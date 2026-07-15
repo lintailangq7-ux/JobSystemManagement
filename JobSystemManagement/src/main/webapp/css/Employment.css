@@ -1,0 +1,212 @@
+/* css/Employment.css */
+
+.main-container {
+    display: flex;
+    gap: 20px;
+    max-width: 1450px;
+    margin: 0 auto;
+}
+
+/* ==================== 左側 生徒情報 ==================== */
+.student-info {
+    background-color: white;
+    border: 2px solid #333;
+    padding: 15px;
+    width: 280px;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.15);
+}
+
+.title-box {
+    background-color: #ffff00;
+    padding: 8px 15px;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 12px;
+    border: 1px solid #333;
+}
+
+.student-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.student-table td {
+    padding: 6px 10px;
+    border: 1px solid #999;
+}
+
+.student-table .header {
+    background-color: #ffff00;
+    font-weight: bold;
+    width: 85px;
+    text-align: center;
+}
+
+.student-table .number {
+    background-color: #ffff99;
+    text-align: center;
+    font-weight: bold;
+}
+
+.remarks-box {
+    margin-top: 15px;
+    border: 2px solid #dc3545;
+    padding: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* ==================== 右側 テーブル ==================== */
+.guidance-area {
+    flex: 1;
+    position: relative;
+}
+
+.table-container {
+    background-color: white;
+    border: 2px solid #333;
+    position: relative;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.1);
+}
+
+.table-wrapper {
+    max-height: 430px;
+    overflow-y: auto;
+    overflow-x: visible; /* ドロップダウンが隠れないように */
+}
+
+.guidance-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.guidance-table th {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 8px;
+    text-align: center;
+    border: 1px solid #555;
+    white-space: nowrap;
+}
+
+.guidance-table td {
+    padding: 10px 8px;
+    border: 1px solid #ccc;
+    vertical-align: middle;
+}
+
+.id-cell {
+    background-color: #00bfff;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    width: 80px;
+}
+
+.red-text {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.action-col {
+    width: 50px;
+    text-align: center;
+    position: relative; /* ドロップダウンの基準位置 */
+    overflow: visible;
+}
+
+.btn-dots {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    border-radius: 4px;
+}
+
+/* ==================== ⋯ドロップダウンメニュー ==================== */
+.dropdown-wrap {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-menu-custom {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    width: 90px;
+    z-index: 50;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.25);
+}
+
+.dropdown-menu-custom.open {
+    display: flex;
+}
+
+.dropdown-menu-custom button {
+    border: none;
+    color: white;
+    font-weight: bold;
+    padding: 10px 0;
+    font-size: 15px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.btn-change {
+    background-color: #00bfff;
+}
+
+.btn-change:hover {
+    background-color: #009fdb;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+}
+
+.btn-delete:hover {
+    background-color: #c82333;
+}
+
+/* 追加ボタンのフッター（テーブルボックス内・右下） */
+.table-footer {
+    display: flex;
+    justify-content: flex-start;
+    padding: 12px 15px;
+    border-top: 1px solid #ccc;
+}
+
+.btn-add {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 6px;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+}
+
+.btn-add:hover {
+    background-color: #c82333;
+}
+
+/* スクロールバー風 */
+.table-wrapper::-webkit-scrollbar {
+    width: 18px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+    background: #ddd;
+    border-left: 1px solid #999;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: #666;
+    border: 3px solid #ddd;
+}
