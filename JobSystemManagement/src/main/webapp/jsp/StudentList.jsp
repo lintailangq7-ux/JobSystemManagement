@@ -250,7 +250,7 @@
 
 <div class="header-row">
 	  <div class="title-box">
-	    <button class="title-arrow"onclick="location.href='https://teams.microsoft.com/v2/';">
+	    <button class="title-arrow"onclick="history.back()">
 	      <svg viewBox="0 0 24 24"><polygon points="18,2 18,22 4,12" fill="#FFE600"/></svg>
 	    </button>
 	    <div class="title-text">学生情報一覧</div>
@@ -329,7 +329,9 @@
 	</div>
 
 	<div class="ctx-menu" id="ctxMenu">
-	  <button data-action="edit">変更</button>
+	<form action="StudentCenageSevlet"method="get">
+	 	 <button data-action="edit" type="submit">変更</button>
+	  </form>
 	  <button data-action="delete">削除</button>
   	</div>
 
@@ -347,7 +349,9 @@
 
 	<br>
 	<div class="footer-row">
-	<button class="register" onclick="location.href='https://teams.microsoft.com/v2/';">登録</button>
+	<form action="StudentNewSevlet" method ="get">
+	<button class="register" type="submit" >登録</button>
+	</from>
 	</div>
 
 </div>
