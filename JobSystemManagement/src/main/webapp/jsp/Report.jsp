@@ -8,8 +8,17 @@
 	GuidanceDetail Gdata = (ModelEmployment)session.getAttribute("Gdata");
 	List<ModelEmployment> list = (List<ModelEmployment>)request.getAttribute("list");
 	
-	
-	
+	int AT =0;
+	int AJ =0;		
+	for(ModelStudent SL : StuList){
+		int No = SL.getAssen();
+		if(No=1){
+			AT =+1;
+		}else if(No=2){
+			AJ=+1;
+		}
+			
+	}
 	
 	
 	
