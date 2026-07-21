@@ -2,8 +2,9 @@
          pageEncoding="UTF-8"
          import="java.time.format.DateTimeFormatter,
                  DAO.StudentDetailDAO, model.StudentDetail,
-                 model.GuidanceDetail, model.EmploymentChukan,
-                 model.StudentChukan" %>
+                 model.GuidanceDetail, model.ModelStudent,
+                 model.EmploymentChukan,
+                 model.StudentChukan, model.CompanyChukan" %>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -17,7 +18,7 @@
         body { background-color: #f0f0f0; padding: 20px; }
     </style>
 </head>
-<body>
+<body> 
 <%
 	String gakusekiNo = (String) session.getAttribute("userId");
     StudentDetailDAO dao = new StudentDetailDAO();
@@ -52,9 +53,9 @@
             </table>
 
             <br>
-
+			
             <table class="student-table">
-            <%for(StudentChukan Sc:  detail.getStudent().getStudentChukanList()){ %>
+            <%for(StudentChukan Sc:  detail.getStudent().getGakuseiChukanList()){ %>
                 <tr>
                     <td class="header">志望業種</td>
                     <td><%= Sc.getKibouShokushu() %></td>
@@ -87,6 +88,7 @@
         </div>
 
         <!-- 右側：指導一覧 -->
+        
         <div class="guidance-area">
             <div class="table-container">
                 <div class="table-wrapper">
@@ -96,140 +98,55 @@
                                 <th>指導ID</th>
                                 <th>企業名</th>
                                 <th>選考状況</th>
+                                <th>試験日時</th>
                                 <th>業種</th>
                                 <th>備考</th>
                                 <th class="action-col"></th>
                             </tr>
                         </thead>
                         <tbody>
+                        	<%for(GuidanceDetail Gu:  detail.getGuidanceList()){ %>
                             <tr>
-                                <td class="id-cell">ID01</td>
-                                <td>KCSシステムズ</td>
-                                <td>6/3　企業説明会</td>
-                                <td>SE・PG</td>
-                                <td></td>
+                                <td class="id-cell"><%= Gu.getShidoId() %></td>
+                                <td><%= Gu.getCompany().getKaishaName() %></td>
+                                <td><%= Gu.getLatestExam().getShikenNaiyo() %></td>
+                                <td><%= Gu.getLatestExam().getShikenNichiji() %></td>
+                                
+                                <td>
+								<%
+								for(CompanyChukan Mc : Gu.getCompany().getCompanyChukanList()){
+								%>
+   									 <%= Mc.getBoshuShokushu() %>・<br>
+								<%
+								}
+								%>
+								</td>
+                                
+                                <td><%= Gu.getBiko() %></td>
                                 <td class="action-col">
                                     <div class="dropdown-wrap">
                                         <button type="button" class="btn-dots" onclick="toggleMenu(this)">⋯</button>
                                         <div class="dropdown-menu-custom">
-                                            <button type="button" class="btn-change" onclick="onChange('ID01')">変更</button>
+                                            <button type="button" class="btn-change" 
+        											onclick="onChange('<%= Gu.getShidoId() %>')">変更</button>
                                             <button type="button" class="btn-delete" onclick="onDelete('ID01')">削除</button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="id-cell">ID02</td>
-                                <td>西依工業株式会社</td>
-                                <td>6/5　二次試験</td>
-                                <td>製造</td>
-                                <td></td>
-                                <td class="action-col">
-                                    <div class="dropdown-wrap">
-                                        <button type="button" class="btn-dots" onclick="toggleMenu(this)">⋯</button>
-                                        <div class="dropdown-menu-custom">
-                                            <button type="button" class="btn-change" onclick="onChange('ID02')">変更</button>
-                                            <button type="button" class="btn-delete" onclick="onDelete('ID02')">削除</button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="id-cell">ID03</td>
-                                <td>中隈ネットワーク株式会社</td>
-                                <td>6/10　四次面接</td>
-                                <td>保守</td>
-                                <td></td>
-                                <td class="action-col">
-                                    <div class="dropdown-wrap">
-                                        <button type="button" class="btn-dots" onclick="toggleMenu(this)">⋯</button>
-                                        <div class="dropdown-menu-custom">
-                                            <button type="button" class="btn-change" onclick="onChange('ID03')">変更</button>
-                                            <button type="button" class="btn-delete" onclick="onDelete('ID03')">削除</button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="id-cell">ID04</td>
-                                <td>真鍋運輸</td>
-                                <td class="red-text">〜6/9 書類提出期限</td>
-                                <td>運輸</td>
-                                <td></td>
-                                <td class="action-col">
-                                    <div class="dropdown-wrap">
-                                        <button type="button" class="btn-dots" onclick="toggleMenu(this)">⋯</button>
-                                        <div class="dropdown-menu-custom">
-                                            <button type="button" class="btn-change" onclick="onChange('ID04')">変更</button>
-                                            <button type="button" class="btn-delete" onclick="onDelete('ID04')">削除</button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="id-cell">ID05</td>
-                                <td>三原情報システム</td>
-                                <td>見送り</td>
-                                <td>CG</td>
-                                <td></td>
-                                <td class="action-col">
-                                    <div class="dropdown-wrap">
-                                        <button type="button" class="btn-dots" onclick="toggleMenu(this)">⋯</button>
-                                        <div class="dropdown-menu-custom">
-                                            <button type="button" class="btn-change" onclick="onChange('ID05')">変更</button>
-                                            <button type="button" class="btn-delete" onclick="onDelete('ID05')">削除</button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="id-cell">ID06</td>
-                                <td>株式会社すえひろ</td>
-                                <td>内定</td>
-                                <td>その他</td>
-                                <td></td>
-                                <td class="action-col">
-                                    <div class="dropdown-wrap">
-                                        <button type="button" class="btn-dots" onclick="toggleMenu(this)">⋯</button>
-                                        <div class="dropdown-menu-custom">
-                                            <button type="button" class="btn-change" onclick="onChange('ID06')">変更</button>
-                                            <button type="button" class="btn-delete" onclick="onDelete('ID06')">削除</button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="id-cell">ID07</td><td></td><td></td><td></td><td></td>
-                                <td class="action-col">
-                                    <div class="dropdown-wrap">
-                                        <button type="button" class="btn-dots" onclick="toggleMenu(this)">⋯</button>
-                                        <div class="dropdown-menu-custom">
-                                            <button type="button" class="btn-change" onclick="onChange('ID07')">変更</button>
-                                            <button type="button" class="btn-delete" onclick="onDelete('ID07')">削除</button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="id-cell">ID08</td><td></td><td></td><td></td><td></td>
-                                <td class="action-col">
-                                    <div class="dropdown-wrap">
-                                        <button type="button" class="btn-dots" onclick="toggleMenu(this)">⋯</button>
-                                        <div class="dropdown-menu-custom">
-                                            <button type="button" class="btn-change" onclick="onChange('ID08')">変更</button>
-                                            <button type="button" class="btn-delete" onclick="onDelete('ID08')">削除</button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
+              							</div>
+              						</div>
+              					</td>
+              				</tr>
+              				<%} %>
                         </tbody>
                     </table>
-                </div>
-            </div>
+            	</div>S
 
-            <button class="btn-add">追加</button>
-        </div>
-    </div>
+
+	</div>
+	   	<div class="button-group">
+       		<button class="btn-add" onclick="location.href='addGuidance.jsp'">追加</button>
+        	<button class="btn-add" onclick="location.href='../../ListofCompanies'">企業一覧</button>
+        	<button class="btn-add" onclick="location.href='../../StudentServlet'">学生一覧</button>
+        	<button class="btn-add" onclick="location.href='activityReport.jsp'">活動報告書</button>
+    	</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -257,19 +174,19 @@
             }
         });
 
-        // 「変更」ボタン処理（必要に応じて画面遷移やAPI呼び出しに差し替えてください）
-        function onChange(id) {
+     // 「変更」ボタン処理
+        function onChange(shidoId) {
             closeAllMenus();
-            console.log('変更: ' + id);
-            // 例: window.location.href = 'edit?id=' + id;
+            // またはサーブレットを使う場合：
+             window.location.href = 'GuidanceCenageSevlet?action=edit&shidoId=' + shidoId;
         }
 
-        // 「削除」ボタン処理（必要に応じて確認ダイアログやAPI呼び出しに差し替えてください）
-        function onDelete(id) {
+        // 「削除」ボタン処理（参考）
+        function onDelete(shidoId) {
             closeAllMenus();
-            if (confirm(id + ' を削除しますか？')) {
-                console.log('削除: ' + id);
-                // 例: window.location.href = 'delete?id=' + id;
+            if (confirm(shidoId + ' を削除しますか？')) {
+                window.location.href = 'GuidanceServlet?action=delete&shidoId=' + shidoId;
+                // または POST で削除したい場合は form を用意して submit
             }
         }
     </script>

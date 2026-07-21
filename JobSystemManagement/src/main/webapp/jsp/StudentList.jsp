@@ -1,252 +1,162 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    <%@ page import="model.ModelStudent,model.StudentChukan, java.util.List, java.util.ArrayList" %>
-<%
- 	ModelStudent Sdata = (ModelStudent)session.getAttribute("Sdata");
-	List<ModelStudent> StuList = (List<ModelStudent>)request.getAttribute("StuList");
-	
-%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>学生一覧</title>
+<title>指導変更</title>
+
 <style>
-  body {
-    font-family: "MS PGothic", "Meiryo", sans-serif;
-    background: #ffffff;
-    padding: 20px;
-  }
-  .container {
-    max-width: 900px;
-    position: relative;
-  }
 
-  /* header */
-  .header-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  .title-box {
-    display: flex;
-    align-items: center;
-    border: 1px solid #999;
-    width: 300px;
-    height: 60px;
-  }
-  .title-arrow {
-    width: 60px;
-    height: 100%;
-    background: #29ABE2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .title-arrow svg { width: 30px; height: 30px; }
-  .title-text {
-    font-size: 20px;
-    font-weight: bold;
-    margin-left: 14px;
-  }
+body{
+    font-family:Meiryo;
+    background:#fff;
+}
 
-  .search-box {
-    display: inline-block;
-    border: 2px solid #29abe2;
-    border-radius: 20px;
-    padding: 4px 8px;
-  }
+.container{
+    width:1200px;
+    margin:20px auto;
+}
 
-  .search-box input {
-    border: none;
-    outline: none;
-    background: transparent;
-    font-size: 14px;
-  }
+.titleArea{
+    display:flex;
+    align-items:center;
+    margin-bottom:20px;
+}
 
-  /* スクロール関係div=""で使う */
-  .table-wrapper {
-    max-height: 440px;
-    overflow-y: auto;
-    border: 1px solid #999;
-  }
+.backButton{
+    width:48px;
+    height:48px;
+    border:2px solid #444;
+    background:#58c8ff;
+    cursor:pointer;
+    position:relative;
+    padding:0;
+    overflow:hidden;
+}
 
-  /* table */
-  table {
-    border-collapse: collapse;
-    width: 100%;
-  }
-  th {
-    background: #1f5fa8;
-    color: #fff;
-    font-size: 13px;
-    padding: 6px 4px;
-    border: 1px solid #999;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-  }
-  td {
-    border: 1px solid #999;
-    font-size: 13px;
-    padding: 6px 4px;
-    text-align: center;
-    height: 26px;
-  }
-  td.rowhead {
-    background: #29ABE2;
-    color: #003366;
-    font-weight: bold;
-  }
-  tr.empty td.rowhead {
-    background: #29ABE2;
-  }
-  .btn-more {
-    background: #999;
-    color: #fff;
-    border: none;
-    padding: 3px 10px;
-    font-size: 12px;
-    cursor: pointer;
-  }
+/* 黄色の三角 */
+.backButton::after{
+    content:"";
+    position:absolute;
+    left:8px;
+    top:0;
+    width:30px;
+    height:100%;
+    background:#fff34d;
+    clip-path:polygon(100% 0,0 50%,100% 100%);
+}
 
-  /* scroll arrow */
-  .scroll-arrow {
-    position: absolute;
-    right: -70px;
-    top: 90px;
-    width: 40px;
-    height: 400px;
-    background: #ddd;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    box-sizing: border-box;
-  }
+/* ホバー */
+.backButton:hover{
+    filter:brightness(0.95);
+}
 
-  .footer-row {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 16px;
-  }
-  button.register {
-    background: #d9001b;
-    color: #fff;
-    font-weight: bold;
-    font-size: 16px;
-    padding: 10px 30px;
-    border: none;
-    cursor: pointer;
-  }
+.title{
 
-  /* ...ボタン */
-  .more-btn {
-    width: 22px;
-    height: 22px;
-    background: #ddd;
-    border: 1px solid #999;
-    color: #333;
-    font-size: 14px;
-    font-weight: bold;
-    line-height: 1;
-    cursor: pointer;
-    border-radius: 3px;
-  }
-  .more-btn:hover {
-    background: #ccc;
-  }
+    font-size:34px;
+    font-weight:bold;
+    margin-left:20px;
+}
 
-  /* 右クリック風メニュー */
-  .ctx-menu {
-    position: fixed;
-    background: #fff;
-    border: 1px solid #999;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-    min-width: 140px;
-    padding: 4px 0;
-    font-size: 13px;
-    z-index: 1000;
-    display: none;
-  }
-  .ctx-menu button {
-    display: block;
-    width: 100%;
-    text-align: left;
-    padding: 6px 12px;
-    background: none;
-    border: none;
-    font-size: 13px;
-    cursor: pointer;
-    color: #222;
-  }
-  .ctx-menu button:hover {
-    background: #1f5fa8;
-    color: #fff;
-  }
+.main{
 
-  /* 削除確認モーダル */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 2000;
-    align-items: center;
-    justify-content: center;
-  }
-  .modal-overlay.open {
-    display: flex;
-  }
-  .modal-box {
-    background: #fff;
-    border: 1px solid #999;
-    width: 320px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  }
-  .modal-box h3 {
-    margin: 0 0 12px;
-    font-size: 15px;
-    border-left: 4px solid #d9001b;
-    padding-left: 8px;
-  }
-  .modal-box p {
-    font-size: 13px;
-    color: #333;
-    margin: 0 0 20px;
-  }
-  .modal-box .target-name {
-    font-weight: bold;
-    color: #003366;
-  }
-  .modal-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-  }
-  .modal-buttons button {
-    font-size: 13px;
-    padding: 6px 16px;
-    border: none;
-    cursor: pointer;
-  }
-  .btn-cancel {
-    background: #ccc;
-    color: #333;
-  }
-  .btn-delete {
-    background: #d9001b;
-    color: #fff;
-    font-weight: bold;
-  }
+    display:flex;
+    gap:50px;
+}
+
+/******** 左側 ********/
+
+.left{
+
+    width:260px;
+}
+
+.infoTable{
+
+    width:100%;
+    border-collapse:collapse;
+}
+
+.infoTable th{
+
+    border:2px solid black;
+    background:#f3f3f3;
+    height:40px;
+}
+
+.infoTable td{
+
+    border:2px solid black;
+    text-align:center;
+    height:42px;
+}
+
+/******** 右側 ********/
+
+.right{
+
+    flex:1;
+}
+
+.formTable{
+
+    border-collapse:collapse;
+}
+
+.formTable td{
+
+    padding:5px;
+}
+
+label{
+
+    font-weight:bold;
+}
+
+input[type=text]{
+
+    width:300px;
+    height:38px;
+    text-align:center;
+    border:2px solid black;
+    font-size:18px;
+}
+
+textarea{
+
+    width:430px;
+    height:160px;
+    border:2px solid black;
+    font-size:18px;
+}
+
+.buttonArea{
+
+    text-align:right;
+    margin-top:20px;
+}
+
+.submitButton{
+
+    width:110px;
+    height:60px;
+    background:red;
+    color:white;
+    border:none;
+    border-radius:10px;
+    font-size:24px;
+    font-weight:bold;
+    cursor:pointer;
+}
 
 </style>
+
 </head>
 <body>
 
 <div class="container">
+
 
 <div class="header-row">
 	  <div class="title-box">
@@ -256,13 +166,13 @@
 	    <div class="title-text">学生情報一覧</div>
 	  </div>
 
-	  <div class="search-box">
-		<input type="text" id="SSbox"  placeholder="検索">
-		<button type="button">検索</button>
-	</div>
-	</div>
+<button class="backButton" onclick="history.back()"></button>
 
+<div class="title">
 
+<<<<<<< HEAD
+指導変更
+=======
 	<div class="table-wrapper">
 	<table>
 		<tr>
@@ -353,78 +263,210 @@
 	<button class="register" type="submit" >登録</button>
 	</from>
 	</div>
+>>>>>>> branch 'main' of git@github.com:lintailangq7-ux/JobSystemManagement.git
 
 </div>
 
-<script>
-  const menu = document.getElementById('ctxMenu');
-  const modalOverlay = document.getElementById('modalOverlay');
-  const modalTargetName = document.getElementById('modalTargetName');
-  let currentRow = null;
-  let currentTr = null;
+</div>
 
-  // 「…」ボタンをクリックしたらメニュー表示
-  document.querySelectorAll('.more-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      currentRow = btn.dataset.row;
-      currentTr = btn.closest('tr');
+<div class="main">
 
-      const rect = btn.getBoundingClientRect();
-      menu.style.display = 'block';
+<!-- 左側 生徒情報 -->
 
-      const menuWidth = menu.offsetWidth;
-      let left = rect.right - menuWidth;
-      if (left < 4) left = rect.left;
+<div class="left">
 
-      menu.style.left = left + 'px';
-      menu.style.top = (rect.bottom + 4) + 'px';
-    });
-  });
+<table class="infoTable">
 
-  // メニュー項目をクリックしたときの処理
-  document.querySelectorAll('.ctx-menu button').forEach(item => {
-    item.addEventListener('click', () => {
-      menu.style.display = 'none';
-      const action = item.dataset.action;
+<tr>
+<th colspan="2">
+生徒情報
+</th>
+</tr>
 
-      if (action === 'delete') {
-        // 削除 → 確認モーダルを表示
-        const name = currentTr ? currentTr.querySelector('.name-cell').textContent : '';
-        modalTargetName.textContent = '学籍番号 ' + currentRow + '（' + name + '）';
-        modalOverlay.classList.add('open');
-      } else if (action === 'edit') {
-        // 変更 → 編集画面へ遷移
-        location.href = 'edit.html?id=' + encodeURIComponent(currentRow);
-      }
-    });
-  });
+<tr>
+<td>名前</td>
+<td>${student.studentName}</td>
+</tr>
 
-  // モーダル：キャンセル
-  document.getElementById('modalCancel').addEventListener('click', () => {
-    modalOverlay.classList.remove('open');
-  });
+<tr>
+<td>クラス</td>
+<td>${student.className}</td>
+</tr>
 
-  // モーダル：削除確定
-  document.getElementById('modalConfirm').addEventListener('click', () => {
-    if (currentTr) {
-      currentTr.remove();
-    }
-    modalOverlay.classList.remove('open');
-  });
+<tr>
+<td>希望職種</td>
+<td>
+${student.job1}
+${student.job2}
+${student.job3}
+</td>
+</tr>
 
-  // モーダルの背景クリックでも閉じる
-  modalOverlay.addEventListener('click', (e) => {
-    if (e.target === modalOverlay) {
-      modalOverlay.classList.remove('open');
-    }
-  });
+<tr>
+<td>内定状況</td>
+<td>${student.offerStatus}</td>
+</tr>
 
-  // メニュー外をクリックしたら閉じる
-  document.addEventListener('click', () => {
-    menu.style.display = 'none';
-  });
-</script>
+</table>
+
+</div>
+
+<!-- 右側 -->
+
+<div class="right">
+
+<form action="GuidanceUpdateServlet" method="post">
+
+<input type="hidden"
+name="studentNo"
+value="${student.studentNo}">
+
+<table class="formTable">
+
+<tr>
+
+<td>企業ID</td>
+
+<td>
+
+<input type="text"
+name="companyId"
+value="${guidance.companyId}">
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>企業名</td>
+
+<td>
+
+<input type="text"
+name="companyName"
+value="${guidance.companyName}">
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>試験会場</td>
+
+<td>
+
+<input type="text"
+name="place"
+value="${guidance.place}">
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>提出状況</td>
+
+<td>
+
+<input type="text"
+name="submitStatus"
+value="${guidance.submitStatus}">
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>試験内容</td>
+
+<td>
+
+<input type="text"
+name="exam"
+value="${guidance.exam}">
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>試験日時</td>
+
+<td>
+
+<input type="text"
+name="examDate"
+value="${guidance.examDate}">
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>内定確定</td>
+
+<td>
+
+<input type="text"
+name="offerStatus"
+value="${guidance.offerStatus}">
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>内定承諾日</td>
+
+<td>
+
+<input type="text"
+name="acceptDate"
+value="${guidance.acceptDate}">
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>備考</td>
+
+<td>
+
+<textarea
+name="memo">${guidance.memo}</textarea>
+
+</td>
+
+</tr>
+
+</table>
+
+<div class="buttonArea">
+
+<button class="submitButton">
+
+変更
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
 
 </body>
 </html>

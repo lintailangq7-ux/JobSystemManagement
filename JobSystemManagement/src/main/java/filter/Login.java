@@ -25,7 +25,7 @@ public class Login implements Filter {
         String requestURI = req.getRequestURI();
 
         // ログイン関連ページはフィルターを通過させる
-        if (requestURI.endsWith("/Login.jsp") || 
+        if (requestURI.endsWith("/jsp/Login.jsp") || 
             requestURI.endsWith("/LoginServlet") ||
             requestURI.endsWith("/login")) {
             
@@ -48,7 +48,7 @@ public class Login implements Filter {
             chain.doFilter(request, response);
         } else {
             // 未ログイン → ログインページへリダイレクト
-            res.sendRedirect(req.getContextPath() + "/Login.jsp");
+            res.sendRedirect(req.getContextPath() + "/jsp/Login.jsp");
         }
     }
 

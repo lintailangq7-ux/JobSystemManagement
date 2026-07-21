@@ -155,6 +155,7 @@
 </div>
 </form>
 </div>
+
 <table border="1">
 	<thead>
 		<tr>
@@ -176,7 +177,6 @@ if(list != null){
 
     for(Company c : list){
 %>
-	
 	
 	<tr>
 			    <td><%= c.getId() %></td>
