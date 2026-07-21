@@ -14,6 +14,7 @@ import javax.sql.DataSource;
 
 import model.ModelStudent;
 import model.StudentChukan;
+import model.StudentList;
 
 public class StudentDAO {
 	//データベースに接続に使用する情報
@@ -73,6 +74,53 @@ public class StudentDAO {
 			return false;
 		}
 		return true;
+	}
+	public List<StudentList> findByCompanyId(String companyId) {
+		// TODO 自動生成されたメソッド・スタブ
+		 List<StudentList> studentList = new ArrayList<>();
+
+		    String sql =
+		        "SELECT クラス番号, 出席番号, 氏名 "
+		      + "FROM 学生テーブル "
+		      + "WHERE 企業ID = ?";
+
+		    try {
+
+		        Connection conn =
+		                DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+
+		        PreparedStatement ps =
+		                conn.prepareStatement(sql);
+
+		        ps.setString(1, companyId);
+
+		        ResultSet rs = ps.executeQuery();
+
+		        while (rs.next()) {
+
+		            StudentList student = new StudentList();
+
+		            student.setClassNo(
+		                rs.getString("クラス番号")
+		            );
+
+		            student.setAttendanceNo(
+		                rs.getString("出席番号")
+		            );
+
+		            student.setStudentName(
+		                rs.getString("氏名")
+		            );
+
+		            studentList.add(student);
+		        }
+
+		    } catch(Exception e) {
+		        e.printStackTrace();
+		    }
+
+		    return studentList;
+		
 	}
 }
 
