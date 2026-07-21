@@ -136,12 +136,12 @@
               				<%} %>
                         </tbody>
                     </table>
-            	</div>
+            	</div>S
 
     	<div class="button-group">
        		<button class="btn-add" onclick="location.href='addGuidance.jsp'">追加</button>
-        	<button class="btn-add" onclick="location.href='ListofCompanies.jsp'">企業一覧</button>
-        	<button class="btn-add" onclick="location.href='StudentList.jsp.jsp'">学生一覧</button>
+        	<button class="btn-add" onclick="location.href='../../ListofCompanies'">企業一覧</button>
+        	<button class="btn-add" onclick="location.href='../../StudentServlet'">学生一覧</button>
         	<button class="btn-add" onclick="location.href='activityReport.jsp'">活動報告書</button>
     	</div>
 	</div>
