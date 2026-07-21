@@ -15,7 +15,7 @@ import model.StudentLogic;
 /**
 * Servlet implementation class StudentServlet
 */
-@jakarta.servlet.annotation.WebServlet("/Student")
+@jakarta.servlet.annotation.WebServlet("/StudentServlet")
 public class StudentServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
  
