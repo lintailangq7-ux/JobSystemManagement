@@ -8,8 +8,18 @@
 	GuidanceDetail Gdata = (ModelEmployment)session.getAttribute("Gdata");
 	List<ModelEmployment> list = (List<ModelEmployment>)request.getAttribute("list");
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	// 月 → 週リスト（あっせん報告の対象週）
-	@SuppressWarnings("unchecked")
+	
 	LinkedHashMap<String, List<String>> monthWeekMap =
 			(LinkedHashMap<String, List<String>>) request.getAttribute("MonthWeekMap");
 	if (monthWeekMap == null) {
