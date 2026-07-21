@@ -1,15 +1,15 @@
 package model;
 
 //1. Login.java
-public class Login {
+public class ModelLogin {
  private String userId;      // ユーザーID
  private String password;    // パスワード
 
  // デフォルトコンストラクタ
- public Login() {}
+ public ModelLogin() {}
 
  // 全引数コンストラクタ
- public Login(String userId, String password) {
+ public ModelLogin(String userId, String password) {
      this.userId = userId;
      this.password = password;
  }

@@ -157,13 +157,113 @@ textarea{
 
 <div class="container">
 
-<div class="titleArea">
+
+<div class="header-row">
+	  <div class="title-box">
+	    <button class="title-arrow"onclick="history.back()">
+	      <svg viewBox="0 0 24 24"><polygon points="18,2 18,22 4,12" fill="#FFE600"/></svg>
+	    </button>
+	    <div class="title-text">学生情報一覧</div>
+	  </div>
 
 <button class="backButton" onclick="history.back()"></button>
 
 <div class="title">
 
+<<<<<<< HEAD
 指導変更
+=======
+	<div class="table-wrapper">
+	<table>
+		<tr>
+			<th>学籍番号</th>
+			<th>クラス</th>
+			<th>番号</th>
+			<th>氏名</th>
+			<th>性別</th>
+			<th>あっせん状況</th>
+			<th>在籍状況</th>
+			<th>希望地域</th>
+			<th>希望業種1</th>
+			<th>希望業種2</th>
+			<th>希望業種3</th>
+			<th>備考</th>
+			<th>　</th>
+		</tr>
+
+		
+	<% for(ModelStudent SD : StuList){ %>
+		<tr data-id=<%= SD.getGakusekiNo()%>>
+			<td class="rowhead"><%=SD.getGakusekiNo() %></td>
+			<td><%=SD.getClassName() %></td>
+			<td><%=SD.getAttendanceNo() %></td>
+			<td class="name-cell"><%=SD.getName() %></td>
+			<%String Sei = SD.getSeibetsu();
+			  if(Sei.equals("F")){ %>
+			  	<td>女</td>
+			<% }else if(Sei.equals("M")){%>
+				 <td>男</td>
+			<% }else if(Sei.equals("X")){%>
+				 <td>未</td>
+			 <%} %>		
+			 <%
+			   int zai = SD.getZaisekiJokyo();
+			   if(zai == 1){%>
+			 	<td>在学</td>
+			 <% }else if(zai ==2){ %>
+			 	<td>卒業</td>
+			 <% }else if(zai ==3){ %>
+			 	<td>退学</td>
+			 <% }else if(zai ==4){ %>
+				<td>留年</td>
+			<%}%>
+			<td>辞退</td>
+			<td><%=SD.getKenNaiGaiKibo() %></td>
+			<%
+			  List<StudentChukan> chukanList = SD.getGakuseiChukanList();
+			    for (int i = 0; i <= 2; i++) { 
+			        if (chukanList != null && i < chukanList.size()) {
+			        	%>
+			        	        <td><%= chukanList.get(i).getKibouShokushu() %></td>
+			        	<%
+			        	        } else {
+			        	%>
+			        	        <td>-</td>
+			        	   <%} %>
+			<%} %>
+			<td><%=SD.getBiko() %></td>
+			<td><button class="more-btn" data-row=<%=SD.getGakusekiNo() %>>&hellip;</button></td>
+		</tr>
+		<%} %>
+	</table>
+	</div>
+
+	<div class="ctx-menu" id="ctxMenu">
+	<form action="StudentCenageSevlet"method="get">
+	 	 <button data-action="edit" type="submit">変更</button>
+	  </form>
+	  <button data-action="delete">削除</button>
+  	</div>
+
+	<!-- 削除確認モーダル -->
+	<div class="modal-overlay" id="modalOverlay">
+	  <div class="modal-box">
+	    <h3>削除の確認</h3>
+	    <p><span class="target-name" id="modalTargetName"></span> を削除します。<br>この操作は元に戻せません。</p>
+	    <div class="modal-buttons">
+	      <button class="btn-cancel" id="modalCancel">キャンセル</button>
+	      <button class="btn-delete" id="modalConfirm">削除する</button>
+	    </div>
+	  </div>
+	</div>
+
+	<br>
+	<div class="footer-row">
+	<form action="StudentNewSevlet" method ="get">
+	<button class="register" type="submit" >登録</button>
+	</from>
+	</div>
+>>>>>>> branch 'main' of git@github.com:lintailangq7-ux/JobSystemManagement.git
 
 </div>
 
