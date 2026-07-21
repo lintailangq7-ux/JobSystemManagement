@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
+import DAO.LoginDAO;
 /**
  * Servlet implementation class Login
  */
@@ -40,7 +42,8 @@ public class Login extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+		LoginDAO LDao = new LoginDAO();
+		
         String userId = request.getParameter("userId");
         String password = request.getParameter("password");
         
@@ -54,7 +57,7 @@ public class Login extends HttpServlet {
         if (userId != null && password != null) {
             // 先生ID or 生徒ID の形式チェック（簡易版）
             if (userId.startsWith("Te") || userId.matches("\\d{6}")) {
-                isValid = true; // 現在は簡易認証あとあとDAO入れる
+            	LDao
             }
         }
 

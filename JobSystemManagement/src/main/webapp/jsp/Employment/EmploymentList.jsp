@@ -17,7 +17,7 @@
         body { background-color: #f0f0f0; padding: 20px; }
     </style>
 </head>
-<body>
+<body> 
 <%
 	String gakusekiNo = (String) session.getAttribute("userId");
     StudentDetailDAO dao = new StudentDetailDAO();
@@ -54,7 +54,7 @@
             <br>
 
             <table class="student-table">
-            <%for(StudentChukan Sc:  detail.getStudent().getStudentChukanList()){ %>
+            <%for(StudentChukan Sc:  detail.getStudent().getGakuseiChukanList()){ %>
                 <tr>
                     <td class="header">志望業種</td>
                     <td><%= Sc.getKibouShokushu() %></td>

@@ -60,6 +60,8 @@ public class StudentDAO {
 			}
 			return StuList;
 		}
+	
+	
 	public boolean create(StudentChukan Sdata) {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver") ;

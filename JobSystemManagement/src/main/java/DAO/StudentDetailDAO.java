@@ -30,6 +30,8 @@ public class StudentDetailDAO {
     }
 
     private ModelStudent findStudent(String gakusekiNo) {
+    	StudentChukanDAO scDao = new StudentChukanDAO();
+    	
     	
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -54,6 +56,8 @@ public class StudentDetailDAO {
                     s.setKenNaiGaiKibo(rs.getString("県内外の希望")); // ← カラム名修正
                     s.setSeibetsu(rs.getString("性別"));
                     s.setBiko(rs.getString("備考"));
+                    s.setGakuseiChukanList(scDao.findById(rs.getInt("学籍番号")));
+                    
                     return s;
                 }
             }
