@@ -1,27 +1,33 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="java.util.*" %>
+<%@ page import="model.ModelStudent,model.GuidanceDetail, java.util.List, java.util.ArrayList" %>
 <%
-	// ==== 実際はコントローラ(Servlet)からrequest属性やモデルクラスで渡す想定 ====
-	// 例) request.setAttribute("ClassName", "S3A1");
-	//     request.setAttribute("MonthWeekMap", monthWeekMap); ← LinkedHashMap<String,List<String>>
-	//     request.setAttribute("SelectedMonth", "6月");
-	// ここではダミーデータで代用しています。実データに差し替えてください。
+	ModelStudent Sdata = (ModelStudent)session.getAttribute("Sdata");
+	List<ModelStudent> StuList = (List<ModelStudent>)request.getAttribute("StuList");
 
-	String className = (String) request.getAttribute("ClassName");
-	if (className == null) className = "S3A1";
-
-	Integer year = (Integer) request.getAttribute("TargetYear");
-	if (year == null) year = 2026;
-
-	Integer maleTotal   = (Integer) request.getAttribute("TotalMale");
-	Integer femaleTotal = (Integer) request.getAttribute("TotalFemale");
-	if (maleTotal == null)   maleTotal = 30;
-	if (femaleTotal == null) femaleTotal = 10;
-	int grandTotal = maleTotal + femaleTotal;
-
+	GuidanceDetail Gdata = (ModelEmployment)session.getAttribute("Gdata");
+	List<ModelEmployment> list = (List<ModelEmployment>)request.getAttribute("list");
+	
+	int AT =0;
+	int AJ =0;		
+	for(ModelStudent SL : StuList){
+		int No = SL.getAssen();
+		if(No=1){
+			AT =+1;
+		}else if(No=2){
+			AJ=+1;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	// 月 → 週リスト（あっせん報告の対象週）
-	@SuppressWarnings("unchecked")
+	
 	LinkedHashMap<String, List<String>> monthWeekMap =
 			(LinkedHashMap<String, List<String>>) request.getAttribute("MonthWeekMap");
 	if (monthWeekMap == null) {
