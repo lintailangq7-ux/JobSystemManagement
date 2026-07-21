@@ -250,7 +250,7 @@
 
 <div class="header-row">
 	  <div class="title-box">
-	    <button class="title-arrow"onclick="history.back()">
+	    <button class="title-arrow"onclick="location.href='https://teams.microsoft.com/v2/';">
 	      <svg viewBox="0 0 24 24"><polygon points="18,2 18,22 4,12" fill="#FFE600"/></svg>
 	    </button>
 	    <div class="title-text">学生情報一覧</div>
@@ -295,7 +295,14 @@
 				 <td>男</td>
 			<% }else if(Sei.equals("X")){%>
 				 <td>未</td>
-			 <%} %>		
+			 <%} %>	
+			 <%
+			   	int assen = SD.getAssen();
+			 	if(assen == 1){%>
+			 	<td>あっせん中</td>	
+			 <%}else if(assen ==2){ %>
+			 	<td>辞退</td>	
+			 <%} %>
 			 <%
 			   int zai = SD.getZaisekiJokyo();
 			   if(zai == 1){%>
@@ -307,7 +314,7 @@
 			 <% }else if(zai ==4){ %>
 				<td>留年</td>
 			<%}%>
-			<td></td>
+		
 			<td><%=SD.getKenNaiGaiKibo() %></td>
 			<%
 			  List<StudentChukan> chukanList = SD.getGakuseiChukanList();
@@ -329,9 +336,7 @@
 	</div>
 
 	<div class="ctx-menu" id="ctxMenu">
-	<form action="StudentCenageSevlet"method="get">
-	 	 <button data-action="edit" type="submit">変更</button>
-	  </form>
+	  <button data-action="edit">変更</button>
 	  <button data-action="delete">削除</button>
   	</div>
 
@@ -349,9 +354,7 @@
 
 	<br>
 	<div class="footer-row">
-	<form action="StudentNewSevlet" method ="get">
-	<button class="register" type="submit" >登録</button>
-	</from>
+	<button class="register" onclick="location.href='https://teams.microsoft.com/v2/';">登録</button>
 	</div>
 
 </div>

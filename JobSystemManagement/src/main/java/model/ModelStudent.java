@@ -13,6 +13,7 @@ public class ModelStudent {
     private int zaisekiJokyo;         // 在籍状況
     private String kenNaiGaiKibo;     // 県内外の希望
     private String seibetsu;          // 性別
+    private int assen;
     private String biko;              // 備考
  
     // 学生中間テーブル（希望職種：複数）
@@ -21,7 +22,7 @@ public class ModelStudent {
     public ModelStudent() {}
  
     public ModelStudent(int gakusekiNo, String className, String name, int attendanceNo,
-                        int zaisekiJokyo, String kenNaiGaiKibo, String seibetsu, String biko,
+                        int zaisekiJokyo, String kenNaiGaiKibo, String seibetsu,int assen, String biko,
                         List<StudentChukan> gakuseiChukanList) {
         this.gakusekiNo = gakusekiNo;
         this.className = className;
@@ -30,6 +31,7 @@ public class ModelStudent {
         this.zaisekiJokyo = zaisekiJokyo;
         this.kenNaiGaiKibo = kenNaiGaiKibo;
         this.seibetsu = seibetsu;
+        this.assen =assen;
         this.biko = biko;
         this.StudentChukanList = gakuseiChukanList;
     }
@@ -62,11 +64,17 @@ public class ModelStudent {
     //性別
     public String getSeibetsu() { return seibetsu; }
     public void setSeibetsu(String seibetsu) { this.seibetsu = seibetsu; }
- 
+    
+    //あっせん
+    public int getAssen() { return assen; }
+    public void setAssen(int assen) { this.assen = assen; }
+    
     //備考
     public String getBiko() { return biko; }
     public void setBiko(String biko) { this.biko = biko; }
- 
+
+
+    
     public List<StudentChukan> getGakuseiChukanList() { return StudentChukanList; }
     public void setGakuseiChukanList(List<StudentChukan> gakuseiChukanList) {
         this.StudentChukanList = gakuseiChukanList;
