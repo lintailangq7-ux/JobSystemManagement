@@ -307,7 +307,7 @@
 			 <% }else if(zai ==4){ %>
 				<td>留年</td>
 			<%}%>
-			<td>辞退</td>
+			<td></td>
 			<td><%=SD.getKenNaiGaiKibo() %></td>
 			<%
 			  List<StudentChukan> chukanList = SD.getGakuseiChukanList();
