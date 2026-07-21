@@ -32,7 +32,6 @@ public class StudentDetailDAO {
     private ModelStudent findStudent(String gakusekiNo) {
     	StudentChukanDAO scDao = new StudentChukanDAO();
     	
-    	
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
@@ -44,6 +43,7 @@ public class StudentDetailDAO {
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, gakusekiNo);
+            System.out.println(gakusekiNo.substring(2));
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
