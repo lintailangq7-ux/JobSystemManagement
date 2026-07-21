@@ -23,7 +23,7 @@ public class LoginDAO {
     } catch (ClassNotFoundException e) {
         e.printStackTrace();
     }
-    String sql = "SELECT * FROM login WHERE 学籍番号 = ?;";
+    String sql = "SELECT * FROM login WHERE ユーザーID = ?";
 
     try (Connection con = DriverManager.getConnection(URL, USER, PASS);
          PreparedStatement ps = con.prepareStatement(sql)) {
@@ -33,16 +33,17 @@ public class LoginDAO {
         try (ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
             	ModelLogin l =  new ModelLogin();
-                l.setPassword(rs.getString("ユーザーID"));
-                l.setUserId(rs.getString("パスワード"));
+                l.setPassword(rs.getString("パスワード"));
+                l.setUserId(rs.getString("ユーザーID"));
 
-               
+
                 
                 return l;
             }
         }
     } catch (Exception e) {
         e.printStackTrace();
+        System.out.println(1234);
     }
     return null;
 }
