@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import model.Login;
+import model.ModelLogin;
 
 
 public class LoginDAO {
@@ -15,7 +15,7 @@ public class LoginDAO {
     private static final String PASS = "kcsf";
 
 	
-    public Login findAll(String gakusekiNo){
+    public ModelLogin findId(String gakusekiNo){
 	
 	
     try {
@@ -32,7 +32,7 @@ public class LoginDAO {
 
         try (ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
-                Login l =  new Login();
+            	ModelLogin l =  new ModelLogin();
                 l.setPassword(rs.getString("ユーザーID"));
                 l.setUserId(rs.getString("パスワード"));
 
