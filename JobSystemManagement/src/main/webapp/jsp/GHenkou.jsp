@@ -26,14 +26,36 @@ body{
 }
 
 .backButton{
-
-    width:110px;
-    height:45px;
-    background:#5cc6ff;
-    color:white;
-    font-size:18px;
-    border:2px solid #000;
+    width:48px;
+    height:48px;
+    border:2px solid #444;
+    background:#58c8ff;
     cursor:pointer;
+    position:relative;
+    padding:0;
+    overflow:hidden;
+}
+
+/* 黄色の三角 */
+.backButton::after{
+    content:"";
+    position:absolute;
+    left:8px;
+    top:0;
+    width:30px;
+    height:100%;
+    background:#fff34d;
+    clip-path:polygon(100% 0,0 50%,100% 100%);
+}
+
+/* マウスを乗せた時 */
+.backButton:hover{
+    filter:brightness(0.95);
+}
+
+/* 押した時 */
+.backButton:active{
+    transform:translateY(2px);
 }
 
 .title{
@@ -117,10 +139,8 @@ textarea{
 
 <button type="button"
 class="backButton"
-onclick="history.back()">
-
- 戻る
-
+onclick="history.back()"
+title="戻る">
 </button>
 
 <div class="title">
