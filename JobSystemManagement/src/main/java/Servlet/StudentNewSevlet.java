@@ -43,7 +43,7 @@ public class StudentNewSevlet extends HttpServlet {
 		String resurt =null;
 		
 		if(className.isEmpty()|name.isEmpty()) {
-			//空白だったとき
+			//空白だったときs
 			forword ="/jsp/GTouroku.jsp";
 			resurt = "false";
 		}
