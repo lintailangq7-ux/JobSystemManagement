@@ -184,7 +184,7 @@ textarea{
 </tr>
 
 <tr>
-<td>名前s</td>
+<td>名前</td>
 <td>${student.studentName}</td>
 </tr>
 
