@@ -62,12 +62,18 @@ public class Login extends HttpServlet {
     	 StudentDetail detail = dao.findByGakusekiNo(userId.substring(2));
     	 System.out.println(detail.getStudent().getName());
     	 System.out.println(detail);
-
+    	 String responsed = null;
         if (userId != null && password != null) {
             // 先生ID or 生徒ID の形式チェック（簡易版）
+        	if(userId.startsWith("Te")) {
             	if (password.equals(Login.getPassword())) {
             		isValid = true;
+            		responsed = "jsp/Employment/EmploymentList.jsp";
             	}
+            }else if(userId.startsWith("St")) {
+            		isValid = true;
+            		responsed = "jsp/Employment/TecherEmplymentList.jsp";
+            }
             
      }
 
