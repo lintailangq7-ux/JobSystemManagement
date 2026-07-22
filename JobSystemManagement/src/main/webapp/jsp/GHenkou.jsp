@@ -145,7 +145,7 @@ title="戻る">
 
 <div class="title">
 
-情報変更
+情報変更s
 
 </div>
 
