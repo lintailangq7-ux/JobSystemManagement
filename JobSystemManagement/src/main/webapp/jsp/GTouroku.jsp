@@ -18,7 +18,7 @@ body{
     margin:30px auto;
 }
 
-/* タイトル部分 */
+/* タイトル部分 a*/
 .titleArea{
     display:flex;
     align-items:center;
