@@ -8,6 +8,8 @@ String companyName = (String) request.getAttribute("companyName");
 List<StudentList> studentList =
         (List<StudentList>) request.getAttribute("studentList");
 %>
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -22,60 +24,59 @@ body{
 }
 
 /* ヘッダー */
-.header{
+.top-area{
     display:flex;
-    align-items:center;
-    justify-content:center;
-    margin-top:10px;
+	    justify-content:flex-start;
+	    align-items:center;
+	    margin-bottom:10px;
+		gap:10px;
+		
+}
+.top-area h1{
     position:relative;
-	height: 90px;
+    margin:0;
+    font-size:30px;
+    padding:0;
+    font-weight:normal;
 }
 
 /* 戻るボタン */
-.back-btn{
-    position:absolute;
-    left:5px;
-    width:40px;
-    height:40px;
-    background:#4b6d8a;
-    color:yellow;
-    font-size:24px;
-    font-weight:bold;
-    border:1px solid #333;
-    cursor:pointer;
+.back-botton{
+    width: 40px;
+		height: 40px;
+		border: 1px solid #4aa3df;
+	    background: #4aa3df;
+		color: #fff35c;
+		font-size: 24px;
+		cursor: pointer;
+		padding: 0;
 }
 
-/* タイトル */
-.title{
-    position:absolute;
-    left:45px;
-    width:250px;
-    height:40px;
-    line-height:40px;
-    text-align:center;
-    border:1px solid #3aa0ff;
-    font-size:18px;
-    font-weight:bold;
-    background:white;
-}
+
 
 /* 企業名 */
 .company{
-    width:320px;
-    height:55px;
+    padding:0 ;
+    height:auto;
     line-height:55px;
     text-align:center;
-    border:1px solid #6ca0dc;
+    border:none;
     border-radius:40px;
-    color:#5d92d5;
-    font-size:30px;
+    color:#006fb7;
+    font-size:20px;
     font-weight:bold;
+    margin-left:50px;/*下に移動*/
+    width:auto;/*文字に合わせる*/
+    white-space:nowrap;/*改行しない*/
+     flex-shrink: 0;
+     
+    
 }
 
 /* テーブル全体 */
 .table-area{
-	width: 100%;
-    margin-top:50px;
+	width: 90%;
+    margin-top:20px;
     display:flex;
     justify-content:center;
 }
@@ -150,39 +151,35 @@ td{
     background:white;
     margin:5px 0;
 }
-.company{
-    position:absolute;
-    left:50%;
-    transform:translateX(-50%);
-    top:0;
-
-    width:320px;
-    height:75px;
-    line-height:75px;
-    text-align:center;
-    border:1px solid #6ca0dc;
-    border-radius:40px;
-    color:#5d92d5;
-    font-size:40px;
-    font-weight:bold;
-    background:#fff;
+.class-no{
+	width:20%;
 }
+.number{
+	width:20%;
+}
+.name{
+	width:40%;
+}
+.button-col{
+	width:15%;
+}
+
 </style>
 </head>
 
 <body>
-<div class="header">
+<div class="top-area">
 
     <!-- 戻るボタン -->
-    <button class="back-btn"
+    <button class="back-botton"
         onclick="location.href='<%=request.getContextPath()%>/ListofCompanies'">
         ◀
     </button>
 
     <!-- タイトル -->
-    <div class="title">
-        受験学生一覧
-    </div>
+    
+       <h1> 受験学生一覧</h1>
+    
 
     <!-- 企業名 -->
     <div class="company">
@@ -197,10 +194,10 @@ td{
 
     <thead>
         <tr>
-            <th>クラス番号</th>
-            <th>出席番号</th>
-            <th>氏名</th>
-           
+            <th class="class-no">クラス番号</th>
+            <th class="number">出席番号</th>
+            <th class="name">氏名</th>
+            <th class="button-col">詳細</th>
         </tr>
     </thead>
 

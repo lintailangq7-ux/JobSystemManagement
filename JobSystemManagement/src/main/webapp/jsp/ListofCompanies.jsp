@@ -180,7 +180,7 @@ if(list != null){
 	
 	<tr>
 			    <td><%= c.getId() %></td>
-			    <td><%= c.getName() %></td>
+			    <td><a href="<%= request.getContextPath() %>/ListofExamStudents?companyId=<%= c.getId() %>"><%= c.getName() %></a></td>
 				<td><%= c.getAddress() %></td>
 				<td><%= c.getTel() %></td>
 				<td><%= c.getMail() %></td>

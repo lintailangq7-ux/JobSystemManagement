@@ -125,5 +125,51 @@ public class StudentDAO {
 		    return studentList;
 		
 	}
+
+
+	public String findCompanyName(String companyId) {
+		// TODO 自動生成されたメソッド・スタブ
+		 String companyName = null;
+
+		    String sql =
+		            "SELECT 企業名 "
+		          + "FROM 企業テーブル "
+		          + "WHERE 企業ID = ?";
+
+
+		    try (
+
+		        Connection conn =
+		                DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+
+
+		        PreparedStatement ps =
+		                conn.prepareStatement(sql);){
+
+
+		        ps.setString(1, companyId);
+
+
+		        ResultSet rs =
+		                ps.executeQuery();
+
+
+		        if (rs.next()) {
+
+		            companyName =
+		                    rs.getString("企業名");
+
+		        }
+
+		    
+		    } catch (Exception e) {
+
+		        e.printStackTrace();
+
+		    }
+
+
+		    return companyName;
+	}
 }
 

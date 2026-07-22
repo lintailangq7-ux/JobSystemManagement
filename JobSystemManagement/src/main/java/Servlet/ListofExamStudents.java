@@ -31,7 +31,9 @@ public class ListofExamStudents extends HttpServlet {
 	        List<StudentList> studentList = dao.findByCompanyId(companyId);
 
 	        // 企業名を取得（今回は仮）
-	        String companyName = "○○株式会社";
+	        
+	        String companyName =dao.findCompanyName(companyId);
+
 
 	        // JSPへ渡す
 	        request.setAttribute("companyName", companyName);
