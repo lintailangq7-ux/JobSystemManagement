@@ -97,7 +97,7 @@ textarea{
     margin-top:20px;
 }
 
-/* 登録ボタン */
+/* 登録ボタsン */
 .submitButton{
     width:120px;
     height:50px;
