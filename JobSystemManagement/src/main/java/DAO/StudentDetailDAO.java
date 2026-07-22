@@ -6,7 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import model.GuidanceDetail;
 import model.ModelCompany;
@@ -19,6 +21,94 @@ public class StudentDetailDAO {
     private static final String USER = "root";
     private static final String PASS = "kcsf";
 
+    
+    public List<StudentDetail> findAllStudentDetail() {
+
+        Map<Integer, StudentDetail> studentMap = new LinkedHashMap<>();
+        CompanyChukanDAO companyDao = new CompanyChukanDAO();
+        EmploymentChukanDAO employmentDao = new EmploymentChukanDAO(); 
+        StudentChukanDAO studentDao = new StudentChukanDAO();
+
+        String sql =
+            "SELECT s.*, j.*, c.* " +
+            "FROM 学生テーブル s " +
+            "LEFT JOIN 就職情報テーブル j ON s.学籍番号 = j.学籍番号 " +
+            "LEFT JOIN 企業テーブル c ON j.企業ID = c.企業ID " +
+            "ORDER BY s.学籍番号, j.指導ID";
+
+        try(Connection con = DriverManager.getConnection(URL, USER, PASS);
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery()) {
+
+            while(rs.next()) {
+
+                int gakuseki = rs.getInt("学籍番号");
+
+                // 生徒がまだ作られていなければ生成
+                StudentDetail detail = studentMap.get(gakuseki);
+
+                if(detail == null) {
+
+                    ModelStudent student = new ModelStudent();
+                    student.setGakusekiNo(gakuseki);
+                    student.setName(rs.getString("氏名"));
+                    student.setClassName(rs.getString("クラス"));
+                    student.setAttendanceNo(rs.getInt("出席番号"));
+                    student.setZaisekiJokyo(rs.getInt("在籍状況"));
+                    student.setKenNaiGaiKibo(rs.getString("県内外の希望"));
+                    student.setSeibetsu(rs.getString("性別"));
+                    student.setBiko(rs.getString("備考"));
+
+                    detail = new StudentDetail();
+                    student.setGakuseiChukanList(studentDao.findById(gakuseki));
+                    detail.setStudent(student);
+                    detail.setGuidanceList(new ArrayList<>());
+
+                    studentMap.put(gakuseki, detail);
+                }
+
+                // 指導データがある場合だけ追加
+                if(rs.getString("指導ID") != null) {
+
+                	GuidanceDetail guidance = new GuidanceDetail();
+
+                    guidance.setShidoId(rs.getString("指導ID"));
+                    guidance.setNaiteiKakutei(rs.getInt("内定確定"));
+
+                    Timestamp ts = rs.getTimestamp("内定確定日");
+                    if(ts != null) {
+                        guidance.setNaiteiKakuteiBi(ts.toLocalDateTime());
+                    }
+
+                    guidance.setBiko(rs.getString("備考"));
+
+                    ModelCompany company = new ModelCompany();
+
+                    company.setKaishaId(rs.getString("企業ID"));
+                    company.setKaishaName(rs.getString("企業名"));
+                    company.setAddress(rs.getString("住所"));
+                    company.setTel(rs.getString("電話番号"));
+                    company.setEmail(rs.getString("メールアドレス"));
+                    company.setSaiyoJisseki(rs.getInt("採用実績"));
+                    company.setKinmuChi(rs.getString("勤務地"));
+
+                    guidance.setCompany(company);
+                    company.setKaishaChukanList(companyDao.findById(company.getKaishaId()));
+                    guidance.setExamHistory(employmentDao.findById(guidance.getShidoId()));
+
+
+
+                    detail.getGuidanceList().add(guidance);
+                }
+            }
+
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return new ArrayList<>(studentMap.values());
+    }
+    
     public StudentDetail findByGakusekiNo(String gakusekiNo) {
 
         ModelStudent student = findStudent(gakusekiNo);
