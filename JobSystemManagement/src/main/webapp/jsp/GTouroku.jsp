@@ -32,18 +32,37 @@ body{
 
 /* 戻るボタン */
 .backButton{
-    width:90px;
-    height:40px;
-    background:#2ea3f2;
-    color:white;
-    border:none;
-    border-radius:5px;
-    font-size:16px;
+    width:48px;
+    height:48px;
+    border:2px solid #444;
+    background:#58c8ff;
     cursor:pointer;
+    position:relative;
+    padding:0;
+    overflow:hidden;
 }
 
+/* 黄色の三角 */
+.backButton::after{
+    content:"";
+    position:absolute;
+    left:8px;
+    top:0;
+    width:30px;
+    height:100%;
+    background:#fff34d;
+    clip-path:polygon(100% 0,0 50%,100% 100%);
+}
+
+/* マウスを乗せた時 */
 .backButton:hover{
-    background:#1b8ad3;
+    filter:brightness(0.95);
+}
+
+/* 押した時 */
+.backButton:active{
+    transform:translateY(2px);
+}
 }
 
 table{
@@ -53,6 +72,7 @@ table{
 
 td{
     vertical-align:top;
+    padding-right:80px;
 }
 
 label{
@@ -105,8 +125,8 @@ textarea{
 
         <button type="button"
                 class="backButton"
-                onclick="history.back()">
-             戻る
+                onclick="history.back()"
+                title="戻る">
         </button>
 
         <h2>学生登録</h2>
