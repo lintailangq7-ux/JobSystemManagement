@@ -1,33 +1,19 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="model.ModelStudent,model.GuidanceDetail, java.util.List, java.util.ArrayList" %>
+<%@ page import="java.util.*" %>
+<%@ page import="model.ModelStudent, model.ModelEmployment" %>
 <%
-	ModelStudent Sdata = (ModelStudent)session.getAttribute("Sdata");
-	List<ModelStudent> StuList = (List<ModelStudent>)request.getAttribute("StuList");
+	// ==== ReportSevlet から渡される想定 ====
+	// request.setAttribute("list", list);       ← List<ModelEmployment>（ReportLogic.execute()）
+	// request.setAttribute("StuList", StuList);  ← List<ModelStudent>（StudentLogic.execute()）
+	//
+	// MonthWeekMap / SelectedMonth は、月選択UI用に別途渡す想定（未実装ならダミー値で代用）。
+	// request.setAttribute("MonthWeekMap", monthWeekMap); ← LinkedHashMap<String,List<String>>
+	// request.setAttribute("SelectedMonth", "6月");
+	// クラス名は、後で実データに合わせて追記してください。
 
-	GuidanceDetail Gdata = (ModelEmployment)session.getAttribute("Gdata");
-	List<ModelEmployment> list = (List<ModelEmployment>)request.getAttribute("list");
-	
-	int AT =0;
-	int AJ =0;		
-	for(ModelStudent SL : StuList){
-		int No = SL.getAssen();
-		if(No=1){
-			AT =+1;
-		}else if(No=2){
-			AJ=+1;
-		}
-	}
-	
-	
-	
-	
-	
-	
-	
-	
 	// 月 → 週リスト（あっせん報告の対象週）
-	
+	@SuppressWarnings("unchecked")
 	LinkedHashMap<String, List<String>> monthWeekMap =
 			(LinkedHashMap<String, List<String>>) request.getAttribute("MonthWeekMap");
 	if (monthWeekMap == null) {
@@ -39,23 +25,98 @@
 		monthWeekMap.put("2月", Arrays.asList("2日～6日", "9日～13日", "16日～28日"));
 	}
 
-	String selectedMonth = (String) request.getAttribute("SelectedMonth");
+	// 選択中の月：URLパラメータ(?month=6月)があれば優先。無ければrequest属性、それも無ければデフォルト
+	String selectedMonth = request.getParameter("month");
+	if (selectedMonth == null) selectedMonth = (String) request.getAttribute("SelectedMonth");
 	if (selectedMonth == null) selectedMonth = "6月";
 
-	// 内定状況（選択中の月時点）
-	Integer naiteiMale   = (Integer) request.getAttribute("NaiteiMale");
-	Integer naiteiFemale = (Integer) request.getAttribute("NaiteiFemale");
-	Integer miteiMale    = (Integer) request.getAttribute("MiteiMale");
-	Integer miteiFemale  = (Integer) request.getAttribute("MiteiFemale");
-	if (naiteiMale == null)   naiteiMale = 10;
-	if (naiteiFemale == null) naiteiFemale = 10;
-	if (miteiMale == null)    miteiMale = 20;
-	if (miteiFemale == null)  miteiFemale = 0;
-	int naiteiTotal = naiteiMale + naiteiFemale;
-	int miteiTotal  = miteiMale + miteiFemale;
-	int rateMale   = maleTotal   == 0 ? 0 : Math.round(naiteiMale   * 100f / maleTotal);
-	int rateFemale = femaleTotal == 0 ? 0 : Math.round(naiteiFemale * 100f / femaleTotal);
-	int rateTotal  = grandTotal  == 0 ? 0 : Math.round(naiteiTotal  * 100f / grandTotal);
+	// 選択中の月を数値化（"6月" → 6）
+	int targetMonth = Integer.parseInt(selectedMonth.replace("月", ""));
+
+	// 選択中の週（例："4日～8日"）。指定があれば、対象月内の日付範囲でさらに絞り込む
+	String selectedWeek = request.getParameter("week");
+	Integer weekStartDay = null, weekEndDay = null;
+	if (selectedWeek != null && selectedWeek.contains("～")) {
+		try {
+			String[] parts = selectedWeek.replace("日", "").split("～");
+			weekStartDay = Integer.parseInt(parts[0].trim());
+			weekEndDay   = Integer.parseInt(parts[1].trim());
+		} catch (Exception e) {
+			// 想定外の形式なら週指定は無視して月だけで絞り込む
+			weekStartDay = null;
+			weekEndDay = null;
+		}
+	}
+
+	// 学生一覧（男女人数の集計元）
+	@SuppressWarnings("unchecked")
+	List<ModelStudent> stuList = (List<ModelStudent>) request.getAttribute("StuList");
+	if (stuList == null) stuList = new ArrayList<ModelStudent>();
+
+	// 就職（内定）情報一覧。ModelEmploymentは gakusekiNo を直接持っているので、
+	// 学籍番号ごとにグルーピングして使う
+	@SuppressWarnings("unchecked")
+	List<ModelEmployment> employmentList = (List<ModelEmployment>) request.getAttribute("list");
+	if (employmentList == null) employmentList = new ArrayList<ModelEmployment>();
+
+	Map<Integer, List<ModelEmployment>> employmentMap = new HashMap<Integer, List<ModelEmployment>>();
+	for (ModelEmployment em : employmentList) {
+		List<ModelEmployment> emList = employmentMap.get(em.getGakusekiNo());
+		if (emList == null) {
+			emList = new ArrayList<ModelEmployment>();
+			employmentMap.put(em.getGakusekiNo(), emList);
+		}
+		emList.add(em);
+	}
+
+	int maleTotal = 0, femaleTotal = 0;
+	int naiteiMale = 0, naiteiFemale = 0;
+
+	for (ModelStudent sd : stuList) {
+		String sei = sd.getSeibetsu();
+		boolean isMale   = "M".equals(sei);
+		boolean isFemale = "F".equals(sei);
+		if (isMale)   maleTotal++;
+		if (isFemale) femaleTotal++;
+
+		// その学生の就職情報（複数件）の中に、選択月（・週）時点で「内定確定」しているものが
+		// 1件でもあれば、その学生を内定者としてカウントする
+		List<ModelEmployment> emList = employmentMap.get(sd.getGakusekiNo());
+		boolean naiteiKakutei = false;
+		if (emList != null) {
+			for (ModelEmployment em : emList) {
+				if (em != null && em.getNaiteiKakutei() == 2 && em.getNaiteiKakuteiBi() != null) {
+					int kakuteiMonth = em.getNaiteiKakuteiBi().getMonthValue();
+					// 選択月「以前」に確定した内定を、その月時点の内定としてカウント（累計）
+					if (kakuteiMonth <= targetMonth) {
+						boolean withinWeek = true;
+						// 週が指定されている場合は、対象月内の確定分のみ日付範囲でさらに絞り込む
+						if (kakuteiMonth == targetMonth && weekStartDay != null && weekEndDay != null) {
+							int day = em.getNaiteiKakuteiBi().getDayOfMonth();
+							withinWeek = (day >= weekStartDay && day <= weekEndDay);
+						}
+						if (withinWeek) {
+							naiteiKakutei = true;
+							break;
+						}
+					}
+				}
+			}
+		}
+		if (naiteiKakutei) {
+			if (isMale)   naiteiMale++;
+			if (isFemale) naiteiFemale++;
+		}
+	}
+
+	int grandTotal   = maleTotal + femaleTotal;
+	int miteiMale    = maleTotal   - naiteiMale;
+	int miteiFemale  = femaleTotal - naiteiFemale;
+	int naiteiTotal  = naiteiMale + naiteiFemale;
+	int miteiTotal   = miteiMale  + miteiFemale;
+	int rateMale     = maleTotal   == 0 ? 0 : Math.round(naiteiMale   * 100f / maleTotal);
+	int rateFemale   = femaleTotal == 0 ? 0 : Math.round(naiteiFemale * 100f / femaleTotal);
+	int rateTotal    = grandTotal  == 0 ? 0 : Math.round(naiteiTotal  * 100f / grandTotal);
 %>
 <!DOCTYPE html>
 <html>
@@ -204,6 +265,7 @@
     padding: 10px 24px;
     font-size: 16px;
     font-weight: bold;
+    white-space: nowrap;
     margin-bottom: 12px;
   }
 
@@ -285,7 +347,8 @@
     <div class="right-block">
       <div class="class-info">
         <div class="class-label">クラス</div>
-        <div class="class-name"><%= className %></div>
+        <!-- TODO: 実データに差し替え（クラス名） -->
+        <div class="class-name">S3A1</div>
       </div>
 
       <table class="stats-table">
@@ -307,7 +370,8 @@
 
     <!-- 年 ＋ 月リスト -->
     <div class="year-block">
-      <div class="year-label"><%= year %>年</div>
+      <!-- TODO: 実データに差し替え（対象年） -->
+      <div class="year-label">2026年</div>
       <div class="month-list">
       <% for (String month : monthWeekMap.keySet()) {
              boolean isSelected = month.equals(selectedMonth);
@@ -324,7 +388,7 @@
 
     <!-- 内定状況 -->
     <div class="content-block">
-      <div class="current-box" id="currentBox"><%= selectedMonth %>現在</div>
+      <div class="current-box" id="currentBox"><%= selectedMonth %><%= selectedWeek != null ? " " + selectedWeek : "" %>現在</div>
 
       <table class="report-table">
         <tr>
@@ -353,6 +417,7 @@
         </tr>
       </table>
     </div>
+
 
   </div>
 </div>
@@ -425,16 +490,13 @@
   });
 
   function selectMonth(month, week) {
-    document.querySelectorAll('.month-item').forEach(function (item) {
-      item.classList.toggle('selected', item.dataset.month === month);
-    });
-    document.getElementById('currentBox').textContent =
-        week ? (month + ' ' + week + ' 現在') : (month + '現在');
-
-    // 実際はここでサーバーへ非同期リクエストし、
-    // naiteiMale などの各セルを最新の値に更新する想定。
-    // 例) fetch('ActivityReportServlet?month=' + month + '&week=' + week)
-    //        .then(...).then(data => { document.getElementById('naiteiMale').textContent = data.naiteiMale + '人'; ... });
+    // ReportSevletに月（・週）をパラメータで渡して再読み込みし、
+    // サーバー側で内定者数などを再集計した最新データを表示する
+    var url = 'ReportSevlet?month=' + encodeURIComponent(month);
+    if (week) {
+      url += '&week=' + encodeURIComponent(week);
+    }
+    location.href = url;
   }
 
   // ポップアップ外クリックで閉じる

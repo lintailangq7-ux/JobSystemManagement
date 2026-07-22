@@ -149,8 +149,11 @@ textarea{
 <td>
 
 <label>希望地域</label><br>
-<input type="text" name="area">
-
+<select  name="area">
+    <option value="M">県内</option>
+    <option  value="F">県外</option>
+    <option value="X">その他</option>
+</select>
 </td>
 
 </tr>
@@ -216,9 +219,9 @@ textarea{
 <label>性別</label><br>
 
 <select name="sex">
-    <option>男</option>
-    <option>女</option>
-    <option>どちらでもない</option>
+    <option value="M">>男</option>
+    <option  value="F">>女</option>
+    <option value="X">>どちらでもない</option>
 </select>
 
 </td>
@@ -240,8 +243,8 @@ textarea{
 <label>あっせん状況</label><br>
 
 <select name="status">
-    <option>継続</option>
-    <option>辞退</option>
+    <option value="1">継続</option>
+    <option value="2">辞退</option>
 </select>
 
 </td>
@@ -255,12 +258,11 @@ textarea{
 <label>在籍状況</label><br>
 
 <select name="schoolStatus">
-    <option>在籍</option>
-    <option>卒業</option>
-    <option>休学</option>
-    <option>退学</option>
+    <option value="1">在籍</option>
+    <option value="2">卒業</option>
+    <option value="3">休学</option>
+    <option value="4">退学</option>
 </select>
-
 </td>
 
 </tr>
