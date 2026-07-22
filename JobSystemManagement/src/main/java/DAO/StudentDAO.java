@@ -38,7 +38,7 @@ public class StudentDAO {
 			}		
 			
 			try(Connection conn = ds.getConnection()){
-				String SQL =("SELECT 学籍番号, クラス, 氏名, 出席番号, 在籍状況, 県内外の希望, 性別, 備考 FROM 学生テーブル;");
+				String SQL =("SELECT 学籍番号, クラス, 氏名, 出席番号, 在籍状況, 県内外の希望, 性別, 備考,あっせん FROM 学生テーブル;");
 				PreparedStatement pStmt = conn.prepareStatement(SQL);
 				ResultSet rs = pStmt.executeQuery();
 			
@@ -50,9 +50,10 @@ public class StudentDAO {
 					int zaisekiJokyo = rs.getInt("在籍状況");
 					String kenNaiGaiKibo = rs.getString("県内外の希望");
 					String seibetsu = rs.getString("性別");
+					int assen = rs.getInt("あっせん");
 					String biko = rs.getString("備考");
 					 List<StudentChukan> list = StuCukan.findById(gakusekiNo);
-					ModelStudent StuData = new ModelStudent(gakusekiNo,className,name,attendanceNo,zaisekiJokyo,kenNaiGaiKibo,seibetsu,biko,list);
+					ModelStudent StuData = new ModelStudent(gakusekiNo,className,name,attendanceNo,zaisekiJokyo,kenNaiGaiKibo,seibetsu,assen,biko,list);
 					StuList.add(StuData);
 				}
 			}catch (Exception e) {

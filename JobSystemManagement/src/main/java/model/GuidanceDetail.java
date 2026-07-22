@@ -22,10 +22,10 @@ public class GuidanceDetail {
     public String getShidoId() { return shidoId; }
     public void setShidoId(String shidoId) { this.shidoId = shidoId; }
 
-    public LocalDateTime getNaiteiKakuteiBi() { return naiteiKakuteiBi; }
+    public LocalDateTime getNaiteiKakuteiBi() { return naiteiKakuteiBi; } //確定日
     public void setNaiteiKakuteiBi(LocalDateTime naiteiKakuteiBi) { this.naiteiKakuteiBi = naiteiKakuteiBi; }
 
-    public int getNaiteiKakutei() { return naiteiKakutei; }
+    public int getNaiteiKakutei() { return naiteiKakutei; }		//確定
     public void setNaiteiKakutei(int naiteiKakutei) { this.naiteiKakutei = naiteiKakutei; }
 
     public String getBiko() { return biko; }

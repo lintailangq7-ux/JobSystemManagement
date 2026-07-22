@@ -53,7 +53,7 @@
             </table>
 
             <br>
-
+			
             <table class="student-table">
             <%for(StudentChukan Sc:  detail.getStudent().getGakuseiChukanList()){ %>
                 <tr>
@@ -88,6 +88,7 @@
         </div>
 
         <!-- 右側：指導一覧 -->
+        
         <div class="guidance-area">
             <div class="table-container">
                 <div class="table-wrapper">
@@ -138,13 +139,14 @@
                     </table>
             	</div>S
 
-    	<div class="button-group">
+
+	</div>
+	   	<div class="button-group">
        		<button class="btn-add" onclick="location.href='addGuidance.jsp'">追加</button>
         	<button class="btn-add" onclick="location.href='../../ListofCompanies'">企業一覧</button>
         	<button class="btn-add" onclick="location.href='../../StudentServlet'">学生一覧</button>
         	<button class="btn-add" onclick="location.href='activityReport.jsp'">活動報告書</button>
     	</div>
-	</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
