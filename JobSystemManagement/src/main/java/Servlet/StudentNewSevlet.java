@@ -59,31 +59,23 @@ public class StudentNewSevlet extends HttpServlet {
 			forword ="/jsp/GTouroku.jsp";
 			resurt = "false";
 		}else if(attendanceNoS.isEmpty()){
-			request.setAttribute("emg", "が入力されていません");
+			request.setAttribute("emg", "出席番号が入力されていません");
 			forword ="/jsp/GTouroku.jsp";
 			resurt = "false";			
 		}else if(zaisekiJokyoS.isEmpty()){
-			request.setAttribute("emg", "が入力されていません");
+			request.setAttribute("emg", "在籍状況が入力されていません");
 			forword ="/jsp/GTouroku.jsp";
 			resurt = "false";								
 		}else if(kenNaiGaiKibo.isEmpty()){
-			request.setAttribute("emg", "が入力されていません");
+			request.setAttribute("emg", "県内外希望が入力されていません");
 			forword ="/jsp/GTouroku.jsp";
 			resurt = "false";
 		}else if(seibetsu.isEmpty()){
-			request.setAttribute("emg", "が入力されていません");
+			request.setAttribute("emg", "性別が入力されていません");
 			forword ="/jsp/GTouroku.jsp";
 			resurt = "false";
 		}else if(assenS.isEmpty()){
-			request.setAttribute("emg", "が入力されていません");
-			forword ="/jsp/GTouroku.jsp";
-			resurt = "false";
-		}else if(biko.isEmpty()){
-			request.setAttribute("emg", "が入力されていません");
-			forword ="/jsp/GTouroku.jsp";
-			resurt = "false";		
-			
-			request.setAttribute("emg", "入力されていない欄があります");
+			request.setAttribute("emg", "あっせん状況が入力されていません");
 			forword ="/jsp/GTouroku.jsp";
 			resurt = "false";
 		}
@@ -104,7 +96,7 @@ public class StudentNewSevlet extends HttpServlet {
 		if(resurt==null) {
 			ModelStudent MD = new ModelStudent(gakusekiNo,className,name,attendanceNo,zaisekiJokyo,kenNaiGaiKibo,seibetsu,assen,biko,list);
 		}
-		request.setAttribute("emg","ooooooo");
+		request.setAttribute("emg","登録完了");
 		RequestDispatcher dispatcher = request.getRequestDispatcher(forword);
 		dispatcher.forward(request, response);
 	}
