@@ -133,7 +133,7 @@ public class StudentDetailDAO {
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, gakusekiNo);
-            System.out.println(gakusekiNo.substring(2));
+            System.out.println(gakusekiNo.substring(1));
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {

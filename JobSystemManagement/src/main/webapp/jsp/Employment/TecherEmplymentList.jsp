@@ -8,187 +8,218 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>指導一覧</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../../css/Employment.css"> <!-- CSSファイルの読み込み -->
-    <style>
-        /* 必要最小限のJSP固有スタイル */
-        body { background-color: #f0f0f0; padding: 20px; }
-    </style>
+<meta charset="UTF-8">
+<title>企業一覧</title>
+<style>
+	.top-area{
+	    display:flex;
+	    justify-content:flex-start;
+	    align-items:center;
+	    margin-bottom:10px;
+		gap:10px;
+		
+	}
+
+	
+	.top-area h1{
+		position: relative;
+	    margin:0;
+	    font-size:30px;
+	    padding:0;
+	    font-weight:normal;
+		
+		
+		
+	}
+	.back-button{
+		width: 40px;
+		height: 40px;
+		border: 1px solid #4aa3df;
+	    background: #4aa3df;
+		color: #fff35c;
+		font-size: 24px;
+		cursor: pointer;
+		padding: 0;
+	}
+	
+
+
+
+	.search-area{
+	    display: flex;
+	    justify-content: flex-end;  /* 右寄せ */
+	    /*margin-bottom: 20px;*/
+		padding: 10px;
+		box-sizing: border-box;
+		max-width: 100%;
+	}
+	.search-box{
+		position: relative;
+		width: 200px;
+		display: flex; 
+		justify-content: flex-end;
+	}
+	.search-box input{
+	    width:250px;
+	    height: 30px;
+	    border: 3px solid #5b9bd5;
+	    border-radius: 20px;
+	    font-size: 18px;
+	    outline: none;
+		padding-left: 10px;
+	}
+	.search-btn{
+	    position: absolute;
+	    top: 50%;
+	    right: 10px;
+	    transform: translateY(-50%);
+	    width: 30px;
+	    height: 30px;
+	    border: none;
+	    background: transparent;
+	    cursor: pointer;
+	    font-size: 18px;
+
+	    
+	}
+	
+	table {
+	     width: 100%;
+	     border-collapse: collapse;
+	   }
+	   th {
+	     background: #0d6fb8;
+	     color: #fff;
+	     padding: 10px;
+	     border: 1px solid #000;
+	   }
+	   td:last-child{
+		text-align: center;
+	   }
+	   .add-button {
+	     position: fixed;
+	     right: 30px;
+	     bottom: 30px;
+	     width: 100px;
+	     height: 60px;
+	     background: #ff0000;
+	     color: #fff;
+	     border: none;
+	     border-radius: 12px;
+	     font-size: 24px;
+	     cursor: pointer;
+	   }
+	   .detail-btn {
+	       width: 40px;
+	       height:32px;
+		   font-size: 12px;
+		   letter-spacing: -1px;
+		   line-height: 30px;
+		   text-align: center;
+	   }
+	   .menu-cell {
+	     position: relative;
+	   }
+
+	   .menu {
+		display: none;
+        position: absolute; 
+		top: 0; 
+		right: calc(100% + 10px); 
+		background: #fff; 
+		border: 1px solid #ccc; 
+		gap:0;
+	   }
+
+	   .menu button {
+	     display: block;
+	     width: 80px;
+		 white-space: nowrap;
+		 writing-mode: horizontal-tb;
+		 margin:0;
+	   }
+</style>
 </head>
-<body> 
+<body>
+
+ <div class="top-area">
+<button class="back-button" onclick="location.href='/jsp/Login.jsp'">◀</button>
+
+<h1>企業一覧</h1>
+</div>
+<div class="search-area">
+<form action="<%= request.getContextPath() %>/ListofCompanies" method="get">
+ <div class="search-box">
+<input type="text" name="keyword" placeholder="企業名">
+
+<button type="submit" class="search-btn">
+🔍
+</button>
+</div>
+</form>
+</div>
+
+<table border="1">
+	<thead>
+		<tr>
+			<th>指導ID	</th>
+			<th>氏名</th>
+			<th>選考状況</th>
+			<th>備考</th>
+		</tr>
+		
+	</thead>
+	<tbody id="companyTable">
 <%
-	String gakusekiNo = (String) session.getAttribute("userId");
-    StudentDetailDAO dao = new StudentDetailDAO();
-    StudentDetail detail = dao.findByGakusekiNo(gakusekiNo);
+	StudentDetail detail = StudentDetail) session.getAttribute("detail");
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("M/d");
 %>
-
-
-</body>
-    <div class="main-container">
-        <!-- 左側：生徒情報 -->
-        <div class="student-info">
-            <div class="title-box">指導一覧</div>
-            
-            <table class="student-table">
-                <tr>
-                    <td class="header">氏名</td>
-                    <td><%= detail.getStudent().getName() %></td>
-                </tr>
-                <tr>
-                    <td class="header">クラス</td>
-                    <td><%= detail.getStudent().getClassName()%></td>
-                </tr>
-                <tr>
-                    <td class="header">番号</td>
-                    <td class="number"><%= detail.getStudent().getAttendanceNo()%></td>
-                </tr>
-                <tr>
-                    <td class="header">性別</td>
-                    <td><%= detail.getStudent().getSeibetsu()%></td>
-                </tr>
-            </table>
-
-            <br>
-			
-            <table class="student-table">
-            <%for(StudentChukan Sc:  detail.getStudent().getGakuseiChukanList()){ %>
-                <tr>
-                    <td class="header">志望業種</td>
-                    <td><%= Sc.getKibouShokushu() %></td>
-                </tr>
-             <%} %>
-                <tr>
-                    <td class="header">志望地域</td>
-                    <td><%= detail.getStudent().getKenNaiGaiKibo()%></td>
-                </tr>
-                <tr>
-                    <td class="header">内定状況</td>
+<%
+    for(StudentDetail d : detail){
+    	for(GuidanceDetail g :d.getGuidanceList())
+%>
+	<tr>
+			    <td><%= g.getShidoId() %></td>
+			    <td><a href="<%= request.getContextPath() %>/ListofExamStudents?companyId=<%= d.getStudent().getGakusekiNo() %>"><%= g.getCompany().getKaishaName() %></a></td>
+				<td><%= c.getAddress() %></td>
+				<td><%= c.getTel() %></td>
+				<td><%= c.getMail() %></td>
+				<td><%= c.getJobtype() %></td>
+			    <td class="menu-cell">
+					
+				    <button type="button" class="detail-btn"onclick="toggleActions(this)">詳細</button>
+				    <div class="menu" style="display:none;">
+				      <button type="button" onclick="alert('企業情報を変更しますか')">変更</button><br>
+				      <button type="button" onclick="alert('企業情報を削除しますか')">削除</button>
+				    </div>
+				  
+				 </td>
+				 
+				
+				</tr>
 				<%
-				boolean naitei = false;
+    }
+}
 
-				for (GuidanceDetail Ed : detail.getGuidanceList()) {
-    				if (Ed.getNaiteiKakutei() == 1) {
-        				naitei = true;
-        				break; // 1件見つかったら終了
-   					}
-				}
-				%>
-
-					<td><%= naitei ? "内" : "未" %></td>
-                    
-                    
-                </tr>
-            </table>
-
-            <div class="remarks-box">備考</div>
-        </div>
-
-        <!-- 右側：指導一覧 -->
-        
-        <div class="guidance-area">
-            <div class="table-container">
-                <div class="table-wrapper">
-                    <table class="guidance-table">
-                        <thead>
-                            <tr>
-                                <th>指導ID</th>
-                                <th>企業名</th>
-                                <th>選考状況</th>
-                                <th>試験日時</th>
-                                <th>業種</th>
-                                <th>備考</th>
-                                <th class="action-col"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        	<%for(GuidanceDetail Gu:  detail.getGuidanceList()){ %>
-                            <tr>
-                                <td class="id-cell"><%= Gu.getShidoId() %></td>
-                                <td><%= Gu.getCompany().getKaishaName() %></td>
-                                <td><%= Gu.getLatestExam().getShikenNaiyo() %></td>
-                                <td><%= Gu.getLatestExam().getShikenNichiji() %></td>
-                                
-                                <td>
-								<%
-								for(CompanyChukan Mc : Gu.getCompany().getCompanyChukanList()){
-								%>
-   									 <%= Mc.getBoshuShokushu() %>・<br>
-								<%
-								}
-								%>
-								</td>
-                                
-                                <td><%= Gu.getBiko() %></td>
-                                <td class="action-col">
-                                    <div class="dropdown-wrap">
-                                        <button type="button" class="btn-dots" onclick="toggleMenu(this)">⋯</button>
-                                        <div class="dropdown-menu-custom">
-                                            <button type="button" class="btn-change" 
-        											onclick="onChange('<%= Gu.getShidoId() %>')">変更</button>
-                                            <button type="button" class="btn-delete" onclick="onDelete('ID01')">削除</button>
-              							</div>
-              						</div>
-              					</td>
-              				</tr>
-              				<%} %>
-                        </tbody>
-                    </table>
-            	</div>S
+%>
+				</tbody>
+				
+				
 
 
-	</div>
-	   	<div class="button-group">
-       		<button class="btn-add" onclick="location.href='addGuidance.jsp'">追加</button>
-        	<button class="btn-add" onclick="location.href='../../StudentServlet'">学生一覧</button>
-        	<button class="btn-add" onclick="location.href='activityReport.jsp'">活動報告書</button>
-    	</div>
+</table>
+<button class="add-button" type="button" onclick="location.href=''">追加</button>
+<script>
+	function toggleActions(btn) {
+    const actions = btn.nextElementSibling;
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // 開いているメニューを閉じる
-        function closeAllMenus(except) {
-            document.querySelectorAll('.dropdown-menu-custom.open').forEach(function (menu) {
-                if (menu !== except) {
-                    menu.classList.remove('open');
-                }
-            });
-        }
-
-        // ⋯ボタン押下でメニューの開閉を切り替える
-        function toggleMenu(btn) {
-            var menu = btn.nextElementSibling;
-            var isOpen = menu.classList.contains('open');
-            closeAllMenus(menu);
-            menu.classList.toggle('open', !isOpen);
-        }
-
-        // メニュー外クリックで閉じる
-        document.addEventListener('click', function (e) {
-            if (!e.target.closest('.dropdown-wrap')) {
-                closeAllMenus();
-            }
-        });
-
-     // 「変更」ボタン処理
-        function onChange(shidoId) {
-            closeAllMenus();
-            // またはサーブレットを使う場合：
-             window.location.href = 'GuidanceCenageSevlet?action=edit&shidoId=' + shidoId;
-        }
-
-        // 「削除」ボタン処理（参考）
-        function onDelete(shidoId) {
-            closeAllMenus();
-            if (confirm(shidoId + ' を削除しますか？')) {
-                window.location.href = 'GuidanceServlet?action=delete&shidoId=' + shidoId;
-                // または POST で削除したい場合は form を用意して submit
-            }
-        }
-    </script>
+    if(actions.style.display === "none"){
+        actions.style.display = "block";
+    }else{
+        actions.style.display = "none";
+    }
+}
+</script>
 </body>
 </html>
 

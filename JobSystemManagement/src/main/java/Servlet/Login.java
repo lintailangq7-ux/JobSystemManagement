@@ -1,6 +1,7 @@
 package Servlet;
 
 import java.io.IOException;
+import java.util.List;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -59,31 +60,33 @@ public class Login extends HttpServlet {
     	
     	
     	 StudentDetailDAO dao = new StudentDetailDAO();
-    	 StudentDetail detail = dao.findByGakusekiNo(userId.substring(2));
-    	 System.out.println(detail.getStudent().getName());
-    	 System.out.println(detail);
     	 String responsed = null;
         if (userId != null && password != null) {
+        	System.out.println("userId != null && password != null");
             // 先生ID or 生徒ID の形式チェック（簡易版）
         	if(userId.startsWith("Te")) {
             	if (password.equals(Login.getPassword())) {
             		isValid = true;
-            		responsed = "jsp/Employment/EmploymentList.jsp";
+            		List<StudentDetail> detail = dao.findAllStudentDetail();
+            		session.setAttribute("detail", detail);
+            		responsed = "jsp/Employment/TecherEmplymentList.jsp";
             	}
             }else if(userId.startsWith("St")) {
+            		System.out.println("Su");
             		isValid = true;
-            		responsed = "jsp/Employment/TecherEmplymentList.jsp";
+            		StudentDetail detail = dao.findByGakusekiNo(userId.substring(2));
+                    session.setAttribute("detail", detail);
+            		responsed = "jsp/Employment/EmploymentList.jsp";
             }
             
      }
 
         if (isValid) {
 
-            session.setAttribute("userId", userId.substring(2));
-            System.out.println(userId);
+
             session.setAttribute("userType", userId.startsWith("Te") ? "teacher" : "student");
             
-            response.sendRedirect("jsp/Employment/EmploymentList.jsp"); // メインメニューへ
+            response.sendRedirect(responsed); // メインメニューへ
         } else {
             request.setAttribute("error", "ユーザーIDまたはパスワードが正しくありません。");
             request.getRequestDispatcher("/jsp/Login.jsp").forward(request, response);
