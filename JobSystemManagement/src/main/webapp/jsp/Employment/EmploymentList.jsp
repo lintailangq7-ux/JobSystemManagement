@@ -21,9 +21,9 @@
 <body> 
 <%
 
-	String userId = (String) session.getAttribute("userId");
-	StudentDetailDAO dao = new StudentDetailDAO();
-	StudentDetail detail = dao.findByGakusekiNo(userId);
+	StudentDetail detail = (StudentDetail) session.getAttribute("detail");
+	System.out.println(detail + "detail");
+	System.out.println(detail.getStudent() + "detail.getStudent()");
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("M/d");
 %>
 
