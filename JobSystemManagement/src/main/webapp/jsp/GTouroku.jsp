@@ -219,9 +219,9 @@ textarea{
 <label>性別</label><br>
 
 <select name="sex">
-    <option value="M">>男</option>
-    <option  value="F">>女</option>
-    <option value="X">>どちらでもない</option>
+    <option value="M">男</option>
+    <option  value="F">女</option>
+    <option value="X">どちらでもない</option>
 </select>
 
 </td>
