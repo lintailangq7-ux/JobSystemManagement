@@ -20,7 +20,10 @@
 </head>
 <body> 
 <%
-	StudentDetail detail = (StudentDetail) session.getAttribute("detail");
+
+	String userId = (String) session.getAttribute("userId");
+	StudentDetailDAO dao = new StudentDetailDAO();
+	StudentDetail detail = dao.findByGakusekiNo(userId);
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("M/d");
 %>
 

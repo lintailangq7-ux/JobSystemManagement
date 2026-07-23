@@ -83,7 +83,7 @@ public class Login extends HttpServlet {
 
         if (isValid) {
 
-
+        	session.setAttribute("userId", userId.substring(2));
             session.setAttribute("userType", userId.startsWith("Te") ? "teacher" : "student");
             
             response.sendRedirect(responsed); // メインメニューへ
