@@ -14,7 +14,6 @@ import javax.sql.DataSource;
 
 import model.ModelStudent;
 import model.StudentChukan;
-import model.StudentList;
 
 public class StudentDAO {
 	//データベースに接続に使用する情報
@@ -63,68 +62,85 @@ public class StudentDAO {
 			return StuList;
 		}
 	
-	
-	public boolean create(StudentChukan Sdata) {
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver") ;
-		 } catch (ClassNotFoundException e) {
-				throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-			}
-		try(Connection conn = DriverManager.getConnection(JDBC_URL,DB_USER,DB_PASS)) {
-		
-		}catch(SQLException e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
+	public boolean create(ModelStudent student) {
+	    String sql = "INSERT INTO 学生テーブル "
+	               + "(学籍番号, クラス, 氏名, 出席番号, 在籍状況, 県内外の希望, 性別, あっせん, 備考) "
+	               + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+	    try (Connection conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+	         PreparedStatement pStmt = conn.prepareStatement(sql)) {
+
+	        pStmt.setInt(1, student.getGakusekiNo());
+	        pStmt.setString(2, student.getClassName());
+	        pStmt.setString(3, student.getName());
+	        pStmt.setInt(4, student.getAttendanceNo());
+	        pStmt.setInt(5, student.getZaisekiJokyo());
+	        pStmt.setString(6, student.getKenNaiGaiKibo());
+	        pStmt.setString(7, student.getSeibetsu());
+	        pStmt.setInt(8, student.getAssen());
+	        pStmt.setString(9, student.getBiko());
+
+	        int result = pStmt.executeUpdate();
+	        return result > 0;
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
-	public List<StudentList> findByCompanyId(String companyId) {
-		// TODO 自動生成されたメソッド・スタブ
-		 List<StudentList> studentList = new ArrayList<>();
-
-		    String sql =
-		        "SELECT クラス番号, 出席番号, 氏名 "
-		      + "FROM 学生テーブル "
-		      + "WHERE 企業ID = ?";
-
-		    try {
-
-		        Connection conn =
-		                DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
-
-		        PreparedStatement ps =
-		                conn.prepareStatement(sql);
-
-		        ps.setString(1, companyId);
-
-		        ResultSet rs = ps.executeQuery();
-
-		        while (rs.next()) {
-
-		            StudentList student = new StudentList();
-
-		            student.setClassNo(
-		                rs.getString("クラス番号")
-		            );
-
-		            student.setAttendanceNo(
-		                rs.getString("出席番号")
-		            );
-
-		            student.setStudentName(
-		                rs.getString("氏名")
-		            );
-
-		            studentList.add(student);
-		        }
-
-		    } catch(Exception e) {
-		        e.printStackTrace();
-		    }
-
-		    return studentList;
-		
-	}
+//	public boolean create(StudentChukan Sdata) {
+//		try {
+//			Class.forName("com.mysql.cj.jdbc.Driver") ;
+//		 } catch (ClassNotFoundException e) {
+//				throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+//			}
+//		try(Connection conn = DriverManager.getConnection(JDBC_URL,DB_USER,DB_PASS)) {
+//		
+//		}catch(SQLException e) {
+//			e.printStackTrace();
+//			return false;
+//		}
+//		return true;
+//	}
+//	public List<StudentList> findByCompanyId(String companyId) {
+//		// TODO 自動生成されたメソッド・スタブ
+//		 List<StudentList> studentList = new ArrayList<>();
+//
+//		    String sql ="SELECT クラス番号, 出席番号, 氏名 FROM 学生テーブル WHERE 企業ID = ?";
+//
+//		    try {  Connection conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+//		        PreparedStatement ps = conn.prepareStatement(sql);
+//
+//		        ps.setString(1, companyId);
+//
+//		        ResultSet rs = ps.executeQuery();
+//
+//		        while (rs.next()) {
+//
+//		            StudentList student = new StudentList();
+//
+//		            student.setClassNo(
+//		                rs.getString("クラス番号")
+//		            );
+//
+//		            student.setAttendanceNo(
+//		                rs.getString("出席番号")
+//		            );
+//
+//		            student.setStudentName(
+//		                rs.getString("氏名")
+//		            );
+//
+//		            studentList.add(student);
+//		        }
+//
+//		    } catch(Exception e) {
+//		        e.printStackTrace();
+//		    }
+//
+//		    return studentList;
+//		
+//	}
 
 
 	public String findCompanyName(String companyId) {

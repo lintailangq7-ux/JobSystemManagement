@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    <%
-    	String emg = (String)request.getAttribute("emg");
-    	String test ="33-4";
-    %>
+<%
+String emg = (String) request.getAttribute("emg");
+%>
+    
 <!DOCTYPE html>
 <html>
 <head>
@@ -153,13 +153,21 @@ dialog button:hover {
 </head>
 
 <body>
-<button onclick="document.getElementById('okDialog').showModal()">表示</button>
 
 <!-- OKボタンのみのダイアログ -->
 <dialog id="okDialog">
-    <p><%=emg %></p>
+    <p style="white-space: pre-line;"><%=emg %></p>
     <button onclick="document.getElementById('okDialog').close()">OK</button>
 </dialog>
+
+<script>
+    window.onload = function() {
+        <% if (emg != null && !emg.isEmpty()) { %>
+            document.getElementById('okDialog').showModal();
+        <% } %>
+    };
+</script>
+</script>
 
 <div class="container">
 
@@ -174,8 +182,8 @@ dialog button:hover {
         <h2>学生登録</h2>
 
     </div>
-<form action="StudentServlet" method="post">
-
+<form action="StudentNewSevlet" method="post">
+    
 <table>
 
 <tr>
