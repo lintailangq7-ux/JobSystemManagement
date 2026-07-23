@@ -20,13 +20,13 @@
 
     <!-- ====================== Servlet ====================== -->
 <servlet>
-    <servlet-name>LoginServlet</servlet-name>
-    <servlet-class>Servlet.LoginServlet</servlet-class>
+    <servlet-name>Login</servlet-name>
+    <servlet-class>Servlet.Login</servlet-class>
 </servlet>
 
     <servlet-mapping>
-        <servlet-name>LoginServlet</servlet-name>
-        <url-pattern>/LoginServlet</url-pattern>
+        <servlet-name>Login</servlet-name>
+        <url-pattern>/Login</url-pattern>
     </servlet-mapping>
 
 
