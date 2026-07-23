@@ -1,5 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    <%
+    	String emg = (String)request.getAttribute("emg");
+    	String test ="33-4";
+    %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -113,11 +117,49 @@ textarea{
     background:#cc0000;
 }
 
+
+
+dialog {
+    border: none;
+    border-radius: 8px;
+    padding: 24px 30px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    min-width: 280px;
+    text-align: center;
+}
+dialog::backdrop {
+    background: rgba(0,0,0,0.5);
+}
+dialog p {
+    margin: 0 0 20px 0;
+    font-size: 15px;
+    color: #333;
+}
+dialog button {
+    padding: 6px 28px;
+    background: #2b6cb0;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+dialog button:hover {
+    background: #245a94;
+}
+
 </style>
 
 </head>
 
 <body>
+<button onclick="document.getElementById('okDialog').showModal()">表示</button>
+
+<!-- OKボタンのみのダイアログ -->
+<dialog id="okDialog">
+    <p><%=emg %></p>
+    <button onclick="document.getElementById('okDialog').close()">OK</button>
+</dialog>
 
 <div class="container">
 
@@ -132,7 +174,6 @@ textarea{
         <h2>学生登録</h2>
 
     </div>
-
 <form action="StudentServlet" method="post">
 
 <table>

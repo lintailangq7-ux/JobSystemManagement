@@ -27,23 +27,63 @@ public class StudentNewSevlet extends HttpServlet {
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		int gakusekiNo = Integer.parseInt(request.getParameter("studentNo"));          // 学籍番号
-		String className = request.getParameter("className");						   // クラス
-		String name = request.getParameter("studentName");   				               // 氏名
-		int attendanceNo = Integer.parseInt(request.getParameter("attendanceNo"));        // 出席番号
-		int zaisekiJokyo = Integer.parseInt(request.getParameter("schoolStatus"));        // 在籍状況
-		String kenNaiGaiKibo = request.getParameter("area");     // 県内外の希望
-		String seibetsu = request.getParameter("sex");          // 性別
-		int assen = Integer.parseInt(request.getParameter("status"));   
-		String biko = request.getParameter("memo");              // 備考
+		int gakusekiNo = Integer.parseInt(request.getParameter("studentNo"));          // 学籍番号*
+		String gakusekiNoNum = request.getParameter("studentNo");          // 学籍番号*
+		String className = request.getParameter("className");						   // クラス*
+		String name = request.getParameter("studentName");   				               // 氏名*
+		int attendanceNo = Integer.parseInt(request.getParameter("attendanceNo"));        // 出席番号*
+		int zaisekiJokyo = Integer.parseInt(request.getParameter("schoolStatus"));        // 在籍状況*
+		String attendanceNoS = request.getParameter("attendanceNo");        // 出席番号*
+		String zaisekiJokyoS = request.getParameter("schoolStatus");        // 在籍状況*
+		String kenNaiGaiKibo = request.getParameter("area");   	  							// 県内外の希望*
+		String seibetsu = request.getParameter("sex");          								// 性別*
+		int assen = Integer.parseInt(request.getParameter("status"));   						//あっせん*
+		String assenS = request.getParameter("status");   						//あっせん*
+		String biko = request.getParameter("memo");            								  // 備考*
 		List<StudentChukan> list = new ArrayList<>();
 		list.add(null);
 		list.add(null);
 		String forword ="/jsp/GTouroku.jsp";
 		String resurt =null;
 		
-		if(className.isEmpty()|name.isEmpty()) {
-			//空白だったときs
+		if(className.isEmpty()){
+			request.setAttribute("emg", "クラスが入力されていません");
+			forword ="/jsp/GTouroku.jsp";
+			resurt = "false";
+		}else if(gakusekiNoNum.isEmpty()) {
+			request.setAttribute("emg", "学籍番号が入力されていません");
+			forword ="/jsp/GTouroku.jsp";
+			resurt = "false";			
+		}else if(name.isEmpty()) {	
+			request.setAttribute("emg", "氏名が入力されていません");
+			forword ="/jsp/GTouroku.jsp";
+			resurt = "false";
+		}else if(attendanceNoS.isEmpty()){
+			request.setAttribute("emg", "が入力されていません");
+			forword ="/jsp/GTouroku.jsp";
+			resurt = "false";			
+		}else if(zaisekiJokyoS.isEmpty()){
+			request.setAttribute("emg", "が入力されていません");
+			forword ="/jsp/GTouroku.jsp";
+			resurt = "false";								
+		}else if(kenNaiGaiKibo.isEmpty()){
+			request.setAttribute("emg", "が入力されていません");
+			forword ="/jsp/GTouroku.jsp";
+			resurt = "false";
+		}else if(seibetsu.isEmpty()){
+			request.setAttribute("emg", "が入力されていません");
+			forword ="/jsp/GTouroku.jsp";
+			resurt = "false";
+		}else if(assenS.isEmpty()){
+			request.setAttribute("emg", "が入力されていません");
+			forword ="/jsp/GTouroku.jsp";
+			resurt = "false";
+		}else if(biko.isEmpty()){
+			request.setAttribute("emg", "が入力されていません");
+			forword ="/jsp/GTouroku.jsp";
+			resurt = "false";		
+			
+			request.setAttribute("emg", "入力されていない欄があります");
 			forword ="/jsp/GTouroku.jsp";
 			resurt = "false";
 		}
@@ -53,7 +93,7 @@ public class StudentNewSevlet extends HttpServlet {
 			if(Stulist != null) {
 				for(ModelStudent M:Stulist) {
 					if(M.getGakusekiNo()==gakusekiNo){
-						//被りの時の仮の処理
+						request.setAttribute("emg", "学籍番号はもう登録されています");
 						forword ="/jsp/GTouroku.jsp";
 						resurt = "false";
 					}
@@ -63,8 +103,10 @@ public class StudentNewSevlet extends HttpServlet {
 		}
 		if(resurt==null) {
 			ModelStudent MD = new ModelStudent(gakusekiNo,className,name,attendanceNo,zaisekiJokyo,kenNaiGaiKibo,seibetsu,assen,biko,list);
-			
 		}
+		request.setAttribute("emg","ooooooo");
+		RequestDispatcher dispatcher = request.getRequestDispatcher(forword);
+		dispatcher.forward(request, response);
 	}
 
 }
