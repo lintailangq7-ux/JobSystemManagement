@@ -46,6 +46,7 @@ public class Login extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+		System.out.println(this.getClass().getResource("Login.class"));
 		LoginDAO LDao = new LoginDAO();
 		ModelLogin Login = new ModelLogin();
 		
@@ -83,7 +84,7 @@ public class Login extends HttpServlet {
 
         if (isValid) {
 
-
+        	session.setAttribute("userId", userId.substring(2));
             session.setAttribute("userType", userId.startsWith("Te") ? "teacher" : "student");
             
             response.sendRedirect(responsed); // メインメニューへ

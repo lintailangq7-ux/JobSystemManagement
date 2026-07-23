@@ -24,6 +24,7 @@
 	    font-size:30px;
 	    padding:0;
 	    font-weight:normal;
+	    
 		
 		
 		
@@ -140,7 +141,7 @@
 <body>
 
  <div class="top-area">
-<button class="back-button" onclick="location.href='/jsp/Login.jsp'">◀</button>
+<button class="back-button" onclick="history.back()">◀</button>
 
 <h1>企業一覧</h1>
 </div>
@@ -187,9 +188,9 @@ if(list != null){
 				<td><%= c.getJobtype() %></td>
 			    <td class="menu-cell">
 					
-				    <button type="button" class="detail-btn"onclick="toggleActions(this)">詳細</button>
+				    <button type="button" class="detail-btn"onclick="toggleActions(this)">…</button>
 				    <div class="menu" style="display:none;">
-				      <button type="button" onclick="alert('企業情報を変更しますか')">変更</button><br>
+				      <button type="button" onclick="location.href='<%=request.getContextPath()%>/jsp/Khenkou.jsp?companyId=<%= c.getId() %>'">変更</button><br>
 				      <button type="button" onclick="alert('企業情報を削除しますか')">削除</button>
 				    </div>
 				  
@@ -208,7 +209,7 @@ if(list != null){
 
 
 </table>
-<button class="add-button" type="button" onclick="location.href=''">追加</button>
+<button class="add-button" type="button" onclick="location.href='<%=request.getContextPath()%>/jsp/Ktouroku.jsp'">追加</button>
 <script>
 function toggleActions(btn) {
     const actions = btn.nextElementSibling;

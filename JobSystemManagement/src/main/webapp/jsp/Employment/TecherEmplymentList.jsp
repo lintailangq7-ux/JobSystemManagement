@@ -170,8 +170,9 @@
 		
 	</thead>
 	<tbody id="companyTable">
-<%
-	StudentDetail detail = StudentDetail) session.getAttribute("detail");
+<%	
+	StudentDetailDAO dao = new StudentDetailDAO();
+	StudentDetail detail = dao.findByGakusekiNo(userId);
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("M/d");
 %>
 <%

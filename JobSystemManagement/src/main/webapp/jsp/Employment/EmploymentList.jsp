@@ -20,7 +20,10 @@
 </head>
 <body> 
 <%
+
 	StudentDetail detail = (StudentDetail) session.getAttribute("detail");
+	System.out.println(detail + "detail");
+	System.out.println(detail.getStudent() + "detail.getStudent()");
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("M/d");
 %>
 
