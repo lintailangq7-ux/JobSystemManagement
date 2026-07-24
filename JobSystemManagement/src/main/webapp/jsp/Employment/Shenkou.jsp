@@ -11,11 +11,12 @@
 body{
     font-family:Meiryo;
     background:#fff;
+    margin:0;
 }
 
 .container{
     width:1200px;
-    margin:20px auto;
+    margin:20px 0 20px 20px;
 }
 
 .titleArea{
@@ -35,7 +36,6 @@ body{
     overflow:hidden;
 }
 
-/* 黄色の三角 */
 .backButton::after{
     content:"";
     position:absolute;
@@ -47,75 +47,60 @@ body{
     clip-path:polygon(100% 0,0 50%,100% 100%);
 }
 
-/* ホバー */
 .backButton:hover{
     filter:brightness(0.95);
 }
 
 .title{
-
     font-size:34px;
     font-weight:bold;
     margin-left:20px;
 }
 
 .main{
-
     display:flex;
-    gap:50px;
+    gap:70px;
+    align-items:flex-start;
 }
 
-/******** 左側 ********/
-
 .left{
-
     width:260px;
 }
 
 .infoTable{
-
     width:100%;
     border-collapse:collapse;
 }
 
 .infoTable th{
-
     border:2px solid black;
     background:#f3f3f3;
     height:40px;
 }
 
 .infoTable td{
-
     border:2px solid black;
     text-align:center;
     height:42px;
 }
 
-/******** 右側 ********/
-
 .right{
-
     flex:1;
 }
 
 .formTable{
-
     border-collapse:collapse;
 }
 
 .formTable td{
-
-    padding:5px;
+    padding:5px 10px 5px 5px;
 }
 
 label{
-
     font-weight:bold;
 }
 
 input[type=text]{
-
     width:300px;
     height:38px;
     text-align:center;
@@ -124,7 +109,6 @@ input[type=text]{
 }
 
 textarea{
-
     width:430px;
     height:160px;
     border:2px solid black;
@@ -132,13 +116,11 @@ textarea{
 }
 
 .buttonArea{
-
     text-align:right;
     margin-top:20px;
 }
 
 .submitButton{
-
     width:110px;
     height:60px;
     background:red;
@@ -149,7 +131,6 @@ textarea{
     font-weight:bold;
     cursor:pointer;
 }
-
 </style>
 
 </head>
