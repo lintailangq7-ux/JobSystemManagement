@@ -2,6 +2,7 @@ package Servlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import jakarta.servlet.RequestDispatcher;
@@ -11,14 +12,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import DAO.StudentChukanDAO;
 import DAO.StudentDAO;
 import model.ModelStudent;
 import model.StudentChukan;
 import model.StudentLogic;
 
-/**
- * Servlet implementation class StudentNewSevlet
- */
 @WebServlet("/StudentNewSevlet")
 public class StudentNewSevlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -29,17 +28,18 @@ public class StudentNewSevlet extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	    System.out.println("★★★ 新しいコードが動いています ★★★");
-
-	    String gakusekiNoNum = request.getParameter("studentNo");     // 学籍番号*
-	    String className = request.getParameter("className");         // クラス*
-	    String name = request.getParameter("studentName");             // 氏名*
-	    String attendanceNoS = request.getParameter("attendanceNo");   // 出席番号*
-	    String zaisekiJokyoS = request.getParameter("schoolStatus");   // 在籍状況*
-	    String kenNaiGaiKibo = request.getParameter("area");           // 県内外の希望*
-	    String seibetsu = request.getParameter("sex");                 // 性別*
-	    String assenS = request.getParameter("status");                // あっせん*
-	    String biko = request.getParameter("memo");                    // 備考*
+	    String gakusekiNoNum = request.getParameter("studentNo");
+	    String className = request.getParameter("className");
+	    String name = request.getParameter("studentName");
+	    String attendanceNoS = request.getParameter("attendanceNo");
+	    String zaisekiJokyoS = request.getParameter("schoolStatus");
+	    String kenNaiGaiKibo = request.getParameter("area");
+	    String seibetsu = request.getParameter("sex");
+	    String assenS = request.getParameter("status");
+	    String biko = request.getParameter("memo");
+	    String job1 = request.getParameter("job1");
+	    String job2 = request.getParameter("job2");
+	    String job3 = request.getParameter("job3");
 
 	    List<StudentChukan> list = new ArrayList<>();
 	    list.add(null);
@@ -48,9 +48,7 @@ public class StudentNewSevlet extends HttpServlet {
 	    String forword = "/jsp/GTouroku.jsp";
 	    String resurt = null;
 
-	    // 未入力項目の名前を集めるリスト
 	    List<String> emptyFields = new ArrayList<>();
-
 	    if (className.isEmpty())      emptyFields.add("クラス");
 	    if (gakusekiNoNum.isEmpty())  emptyFields.add("学籍番号");
 	    if (name.isEmpty())           emptyFields.add("氏名");
@@ -61,38 +59,30 @@ public class StudentNewSevlet extends HttpServlet {
 	    if (assenS.isEmpty())         emptyFields.add("あっせん状況");
 
 	    if (!emptyFields.isEmpty()) {
-	        String joined = String.join("、", emptyFields);
-	        request.setAttribute("emg", joined + "が入力されていません");
+	        request.setAttribute("emg", String.join("、", emptyFields) + "が入力されていません");
 	        resurt = "false";
 	    }
 
-	    // 文字数チェック（未入力チェックとは別枠。文字が入っている場合のみ判定）
-	    if (resurt == null) {
-	        List<String> lengthErrors = new ArrayList<>();
-	        if (className.length() > 4)  lengthErrors.add("クラスは4文字以内で入力してください");
-	        if (biko.length() > 100)     lengthErrors.add("備考は100文字以内で入力してください");
-
-	        if (!lengthErrors.isEmpty()) {
-	            request.setAttribute("emg", String.join("\n", lengthErrors));
-	            resurt = "false";
-	        }
-	    }
-
-	    // 学籍番号の数値チェック	
-	    int gakusekiNo = 0;
-	 // 文字数チェック（未入力チェックとは別枠。文字が入っている場合のみ判定）
 	    if (resurt == null) {
 	        List<String> lengthErrors = new ArrayList<>();
 	        if (className.length() != 4)  lengthErrors.add("クラスは4文字で入力してください");
 	        if (biko.length() > 100)      lengthErrors.add("備考は100文字以内で入力してください");
-
 	        if (!lengthErrors.isEmpty()) {
 	            request.setAttribute("emg", String.join("\n", lengthErrors));
 	            resurt = "false";
 	        }
 	    }
 
-	    // 重複チェック
+	    int gakusekiNo = 0;
+	    if (resurt == null) {
+	        try {
+	            gakusekiNo = Integer.parseInt(gakusekiNoNum);
+	        } catch (NumberFormatException e) {
+	            request.setAttribute("emg", "学籍番号は数値で入力してください");
+	            resurt = "false";
+	        }
+	    }
+
 	    if (resurt == null) {
 	        StudentLogic StuLog = new StudentLogic();
 	        List<ModelStudent> Stulist = StuLog.execute();
@@ -107,7 +97,6 @@ public class StudentNewSevlet extends HttpServlet {
 	        }
 	    }
 
-	    // 残りの数値項目の変換とDB登録
 	    if (resurt == null) {
 	        try {
 	            int attendanceNo = Integer.parseInt(attendanceNoS);
@@ -121,7 +110,16 @@ public class StudentNewSevlet extends HttpServlet {
 	            boolean success = StuDAO.create(MD);
 
 	            if (success) {
+	                // 希望職種（中間テーブル）も登録
+	                StudentChukanDAO chukanDao = new StudentChukanDAO();
+	                chukanDao.updateAll(gakusekiNo, Arrays.asList(job1, job2, job3));
+
 	                request.setAttribute("emg", "登録完了");
+
+	                List<ModelStudent> updatedList = StuDAO.findAll();
+	                request.setAttribute("StuList", updatedList);
+
+	                forword = "/jsp/StudentList.jsp";
 	            } else {
 	                request.setAttribute("emg", "登録に失敗しました");
 	            }

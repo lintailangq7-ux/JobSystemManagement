@@ -4,6 +4,8 @@
 <%
  	ModelStudent Sdata = (ModelStudent)session.getAttribute("Sdata");
 	List<ModelStudent> StuList = (List<ModelStudent>)request.getAttribute("StuList");
+	String emg = (String) request.getAttribute("emg");
+	String keyword = (String) request.getAttribute("keyword");
 	
 %>
 <!DOCTYPE html>
@@ -50,6 +52,10 @@
     margin-left: 14px;
   }
 
+  .search-area {
+    margin-left: 20px;
+  }
+
   .search-box {
     display: inline-block;
     border: 2px solid #29abe2;
@@ -62,6 +68,13 @@
     outline: none;
     background: transparent;
     font-size: 14px;
+  }
+
+  .search-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
   }
 
   /* スクロール関係div=""で使う */
@@ -242,9 +255,62 @@
     font-weight: bold;
   }
 
+  dialog {
+    border: none;
+    border-radius: 8px;
+    padding: 24px 30px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    min-width: 280px;
+    text-align: center;
+  }
+  dialog::backdrop {
+    background: rgba(0,0,0,0.5);
+  }
+  dialog p {
+    margin: 0 0 20px 0;
+    font-size: 15px;
+    color: #333;
+    white-space: pre-line;
+  }
+  dialog button {
+    padding: 6px 28px;
+    background: #2b6cb0;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  dialog button:hover {
+    background: #245a94;
+  }
+
 </style>
 </head>
 <body>
+
+<dialog id="okDialog">
+    <p><%=emg%></p>
+    <button onclick="document.getElementById('okDialog').close()">OK</button>
+</dialog>
+
+<script>
+    window.onload = function() {
+        <% if (emg != null && !emg.isEmpty()) { %>
+            document.getElementById('okDialog').showModal();
+        <% } %>
+    };
+
+    // 「戻る」でキャッシュから復元された場合はダイアログを表示しない
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            const dialog = document.getElementById('okDialog');
+            if (dialog.open) {
+                dialog.close();
+            }
+        }
+    });
+</script>
 
 <div class="container">
 
@@ -256,10 +322,14 @@
 	    <div class="title-text">学生情報一覧</div>
 	  </div>
 
-	  <div class="search-box">
-		<input type="text" id="SSbox"  placeholder="検索">
-		<button type="button">検索</button>
-	</div>
+	  <div class="search-area">
+	    <form action="<%= request.getContextPath() %>/StudentSearchServlet" method="get">
+	      <div class="search-box">
+	        <input type="text" name="keyword" placeholder="氏名で検索" value="<%= keyword != null ? keyword : "" %>">
+	        <button type="submit" class="search-btn">🔍</button>
+	      </div>
+	    </form>
+	  </div>
 	</div>
 
 
@@ -338,6 +408,11 @@
 	  <input type="hidden" name="gakusekiNo" id="editGakusekiNo" value="">
 	</form>
 
+	<!-- 「削除」もformでPOST送信する -->
+	<form id="deleteForm" action="StudentDeleteServlet" method="post">
+	  <input type="hidden" name="gakusekiNo" id="deleteGakusekiNo" value="">
+	</form>
+
 	<!-- 削除確認モーダル -->
 	<div class="modal-overlay" id="modalOverlay">
 	  <div class="modal-box">
@@ -352,7 +427,7 @@
 
 	<br>
 	<div class="footer-row">
-	<form action ="StudentNewSevlet" method="post">
+	<form action ="StudentNewSevlet" method="get">
 	<button class="register" type="submit">登録</button>
 	</form>
 	</div>
@@ -365,6 +440,8 @@
   const modalTargetName = document.getElementById('modalTargetName');
   const editForm = document.getElementById('editForm');
   const editGakusekiNo = document.getElementById('editGakusekiNo');
+  const deleteForm = document.getElementById('deleteForm');
+  const deleteGakusekiNo = document.getElementById('deleteGakusekiNo');
   let currentRow = null;
   let currentTr = null;
 
@@ -411,12 +488,12 @@
     modalOverlay.classList.remove('open');
   });
 
-  // モーダル：削除確定
+  // モーダル：削除確定 → サーバーにPOST送信してDBから削除
   document.getElementById('modalConfirm').addEventListener('click', () => {
-    if (currentTr) {
-      currentTr.remove();
+    if (currentRow) {
+      deleteGakusekiNo.value = currentRow;
+      deleteForm.submit();
     }
-    modalOverlay.classList.remove('open');
   });
 
   // モーダルの背景クリックでも閉じる
