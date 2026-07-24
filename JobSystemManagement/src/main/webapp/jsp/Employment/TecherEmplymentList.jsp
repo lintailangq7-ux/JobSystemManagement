@@ -145,7 +145,7 @@
  <div class="top-area">
 <button class="back-button" onclick="location.href='/jsp/Login.jsp'">◀</button>
 
-<h1>企業一覧</h1>
+<h1>指導情報一覧</h1>
 </div>
 <div class="search-area">
 <form action="<%= request.getContextPath() %>/ListofCompanies" method="get">
@@ -158,22 +158,38 @@
 </div>
 </form>
 </div>
+<%
+	// ここで先にデータを取得し、選考状況（EmploymentChukan）の最大件数を求めておく。
+	// この最大件数を元にヘッダーの列数を動的に決める。
+	List<StudentDetail> detail = (List<StudentDetail>) session.getAttribute("detail");
+	DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("M/d");
 
+	int maxExamCount = 0;
+	if (detail != null) {
+		for (StudentDetail d : detail) {
+			if (d.getGuidanceList() != null) {
+				for (GuidanceDetail g : d.getGuidanceList()) {
+					if (g.getExamHistory() != null && g.getExamHistory().size() > maxExamCount) {
+						maxExamCount = g.getExamHistory().size();
+					}
+				}
+			}
+		}
+	}
+%>
 <table border="1">
 	<thead>
 		<tr>
 			<th>指導ID	</th>
 			<th>氏名</th>
-			<th>選考状況</th>
+			<% for (int i = 0; i < maxExamCount; i++) { %>
+				<th>選考状況<%= i + 1 %></th>
+			<% } %>
 			<th>備考</th>
 		</tr>
 		
 	</thead>
 	<tbody id="companyTable">
-<%	
-	List<StudentDetail> detail = (List<StudentDetail>) session.getAttribute("detail");
-    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("M/d");
-%>
 <%
     for(StudentDetail d : detail){
     	for(GuidanceDetail g :d.getGuidanceList()){
@@ -184,9 +200,20 @@
 				<td><%= g.getCompany().getKaishaName() %></td>
 				<td><%= d.getStudent().getName() %></td>
 				
-				<td><%for(EmploymentChukan e : g.getLatestExamList()){ %>
-    				<%= e.getShikenNaiyo() %>
-				<%} %></td>
+				<%
+					// 選考状況：最大件数分の列を必ず出力し、データが無い分は空セルで埋める
+					for (int i = 0; i < maxExamCount; i++) {
+						if (examList != null && i < examList.size()) {
+				%>
+							<td><%= examList.get(i).getShikenNaiyo() %></td>
+				<%
+						} else {
+				%>
+							<td>&nbsp;</td>
+				<%
+						}
+					}
+				%>
 				 
 				<td><%= g.getCompany().getEmail() %></td>
 				<td><%for(CompanyChukan c :g.getCompany().getCompanyChukanList()){  %>
