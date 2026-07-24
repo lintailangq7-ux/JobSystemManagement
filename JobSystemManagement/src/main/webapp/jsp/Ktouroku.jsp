@@ -150,7 +150,7 @@ body{
 
     </div>
 
-<form action="CompanyRegisterServlet" method="post">
+<form action="<%= request.getContextPath() %>/CompanyRegisterServlet" method="post">
 
 <div class="formArea">
 
@@ -196,9 +196,9 @@ body{
 
         <select name="result">
 
-            <option value="あり">あり</option>
+            <option value="1">あり</option>
 
-            <option value="なし">なし</option>
+            <option value="0">なし</option>
 
         </select>
 

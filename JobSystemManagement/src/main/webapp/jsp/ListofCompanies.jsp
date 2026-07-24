@@ -190,8 +190,8 @@ if(list != null){
 					
 				    <button type="button" class="detail-btn"onclick="toggleActions(this)">…</button>
 				    <div class="menu" style="display:none;">
-				      <button type="button" onclick="location.href='<%=request.getContextPath()%>/jsp/Khenkou.jsp?companyId=<%= c.getId() %>'">変更</button><br>
-				      <button type="button" onclick="alert('企業情報を削除しますか')">削除</button>
+				      <button type="button" onclick="location.href='<%= request.getContextPath() %>/CompanyEdit?companyId=<%= c.getId() %>'">変更</button><br>
+				      <button type="button"  onclick="if(confirm('「<%= c.getName() %>」削除しますか？')){location.href='<%=request.getContextPath()%>/CompanyDelete?companyId=<%= c.getId() %>';}">削除</button>
 				    </div>
 				  
 				 </td>

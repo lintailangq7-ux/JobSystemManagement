@@ -139,6 +139,165 @@ public class CompanyDAO {
 	        
 
 	
-	}}
-	        
+	}
+	
 
+public void addCompany(Company company) {
+
+    String sql =
+        "INSERT INTO 企業テーブル "
+      + "(企業ID,企業名, 住所, 電話番号, メールアドレス, 採用実績) "
+      + "VALUES (?,?, ?, ?, ?, ?)";
+
+    try {
+        Connection conn =
+                DriverManager.getConnection(URL, USER, PASS);
+        
+
+        // 企業ID作成
+        String companyId = createCompanyId(conn);
+
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, companyId);
+        ps.setString(2, company.getName());
+        ps.setString(3, company.getAddress());
+        ps.setString(4, company.getTel());
+        ps.setString(5, company.getMail());
+        ps.setInt(6, Integer.parseInt(company.getJobtype()));
+
+        ps.executeUpdate();
+
+        ps.close();
+        conn.close();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+private String createCompanyId(Connection conn) throws Exception {
+
+    String sql =
+        "SELECT MAX(企業ID) FROM 企業テーブル";
+
+    PreparedStatement ps =
+        conn.prepareStatement(sql);
+
+    ResultSet rs = ps.executeQuery();
+
+    if(rs.next() && rs.getString(1) != null) {
+
+        String lastId = rs.getString(1);
+
+        int number =
+            Integer.parseInt(lastId.substring(1));
+
+        return String.format("C%04d", number + 1);
+
+    } else {
+
+        return "C0001";
+    }
+}
+
+public void updateCompany(Company company) {
+	// TODO 自動生成されたメソッド・スタブ
+	
+	 String sql =
+		        "UPDATE 企業テーブル SET "
+		      + "企業名=?, 住所=?, 電話番号=?, メールアドレス=?, 採用実績=? "
+		      + "WHERE 企業ID=?";
+
+		    try {
+
+		        Connection conn =
+		            DriverManager.getConnection(URL, USER, PASS);
+
+		        PreparedStatement ps =
+		            conn.prepareStatement(sql);
+
+		        ps.setString(1, company.getName());
+		        ps.setString(2, company.getAddress());
+		        ps.setString(3, company.getTel());
+		        ps.setString(4, company.getMail());
+		        ps.setInt(5, Integer.parseInt(company.getJobtype()));
+		        ps.setString(6, company.getId());
+
+		        ps.executeUpdate();
+		        int count = ps.executeUpdate();
+		        System.out.println("更新件数：" + count);
+
+		    } catch(Exception e) {
+		        e.printStackTrace();
+		    }
+}
+
+public Company findById(String companyId) {
+
+    Company company = null;
+
+    String sql =
+        "SELECT 企業ID, 企業名, 住所, 電話番号, メールアドレス, 採用実績 "
+      + "FROM 企業テーブル "
+      + "WHERE 企業ID = ?";
+
+    try {
+
+        Connection conn =
+            DriverManager.getConnection(URL, USER, PASS);
+
+        PreparedStatement ps =
+            conn.prepareStatement(sql);
+
+        ps.setString(1, companyId);
+
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+
+            company = new Company();
+
+            company.setId(rs.getString("企業ID"));
+            company.setName(rs.getString("企業名"));
+            company.setAddress(rs.getString("住所"));
+            company.setTel(rs.getString("電話番号"));
+            company.setMail(rs.getString("メールアドレス"));
+
+            // 採用実績がINT型なので文字列に変換
+            company.setJobtype(String.valueOf(rs.getInt("採用実績")));
+        }
+
+        rs.close();
+        ps.close();
+        conn.close();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return company;
+}
+  
+public void deleteCompany(String companyId) {
+
+    String sql = "DELETE FROM 企業テーブル WHERE 企業ID = ?";
+
+    try {
+        Connection conn =
+                DriverManager.getConnection(URL, USER, PASS);
+
+        PreparedStatement ps =
+                conn.prepareStatement(sql);
+
+        ps.setString(1, companyId);
+
+        ps.executeUpdate();
+
+        ps.close();
+        conn.close();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+}
