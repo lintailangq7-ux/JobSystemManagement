@@ -3,7 +3,7 @@
          import="java.time.format.DateTimeFormatter,
                  DAO.StudentDetailDAO, model.StudentDetail,
                  model.GuidanceDetail, model.ModelStudent,
-                 model.EmploymentChukan,
+                 model.EmploymentChukan,java.util.List,
                  model.StudentChukan, model.CompanyChukan" %>
 <!DOCTYPE html>
 <html lang="ja">
@@ -171,21 +171,28 @@
 	</thead>
 	<tbody id="companyTable">
 <%	
-	StudentDetailDAO dao = new StudentDetailDAO();
-	StudentDetail detail = dao.findByGakusekiNo(userId);
+	List<StudentDetail> detail = (List<StudentDetail>) session.getAttribute("detail");
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("M/d");
 %>
 <%
     for(StudentDetail d : detail){
-    	for(GuidanceDetail g :d.getGuidanceList())
+    	for(GuidanceDetail g :d.getGuidanceList()){
 %>
 	<tr>
 			    <td><%= g.getShidoId() %></td>
 			    <td><a href="<%= request.getContextPath() %>/ListofExamStudents?companyId=<%= d.getStudent().getGakusekiNo() %>"><%= g.getCompany().getKaishaName() %></a></td>
-				<td><%= c.getAddress() %></td>
-				<td><%= c.getTel() %></td>
-				<td><%= c.getMail() %></td>
-				<td><%= c.getJobtype() %></td>
+				<td><%= g.getCompany().getKaishaName() %></td>
+				<td><%= d.getStudent().getName() %></td>
+				
+				<td><%for(EmploymentChukan e : g.getLatestExamList()){ %>
+    				<%= e.getShikenNaiyo() %>
+				<%} %></td>
+				 
+				<td><%= g.getCompany().getEmail() %></td>
+				<td><%for(CompanyChukan c :g.getCompany().getCompanyChukanList()){  %>
+				 	<%= c.getBoshuShokushu() %>・
+				 	<%} %>
+				</td>
 			    <td class="menu-cell">
 					
 				    <button type="button" class="detail-btn"onclick="toggleActions(this)">詳細</button>
