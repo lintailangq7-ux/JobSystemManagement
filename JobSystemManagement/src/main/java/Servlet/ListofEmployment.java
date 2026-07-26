@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import DAO.LoginDAO;
 import DAO.StudentDetailDAO;
 import model.StudentDetail;
 
@@ -33,12 +32,6 @@ public class ListofEmployment extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-		System.out.println("Login");
-		LoginDAO LDao = new LoginDAO();
-
-		
-		
 
 
 		String keyword = request.getParameter("keyword");

@@ -73,7 +73,7 @@ public class EmploymentDAO {   // 指導＋就職情報
          * @param biko            備考
          * @return 発行された指導ID。失敗した場合は null。
          */
-        public String insertGuidance(int gakusekiNo, String kigyoId,
+        public String insertGuidance(String gakusekiNo, String kigyoId,
                                       LocalDateTime naiteiKakuteiBi, int naiteiKakutei, String biko) {
 
             String sql = "INSERT INTO 就職情報テーブル "
@@ -86,7 +86,7 @@ public class EmploymentDAO {   // 指導＋就職情報
 
                 try (PreparedStatement ps = con.prepareStatement(sql)) {
                     ps.setString(1, newId);
-                    ps.setInt(2, gakusekiNo);
+                    ps.setString(2, gakusekiNo);
                     ps.setString(3, kigyoId);
 
                     if (naiteiKakuteiBi != null) {

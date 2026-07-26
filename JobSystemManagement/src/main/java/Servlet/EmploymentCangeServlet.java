@@ -10,7 +10,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import DAO.EmploymentChukanDAO;
 import DAO.EmploymentDAO;
+import model.EmploymentChukan;
 
 /**
  * Servlet implementation class EmploymentCangeServlet
@@ -44,7 +46,9 @@ public class EmploymentCangeServlet extends HttpServlet {
 	    String acceptDate   = request.getParameter("acceptDate");
 	    String memo         = request.getParameter("memo");
 		
-		 
+	    EmploymentChukanDAO dao = new EmploymentChukanDAO();
+
+	    EmploymentChukan ec = new EmploymentChukan(offerStatus, null, acceptDate, 0, memo);
 		EmploymentDAO eDAO = new EmploymentDAO();
 		
 		eDAO.updateGuidance(gakusekiNoNum, gakusekiNoNum, null, 0, gakusekiNoNum);

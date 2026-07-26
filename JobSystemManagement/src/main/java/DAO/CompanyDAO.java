@@ -139,6 +139,43 @@ public class CompanyDAO {
 	        
 
 	
-	}}
+	}
+	
+	
+	   public Company findById(String companyName) {
+		   
+	        String sql = "SELECT 企業ID, 企業名, 住所, 電話番号, メールアドレス, 採用実績 "
+	                   + "FROM `企業テーブル` WHERE 企業名 = ?";
+	 
+	        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+	             PreparedStatement ps = con.prepareStatement(sql)) {
+	 
+	            ps.setString(1, companyName);
+	 
+	            try (ResultSet rs = ps.executeQuery()) {
+	                if (rs.next()) {
+	                    Company company = new Company();
+	 
+	                    company.setId(rs.getString("企業ID"));
+	                    company.setName(rs.getString("企業名"));
+	                    company.setAddress(rs.getString("住所"));
+	                    company.setTel(rs.getString("電話番号"));
+	                    company.setMail(rs.getString("メールアドレス"));
+	                    company.setJobtype(rs.getString("採用実績"));
+	 
+	                    return company;
+	                }
+	            }
+	 
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            System.out.println("企業取得エラー: " + e.getMessage());
+	        }
+	 
+	        return null;
+	    }
+
+}
+
 	        
 
