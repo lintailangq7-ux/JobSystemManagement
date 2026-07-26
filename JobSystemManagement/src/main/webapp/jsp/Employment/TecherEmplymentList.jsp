@@ -296,7 +296,7 @@ td:last-child {
     <!-- ============ 左サイドバー ============ -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <button class="back-button" title="ひとつ前の画面に遷移" onclick="location.href='<%= request.getContextPath() %>/jsp/Login.jsp'">◀</button>
+            <button class="back-button" title="ひとつ前の画面に遷移" onclick="location.href='<%= request.getContextPath() %>/Servlet/Login.java'">◀</button>
             <div class="page-title-box">指導一覧</div>
         </div>
 
@@ -310,7 +310,7 @@ td:last-child {
     <main class="main-content">
 
         <div class="search-area">
-            <form action="<%= request.getContextPath() %>/ListofCompanies" method="get">
+            <form action="<%= request.getContextPath() %>/ListofEmployment" method="get">
                 <div class="search-box">
                     <input type="text" name="keyword" placeholder="企業名">
                     <button type="submit" class="search-btn">🔍</button>

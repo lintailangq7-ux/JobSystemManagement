@@ -8,6 +8,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+import DAO.EmploymentDAO;
 
 @WebServlet("/EmploymentNewServlet")
 public class EmploymentNewServlet extends HttpServlet {
@@ -22,7 +25,13 @@ public class EmploymentNewServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		 String gakusekiNoNum = request.getParameter("studentNo");
+        HttpSession session = request.getSession();
+		String gakusekiNoNum = (String) session.getAttribute("userId");
+		
+		 
+		EmploymentDAO eDAO = new EmploymentDAO();
+		
+		eDAO.insertGuidance(0, gakusekiNoNum, null, 0, gakusekiNoNum);
 	}
 
 }

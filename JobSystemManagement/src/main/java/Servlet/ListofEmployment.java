@@ -3,15 +3,16 @@ package Servlet;
 import java.io.IOException;
 import java.util.List;
 
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
-import DAO.CompanyDAO;
-import model.Company;
+import DAO.LoginDAO;
+import DAO.StudentDetailDAO;
+import model.StudentDetail;
 
 /**
  * Servlet implementation class ListofEmployment
@@ -33,40 +34,43 @@ public class ListofEmployment extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        // JSPから検索文字を受け取る
-		 
+		System.out.println("Login");
+		LoginDAO LDao = new LoginDAO();
 
-       String keyword = request.getParameter("keyword");
-        
+		
+		
 
-        //DAOで検索
-        CompanyDAO dao = new CompanyDAO();
-        List<Company> companyList;
+
+		String keyword = request.getParameter("keyword");
+
+        HttpSession session = request.getSession();
+
+    	
+    	StudentDetailDAO dao = new StudentDetailDAO();
+    	String responsed = null;
+
+
+        List<StudentDetail> detail;
         
         if (keyword == null || keyword.trim().isEmpty()) {
-           companyList = dao.findAllCompany();      // 初回表示：全件取得
+           detail = dao.findAllStudentDetail();
         } else {
-            companyList = dao.search(keyword); // 検索時：条件に合うものだけ取得
+           detail = dao.findByCompanyKeyword(keyword); // 検索時：条件に合うものだけ取得
         }
-        System.out.println("keyword = " + keyword);
-        System.out.println("件数 = " + companyList.size());
 
-        // JSPへ渡す
-       
-        request.setAttribute("companyList", companyList);
+        session.setAttribute("detail", detail);
+        responsed = "jsp/Employment/TecherEmplymentList.jsp";
+           
+        response.sendRedirect(responsed); // メインメニューへ
 
-        // 一覧画面へ戻る
-       RequestDispatcher rd =request.getRequestDispatcher("/jsp/Employment/TecherEmplymentList.jsp");
-
-        rd.forward(request, response);
-	}
+    }
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+	
+    }
 
 }

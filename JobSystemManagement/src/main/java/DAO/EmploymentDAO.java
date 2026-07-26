@@ -57,11 +57,7 @@ public class EmploymentDAO {   // 指導＋就職情報
         }
         return list;
     }
-    public class GuidanceDAO {
-
-        private static final String URL  = "jdbc:mysql://localhost:3306/jop_managment_system?useSSL=false&serverTimezone=Asia/Tokyo";
-        private static final String USER = "root";
-        private static final String PASS = "kcsf";
+    
 
         // ==============================
         // 追加（INSERT）
