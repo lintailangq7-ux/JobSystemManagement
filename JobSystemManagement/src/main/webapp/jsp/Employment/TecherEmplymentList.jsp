@@ -394,12 +394,12 @@ td:last-child {
 
 <!-- 「変更」はformでPOST送信して遷移する -->
 <form id="editForm" action="<%= request.getContextPath() %>/GuidanceEditServlet" method="post">
-    <input type="hidden" name="shidoId" id="editShidoId" value="<%= Gu.getShidoId()>
+    <input type="hidden" name="shidoId" id="editShidoId" value="">
 </form>
 
 <!-- 「削除」もformでPOST送信する -->
 <form id="deleteForm" action="<%= request.getContextPath() %>/GuidanceDeleteServlet" method="post">
-    <input type="hidden" name="shidoId" id="deleteShidoId" value="<%= Gu.getShidoId()>
+    <input type="hidden" name="shidoId" id="deleteShidoId" value="">
 </form>
 
 <!-- 削除確認モーダル -->

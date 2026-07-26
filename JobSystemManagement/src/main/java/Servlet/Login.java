@@ -54,6 +54,7 @@ public class Login extends HttpServlet {
         String password = request.getParameter("password");
 
         HttpSession session = request.getSession();
+        
         // TODO: 本来はDB照合処理を書く
         // 仮の認証（後で本物に置き換えてください）
         boolean isValid = false;
@@ -76,16 +77,16 @@ public class Login extends HttpServlet {
             		System.out.println("Su");
             		isValid = true;
             		StudentDetail detail = dao.findByGakusekiNo(userId.substring(2));
-            		session.setAttribute("userId", userId.substring(2));
+            		session.setAttribute("userId", userId);
                     session.setAttribute("detail", detail);
             		responsed = "jsp/Employment/EmploymentList.jsp";
             }
             
-     }
+        }
 
         if (isValid) {
 
-        	session.setAttribute("userId", userId.substring(2));
+        	session.setAttribute("userId", userId);
             session.setAttribute("userType", userId.startsWith("Te") ? "teacher" : "student");
             
             response.sendRedirect(responsed); // メインメニューへ

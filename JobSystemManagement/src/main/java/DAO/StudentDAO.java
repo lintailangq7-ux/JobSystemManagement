@@ -14,6 +14,7 @@ import javax.sql.DataSource;
 
 import model.ModelStudent;
 import model.StudentChukan;
+import model.StudentList;
 
 public class StudentDAO {
 	//データベースに接続に使用する情報
@@ -232,4 +233,82 @@ public class StudentDAO {
 	    }
 	    return StuList;
 	}
+
+	public List<StudentList> findByCompanyId(String companyId) {
+
+        List<StudentList> list = new ArrayList<>();
+
+        String sql = """
+            SELECT s.学籍番号, s.クラス, s.氏名, s.出席番号, s.在籍状況,
+                   s.県内外の希望, s.性別, s.備考
+            FROM 学生テーブル s
+            INNER JOIN 就職情報テーブル j ON s.学籍番号 = j.学籍番号
+            WHERE j.企業ID = ?
+            """;
+
+        try (Connection con = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, companyId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                	StudentList student = new StudentList();
+
+                    student.setClassNo(rs.getString("クラス"));
+                    student.setStudentName(rs.getString("氏名"));
+                    student.setAttendanceNo(Integer.toString(rs.getInt("出席番号")));
+
+
+
+                    list.add(student);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("学生データ取得エラー: " + e.getMessage());
+        }
+        return list;
+    }
+	
+	public List<ModelStudent> findByCompanyI(String companyId) {
+
+        List<ModelStudent> list = new ArrayList<>();
+
+        String sql = """
+            SELECT s.学籍番号, s.クラス, s.氏名, s.出席番号, s.在籍状況,
+                   s.県内外の希望, s.性別, s.備考
+            FROM 学生テーブル s
+            INNER JOIN 就職情報テーブル j ON s.学籍番号 = j.学籍番号
+            WHERE j.企業ID = ?
+            """;
+
+        try (Connection con = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, companyId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                	ModelStudent student = new ModelStudent();
+                    student.setGakusekiNo(rs.getInt("学籍番号"));
+                    student.setClassName(rs.getString("クラス"));
+                    student.setName(rs.getString("氏名"));
+                    student.setAttendanceNo(rs.getInt("出席番号"));
+                    student.setZaisekiJokyo(rs.getInt("在籍状況"));
+                    student.setKenNaiGaiKibo(rs.getString("県内外の希望"));
+                    student.setSeibetsu(rs.getString("性別"));
+                    student.setBiko(rs.getString("備考"));
+
+                    list.add(student);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("学生データ取得エラー: " + e.getMessage());
+        }
+        return list;
+    }
 }

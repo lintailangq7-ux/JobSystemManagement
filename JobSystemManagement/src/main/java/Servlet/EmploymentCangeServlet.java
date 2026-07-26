@@ -51,9 +51,9 @@ public class EmploymentCangeServlet extends HttpServlet {
 	    String place        = request.getParameter("place");
 	    String submitStatus = request.getParameter("submitStatus");
 	    if (submitStatus.equals("済")) {
-	    	submitInt = 0;
-	    }else {
 	    	submitInt = 1;
+	    }else {
+	    	submitInt = 0;
 	    }
 	    
 	    String exam         = request.getParameter("exam"); 
@@ -66,9 +66,9 @@ public class EmploymentCangeServlet extends HttpServlet {
 	    
 	    String offerStatus  = request.getParameter("offerStatus");
 	    if (offerStatus.equals("内")) {
-	    	offerInt = 0;
-	    }else {
 	    	offerInt = 1;
+	    }else {
+	    	offerInt = 0;
 	    }
 	    
 	    
@@ -81,12 +81,15 @@ public class EmploymentCangeServlet extends HttpServlet {
 	    
 	    String memo         = request.getParameter("memo");
 
-	    Company C = cDAO.findById(companyName);
+	    Company C = cDAO.findByName(companyName);
 	    EmploymentChukan ec = new EmploymentChukan(shidoId,examDateTime, exam, submitInt, place);
 
 		
-		eDAO.updateGuidance(gakusekiNoNum, C.getId(), acceptDateTime, offerInt, memo);
+		eDAO.updateGuidance(gakusekiNoNum.substring(2), C.getId(), acceptDateTime, offerInt, memo);
 		ecDAO.update(ec);
+		
+
+    	session.setAttribute("userId",  gakusekiNoNum);
 		
 		response.sendRedirect(request.getContextPath() + "/ListofEmployment");
 	}

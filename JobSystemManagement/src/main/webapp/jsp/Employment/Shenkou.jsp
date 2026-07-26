@@ -196,7 +196,7 @@ ${student.job3}
 
 <div class="right">
 
-<form action="GuidanceUpdateServlet" method="post">
+<form action="EmploymentNewServlet" method="post">
 
 <input type="hidden"
 name="studentNo"

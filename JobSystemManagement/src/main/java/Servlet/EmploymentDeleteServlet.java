@@ -30,13 +30,13 @@ public class EmploymentDeleteServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-		String gakusekiNoNum = (String) session.getAttribute("userId");
 	    String shidoId    = request.getParameter("shidoId");
 
 		
 	    EmploymentChukanDAO ecDAO = new EmploymentChukanDAO();
 		EmploymentDAO eDAO = new EmploymentDAO();
 		
+		System.out.println("delete");
 		ecDAO.delete(shidoId);
 		eDAO.deleteGuidance(shidoId);
 

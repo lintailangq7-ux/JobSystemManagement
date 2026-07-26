@@ -141,16 +141,15 @@ public class CompanyDAO {
 	
 	}
 	
-	
-	   public Company findById(String companyName) {
-		   
+	 public Company findById(String companyId) {
+		 
 	        String sql = "SELECT 企業ID, 企業名, 住所, 電話番号, メールアドレス, 採用実績 "
-	                   + "FROM `企業テーブル` WHERE 企業名 = ?";
+	                   + "FROM `企業テーブル` WHERE 企業ID = ?";
 	 
 	        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
 	             PreparedStatement ps = con.prepareStatement(sql)) {
 	 
-	            ps.setString(1, companyName);
+	            ps.setString(1, companyId);
 	 
 	            try (ResultSet rs = ps.executeQuery()) {
 	                if (rs.next()) {
@@ -163,6 +162,41 @@ public class CompanyDAO {
 	                    company.setMail(rs.getString("メールアドレス"));
 	                    company.setJobtype(rs.getString("採用実績"));
 	 
+	                    return company;
+	                }
+	            }
+	 
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            System.out.println("企業取得エラー: " + e.getMessage());
+	        }
+	 
+	        return null;
+	    }
+	
+	
+	   public Company findByName(String companyName) {
+           	System.out.println("企業名検索OK1");
+	        String sql = "SELECT 企業ID, 企業名, 住所, 電話番号, メールアドレス, 採用実績 "
+	                   + "FROM `企業テーブル` WHERE 企業名 = ?";
+	 
+	        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+	             PreparedStatement ps = con.prepareStatement(sql)) {
+                System.out.println("企業名検索OK2");
+	            ps.setString(1, companyName);
+	 
+	            try (ResultSet rs = ps.executeQuery()) {
+	                if (rs.next()) {
+	                    Company company = new Company();
+	 
+	                    company.setId(rs.getString("企業ID"));
+	                    company.setName(rs.getString("企業名"));
+	                    company.setAddress(rs.getString("住所"));
+	                    company.setTel(rs.getString("電話番号"));
+	                    company.setMail(rs.getString("メールアドレス"));
+	                    company.setJobtype(rs.getString("採用実績"));
+	                    
+	                    System.out.println("企業名検索OK3");
 	                    return company;
 	                }
 	            }
