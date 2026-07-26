@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import DAO.EmploymentChukanDAO;
 import DAO.EmploymentDAO;
 
 /**
@@ -33,9 +34,12 @@ public class EmploymentDeleteServlet extends HttpServlet {
 	    String shidoId    = request.getParameter("shidoId");
 
 		
-		 
+	    EmploymentChukanDAO ecDAO = new EmploymentChukanDAO();
 		EmploymentDAO eDAO = new EmploymentDAO();
+		
+		ecDAO.delete(shidoId);
 		eDAO.deleteGuidance(shidoId);
+
 		
 		response.sendRedirect(request.getContextPath() + "/ListofEmployment");
 	}

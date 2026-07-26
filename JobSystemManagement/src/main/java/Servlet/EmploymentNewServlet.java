@@ -79,6 +79,7 @@ public class EmploymentNewServlet extends HttpServlet {
 
 		
 		eDAO.insertGuidance(gakusekiNoNum, C.getId(), acceptDateTime, offerInt, memo);
+		ecDAO.insert(ec);
 		
 		response.sendRedirect(request.getContextPath() + "/ListofEmployment");
 	}
