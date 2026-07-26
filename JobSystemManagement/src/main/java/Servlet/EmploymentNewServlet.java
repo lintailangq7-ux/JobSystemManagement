@@ -117,8 +117,8 @@ public class EmploymentNewServlet extends HttpServlet {
 		if (acceptDate != null && !acceptDate.isEmpty()) {
 			acceptDateTime = LocalDateTime.parse(acceptDate);
 		}
-
-		String newId = eDAO.insertGuidance(gakusekiNo, C.getId(), acceptDateTime, offerInt, memo);
+		EmploymentChukan ec = new EmploymentChukan("", examDateTime, exam, submitInt, place);
+		String newId = eDAO.insertGuidanceWithExam (gakusekiNo, C.getId(), acceptDateTime, offerInt, memo, ec);
 		if (newId == null) {
 			request.setAttribute("mode", "add");
 			request.setAttribute("student", student);
@@ -127,18 +127,6 @@ public class EmploymentNewServlet extends HttpServlet {
 			return;
 		}
 
-		EmploymentChukan ec = new EmploymentChukan(newId, examDateTime, exam, submitInt, place);
-		boolean chukanOk = ecDAO.insert(ec);
-		if (!chukanOk) {
-			// 子テーブル(試験情報)の登録に失敗した場合、
-			// 親(指導情報)だけが残る孤立データを防ぐためロールバックする。
-			eDAO.deleteGuidance(newId);
-			request.setAttribute("mode", "add");
-			request.setAttribute("student", student);
-			request.setAttribute("errorMessage", "試験情報の登録に失敗しました。入力内容を確認してください。");
-			request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
-			return;
-		}
 
 		response.sendRedirect(request.getContextPath() + "/ListofEmployment");
 	}
