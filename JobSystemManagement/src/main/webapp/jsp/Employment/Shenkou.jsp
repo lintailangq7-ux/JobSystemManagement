@@ -138,6 +138,10 @@ textarea{
 
 <div class="container">
 
+<% if (request.getAttribute("errorMessage") != null) { %>
+<div style="color:red; font-weight:bold; margin-bottom:10px;"><%= request.getAttribute("errorMessage") %></div>
+<% } %>
+
 <div class="titleArea">
 
 <button class="backButton" onclick="history.back()"></button>
@@ -166,7 +170,7 @@ textarea{
 
 <tr>
 <td>名前</td>
-<td>${student.studentName}</td>
+<td>${student.name}</td>
 </tr>
 
 <tr>
@@ -175,17 +179,15 @@ textarea{
 </tr>
 
 <tr>
-<td>希望職種</td>
+<td>学籍番号</td>
 <td>
-${student.job1}
-${student.job2}
-${student.job3}
+${student.gakusekiNo}
 </td>
 </tr>
 
 <tr>
 <td>内定状況</td>
-<td>${student.offerStatus}</td>
+<td>${employment.naiteiKakutei == 1 ? '内' : '未'}</td>
 </tr>
 
 </table>
@@ -196,11 +198,15 @@ ${student.job3}
 
 <div class="right">
 
-<form action="EmploymentNewServlet" method="post">
+<form action="<%= "edit".equals(request.getAttribute("mode")) ? "EmploymentCangeServlet" : "EmploymentNewServlet" %>" method="post">
 
 <input type="hidden"
 name="studentNo"
-value="${student.studentNo}">
+value="${student.gakusekiNo}">
+
+<input type="hidden"
+name="shidoId"
+value="${shidoId}">
 
 <table class="formTable">
 
@@ -212,7 +218,7 @@ value="${student.studentNo}">
 
 <input type="text"
 name="companyId"
-value="${guidance.companyId}">
+value="${company.id}">
 
 </td>
 
@@ -226,7 +232,7 @@ value="${guidance.companyId}">
 
 <input type="text"
 name="companyName"
-value="${guidance.companyName}">
+value="${company.name}">
 
 </td>
 
@@ -240,7 +246,7 @@ value="${guidance.companyName}">
 
 <input type="text"
 name="place"
-value="${guidance.place}">
+value="${chukan.shikenKaijo}">
 
 </td>
 
@@ -254,7 +260,7 @@ value="${guidance.place}">
 
 <input type="text"
 name="submitStatus"
-value="${guidance.submitStatus}">
+value="${chukan.teishutsuShoruiJokyo == 1 ? '済' : ''}">
 
 </td>
 
@@ -268,7 +274,7 @@ value="${guidance.submitStatus}">
 
 <input type="text"
 name="exam"
-value="${guidance.exam}">
+value="${chukan.shikenNaiyo}">
 
 </td>
 
@@ -282,7 +288,7 @@ value="${guidance.exam}">
 
 <input type="text"
 name="examDate"
-value="${guidance.examDate}">
+value="${chukan.shikenNichiji}">
 
 </td>
 
@@ -296,7 +302,7 @@ value="${guidance.examDate}">
 
 <input type="text"
 name="offerStatus"
-value="${guidance.offerStatus}">
+value="${employment.naiteiKakutei == 1 ? '内' : ''}">
 
 </td>
 
@@ -310,7 +316,7 @@ value="${guidance.offerStatus}">
 
 <input type="text"
 name="acceptDate"
-value="${guidance.acceptDate}">
+value="${employment.naiteiKakuteiBi}">
 
 </td>
 
@@ -323,7 +329,7 @@ value="${guidance.acceptDate}">
 <td>
 
 <textarea
-name="memo">${guidance.memo}</textarea>
+name="memo">${employment.biko}</textarea>
 
 </td>
 
@@ -335,7 +341,7 @@ name="memo">${guidance.memo}</textarea>
 
 <button class="submitButton">
 
-変更
+<%= "edit".equals(request.getAttribute("mode")) ? "変更" : "追加" %>
 
 </button>
 

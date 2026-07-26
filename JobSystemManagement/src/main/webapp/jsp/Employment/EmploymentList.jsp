@@ -342,7 +342,7 @@ td:last-child {
     <!-- ============ 左サイドバー ============ -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <button class="back-button" title="ひとつ前の画面に遷移" onclick="location.href='<%= request.getContextPath() %>/Login.java'">◀</button>
+            <button class="back-button" title="ひとつ前の画面に遷移" onclick="location.href='<%= request.getContextPath() %>/Login'">◀</button>
             <div class="page-title-box">指導一覧</div>
         </div>
 		<div class="student-info">
