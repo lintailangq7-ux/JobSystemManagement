@@ -114,6 +114,16 @@ public class EmploymentCangeServlet extends HttpServlet {
 			return;
 		}
  
+		// 試験日時は複合主キー(指導ID + 試験日時)の一部でNULL不可。
+		// 未入力のままUPDATEすると制約違反になるため必須チェックする。
+		if (examDate == null || examDate.trim().isEmpty()) {
+			request.setAttribute("mode", "edit");
+			request.setAttribute("shidoId", shidoId);
+			request.setAttribute("errorMessage", "試験日時は必須です。入力してください。");
+			request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
+			return;
+		}
+ 
 		submitInt = "済".equals(submitStatus) ? 1 : 0;
 		offerInt  = "内".equals(offerStatus) ? 1 : 0;
  
@@ -130,7 +140,14 @@ public class EmploymentCangeServlet extends HttpServlet {
 		EmploymentChukan ec = new EmploymentChukan(shidoId, examDateTime, exam, submitInt, place);
  
 		eDAO.updateGuidance(shidoId, C.getId(), acceptDateTime, offerInt, memo);
-		ecDAO.update(ec);
+		boolean chukanOk = ecDAO.update(ec);
+		if (!chukanOk) {
+			request.setAttribute("mode", "edit");
+			request.setAttribute("shidoId", shidoId);
+			request.setAttribute("errorMessage", "試験情報の更新に失敗しました。入力内容を確認してください。");
+			request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
+			return;
+		}
  
 		response.sendRedirect(request.getContextPath() + "/ListofEmployment");
 	}

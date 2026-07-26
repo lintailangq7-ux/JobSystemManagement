@@ -31,59 +31,55 @@ public class ListofEmployment extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        String keyword = request.getParameter("keyword");
-        String userId = request.getParameter("userId");
-        String password = request.getParameter("password");
-
-        HttpSession session = request.getSession();
-        // TODO: 本来はDB照合処理を書く
-        // 仮の認証（後で本物に置き換えてください）
-        
-
-    	
-    	StudentDetailDAO dao = new StudentDetailDAO();
-    	String responsed = null;
-
-
-
-        	System.out.println("userId != null && password != null");
-            // 先生ID or 生徒ID の形式チェック（簡易版）
-        	if(userId.startsWith("Te")) {
-        		List<StudentDetail> detail;
-        		  if (keyword == null || keyword.trim().isEmpty()) {
-        			  	detail = dao.findAllStudentDetail();
-        	        } else {
-        	        	detail = dao.findByCompanyKeyword(keyword); // 検索時：条件に合うものだけ取得
-        	        }
-            		
-            		session.setAttribute("detail", detail);
-            		responsed = "jsp/Employment/TecherEmplymentList.jsp";
-            }else if(userId.startsWith("St")) {
-            		StudentDetail detail = dao.findByGakusekiNo(userId.substring(2));
-            		session.setAttribute("userId", userId);
-                    session.setAttribute("detail", detail);
-            		responsed = "jsp/Employment/EmploymentList.jsp";
-            }
-            
-
-
-
-        	session.setAttribute("userId", userId);
-            session.setAttribute("userType", userId.startsWith("Te") ? "teacher" : "student");
-            
-            response.sendRedirect(responsed); // メインメニューへ
-
-    }
-
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+ 
+		String keyword = request.getParameter("keyword");
+ 
+		HttpSession session = request.getSession();
+		String userId = (String) session.getAttribute("userId");
+ 
+		if (userId == null) {
+			// セッション切れ・未ログインの場合はログイン画面へ
+			response.sendRedirect(request.getContextPath() + "/Login");
+			return;
+		}
+ 
+		StudentDetailDAO dao = new StudentDetailDAO();
+		String responsed;
+ 
+		if (userId.startsWith("Te")) {
+			List<StudentDetail> detail;
+			if (keyword == null || keyword.trim().isEmpty()) {
+				detail = dao.findAllStudentDetail();
+			} else {
+				detail = dao.findByCompanyKeyword(keyword); // 検索時：条件に合うものだけ取得
+			}
+ 
+			session.setAttribute("detail", detail);
+			responsed = "/jsp/Employment/TecherEmplymentList.jsp";
+ 
+		} else if (userId.startsWith("St")) {
+			StudentDetail detail = dao.findByGakusekiNo(userId.substring(2));
+			session.setAttribute("detail", detail);
+			responsed = "/jsp/Employment/EmploymentList.jsp";
+ 
+		} else {
+			// 想定外の userId 形式の場合はログイン画面へ
+			response.sendRedirect(request.getContextPath() + "/Login");
+			return;
+		}
+ 
+		session.setAttribute("userType", userId.startsWith("Te") ? "teacher" : "student");
+ 
+		response.sendRedirect(request.getContextPath() + responsed);
+	}
+ 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-	
-    }
-
+			throws ServletException, IOException {
+ 
+	}
 }

@@ -282,7 +282,7 @@ value="${chukan.shikenNaiyo}">
 
 <tr>
 
-<td>試験日時</td>
+<td>試験日時<span style="color:red;">＊</span></td>
 
 <td>
 

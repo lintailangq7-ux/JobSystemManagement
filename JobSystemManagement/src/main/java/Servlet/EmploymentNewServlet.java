@@ -1,5 +1,5 @@
 package Servlet;
- 
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 
@@ -18,11 +18,11 @@ import model.Company;
 import model.EmploymentChukan;
 import model.ModelStudent;
 import model.StudentDetail;
- 
+
 @WebServlet("/EmploymentNewServlet")
 public class EmploymentNewServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
- 
+
 	/**
 	 * 追加画面表示。
 	 * 対象の生徒は、Login.java / ReportServlet等でセッションにセットされている
@@ -33,16 +33,16 @@ public class EmploymentNewServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		StudentDetail detail = getStudentDetailFromSession(session);
- 
+
 		request.setAttribute("mode", "add");
 		if (detail != null) {
 			request.setAttribute("student", detail.getStudent());
 		}
- 
+
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp");
 		dispatcher.forward(request, response);
 	}
- 
+
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -53,7 +53,7 @@ public class EmploymentNewServlet extends HttpServlet {
 		EmploymentChukanDAO ecDAO = new EmploymentChukanDAO();
 		int submitInt;
 		int offerInt;
- 
+
 		StudentDetail detail = getStudentDetailFromSession(session);
 		if (detail == null || detail.getStudent() == null) {
 			// 対象生徒が特定できない場合は処理を進めない
@@ -64,7 +64,7 @@ public class EmploymentNewServlet extends HttpServlet {
 		}
 		ModelStudent student = detail.getStudent();
 		String gakusekiNo = String.valueOf(student.getGakusekiNo());
- 
+
 		String companyName  = request.getParameter("companyName");
 		String place         = request.getParameter("place");
 		String submitStatus  = request.getParameter("submitStatus");
@@ -73,7 +73,7 @@ public class EmploymentNewServlet extends HttpServlet {
 		String offerStatus   = request.getParameter("offerStatus");
 		String acceptDate    = request.getParameter("acceptDate");
 		String memo          = request.getParameter("memo");
- 
+
 		// ---- 入力チェック（未入力のまま送信された場合にNPEで落ちないようにする） ----
 		if (companyName == null || companyName.trim().isEmpty()) {
 			request.setAttribute("mode", "add");
@@ -82,7 +82,7 @@ public class EmploymentNewServlet extends HttpServlet {
 			request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
 			return;
 		}
- 
+
 		Company C = cDAO.findByName(companyName);
 		if (C == null) {
 			request.setAttribute("mode", "add");
@@ -91,20 +91,33 @@ public class EmploymentNewServlet extends HttpServlet {
 			request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
 			return;
 		}
- 
+
+		// 試験日時はDB上、試験情報の複合主キー(指導ID + 試験日時)の一部であり
+		// NULLを許容しない。未入力のままDBへ書き込むと子テーブルのINSERTが
+		// 制約違反で失敗し、試験情報を持たない「孤立した」指導レコードが
+		// 就職情報テーブルにだけ残ってしまう（一覧画面がその後クラッシュする原因）。
+		// そのため、ここで必須チェックする。
+		if (examDate == null || examDate.trim().isEmpty()) {
+			request.setAttribute("mode", "add");
+			request.setAttribute("student", student);
+			request.setAttribute("errorMessage", "試験日時は必須です。入力してください。");
+			request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
+			return;
+		}
+
 		submitInt = "済".equals(submitStatus) ? 1 : 0;
 		offerInt  = "内".equals(offerStatus) ? 1 : 0;
- 
+
 		LocalDateTime examDateTime = null;
 		if (examDate != null && !examDate.isEmpty()) {
 			examDateTime = LocalDateTime.parse(examDate);
 		}
- 
+
 		LocalDateTime acceptDateTime = null;
 		if (acceptDate != null && !acceptDate.isEmpty()) {
 			acceptDateTime = LocalDateTime.parse(acceptDate);
 		}
- 
+
 		String newId = eDAO.insertGuidance(gakusekiNo, C.getId(), acceptDateTime, offerInt, memo);
 		if (newId == null) {
 			request.setAttribute("mode", "add");
@@ -113,13 +126,23 @@ public class EmploymentNewServlet extends HttpServlet {
 			request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
 			return;
 		}
- 
+
 		EmploymentChukan ec = new EmploymentChukan(newId, examDateTime, exam, submitInt, place);
-		ecDAO.insert(ec);
- 
+		boolean chukanOk = ecDAO.insert(ec);
+		if (!chukanOk) {
+			// 子テーブル(試験情報)の登録に失敗した場合、
+			// 親(指導情報)だけが残る孤立データを防ぐためロールバックする。
+			eDAO.deleteGuidance(newId);
+			request.setAttribute("mode", "add");
+			request.setAttribute("student", student);
+			request.setAttribute("errorMessage", "試験情報の登録に失敗しました。入力内容を確認してください。");
+			request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
+			return;
+		}
+
 		response.sendRedirect(request.getContextPath() + "/ListofEmployment");
 	}
- 
+
 	/**
 	 * セッションの "detail" 属性から StudentDetail を安全に取り出す。
 	 * 教師ログイン直後（生徒一覧選択前）は List&lt;StudentDetail&gt; が
@@ -132,5 +155,5 @@ public class EmploymentNewServlet extends HttpServlet {
 		}
 		return null;
 	}
- 
+
 }
