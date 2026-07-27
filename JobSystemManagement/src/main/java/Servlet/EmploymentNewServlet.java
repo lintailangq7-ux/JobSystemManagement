@@ -28,12 +28,9 @@ public class EmploymentNewServlet extends HttpServlet {
 }
 
 
-//// 指導一覧（メイン情報）
-//private String shidoId;           // 指導ID
-//private int gakusekiNo;           // 学籍番号
-//private String kaishaId;          // 企業ID
-//private LocalDateTime naiteiKakuteiBi;   // 内定確定日
-//private int naiteiKakutei;        // 内定確定
-//private String biko;              // 備考
-//
-//// 就職情報中間テーブル（複数）
+//shidoId
+//gakusekiNo
+//kaishaId
+//naiteiKakuteiBi
+//naiteiKakutei
+//biko
