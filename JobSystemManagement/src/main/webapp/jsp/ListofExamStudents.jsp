@@ -197,7 +197,7 @@ td{
             <th class="class-no">クラス番号</th>
             <th class="number">出席番号</th>
             <th class="name">氏名</th>
-            <th class="button-col">詳細</th>
+            
         </tr>
     </thead>
 
@@ -212,15 +212,7 @@ td{
             <td><%= s.getClassNo() %></td>
             <td><%= s.getAttendanceNo() %></td>
             <td><%= s.getStudentName() %></td>
-            <td class="menu-cell">
-					
-				    <button type="button" class="detail-btn"onclick="toggleActions(this)">詳細</button>
-				    <div class="menu" style="display:none;">
-				      <button type="button" onclick="alert('企業情報を変更しますか')">変更</button><br>
-				      <button type="button" onclick="alert('企業情報を削除しますか')">削除</button>
-				    </div>
-				  
-				 </td>
+           
         </tr>
 
     <%
