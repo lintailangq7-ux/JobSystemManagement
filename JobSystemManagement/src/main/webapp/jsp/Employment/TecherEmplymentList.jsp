@@ -383,7 +383,7 @@ td:last-child {
 </div>
 
 <div class="side-add-area">
-    <button class="add-button" title="指導追加" onclick="location.href='<%= request.getContextPath() %>/GuidanceAddServlet'">追加</button>
+    <button class="add-button" title="指導追加" onclick="location.href='<%= request.getContextPath() %>/EmploymentNewServlet'">追加</button>
 </div>
 
 <!-- 右クリック風メニュー -->
@@ -393,12 +393,12 @@ td:last-child {
 </div>
 
 <!-- 「変更」はformでPOST送信して遷移する -->
-<form id="editForm" action="<%= request.getContextPath() %>/GuidanceEditServlet" method="post">
+<form id="editForm" action="<%= request.getContextPath() %>/EmploymentCangeServlet" method="get">
     <input type="hidden" name="shidoId" id="editShidoId" value="">
 </form>
 
 <!-- 「削除」もformでPOST送信する -->
-<form id="deleteForm" action="<%= request.getContextPath() %>/GuidanceDeleteServlet" method="post">
+<form id="deleteForm" action="<%= request.getContextPath() %>/EmploymentDeleteServlet" method="get">
     <input type="hidden" name="shidoId" id="deleteShidoId" value="">
 </form>
 

@@ -478,12 +478,12 @@ td:last-child {
 </div>
 
 <!-- 「変更」はformでPOST送信して遷移する -->
-<form id="editForm" action="<%= request.getContextPath() %>EmploymentCangeServlet" method="get">
+<form id="editForm" action="<%= request.getContextPath() %>/EmploymentCangeServlet" method="get">
     <input type="hidden" name="shidoId" id="editShidoId" value="">
 </form>
 
 <!-- 「削除」もformでPOST送信する -->
-<form id="deleteForm" action="<%= request.getContextPath() %>/GuidanceDeleteServlet" method="get">
+<form id="deleteForm" action="<%= request.getContextPath() %>/EmploymentDeleteServlet" method="get">
     <input type="hidden" name="shidoId" id="deleteShidoId" value="">
 </form>
 
