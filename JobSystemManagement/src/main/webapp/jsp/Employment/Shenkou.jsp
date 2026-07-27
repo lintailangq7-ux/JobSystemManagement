@@ -11,11 +11,12 @@
 body{
     font-family:Meiryo;
     background:#fff;
+    margin:0;
 }
 
 .container{
     width:1200px;
-    margin:20px auto;
+    margin:20px 0 20px 20px;
 }
 
 .titleArea{
@@ -35,7 +36,6 @@ body{
     overflow:hidden;
 }
 
-/* 黄色の三角 */
 .backButton::after{
     content:"";
     position:absolute;
@@ -47,75 +47,60 @@ body{
     clip-path:polygon(100% 0,0 50%,100% 100%);
 }
 
-/* ホバー */
 .backButton:hover{
     filter:brightness(0.95);
 }
 
 .title{
-
     font-size:34px;
     font-weight:bold;
     margin-left:20px;
 }
 
 .main{
-
     display:flex;
-    gap:50px;
+    gap:70px;
+    align-items:flex-start;
 }
 
-/******** 左側 ********/
-
 .left{
-
     width:260px;
 }
 
 .infoTable{
-
     width:100%;
     border-collapse:collapse;
 }
 
 .infoTable th{
-
     border:2px solid black;
     background:#f3f3f3;
     height:40px;
 }
 
 .infoTable td{
-
     border:2px solid black;
     text-align:center;
     height:42px;
 }
 
-/******** 右側 ********/
-
 .right{
-
     flex:1;
 }
 
 .formTable{
-
     border-collapse:collapse;
 }
 
 .formTable td{
-
-    padding:5px;
+    padding:5px 10px 5px 5px;
 }
 
 label{
-
     font-weight:bold;
 }
 
 input[type=text]{
-
     width:300px;
     height:38px;
     text-align:center;
@@ -124,7 +109,6 @@ input[type=text]{
 }
 
 textarea{
-
     width:430px;
     height:160px;
     border:2px solid black;
@@ -132,13 +116,11 @@ textarea{
 }
 
 .buttonArea{
-
     text-align:right;
     margin-top:20px;
 }
 
 .submitButton{
-
     width:110px;
     height:60px;
     background:red;
@@ -149,13 +131,16 @@ textarea{
     font-weight:bold;
     cursor:pointer;
 }
-
 </style>
 
 </head>
 <body>
 
 <div class="container">
+
+<% if (request.getAttribute("errorMessage") != null) { %>
+<div style="color:red; font-weight:bold; margin-bottom:10px;"><%= request.getAttribute("errorMessage") %></div>
+<% } %>
 
 <div class="titleArea">
 
@@ -185,7 +170,7 @@ textarea{
 
 <tr>
 <td>名前</td>
-<td>${student.studentName}</td>
+<td>${student.name}</td>
 </tr>
 
 <tr>
@@ -194,17 +179,15 @@ textarea{
 </tr>
 
 <tr>
-<td>希望職種</td>
+<td>学籍番号</td>
 <td>
-${student.job1}
-${student.job2}
-${student.job3}
+${student.gakusekiNo}
 </td>
 </tr>
 
 <tr>
 <td>内定状況</td>
-<td>${student.offerStatus}</td>
+<td>${employment.naiteiKakutei == 1 ? '内' : '未'}</td>
 </tr>
 
 </table>
@@ -215,11 +198,15 @@ ${student.job3}
 
 <div class="right">
 
-<form action="GuidanceUpdateServlet" method="post">
+<form action="<%= "edit".equals(request.getAttribute("mode")) ? "EmploymentCangeServlet" : "EmploymentNewServlet" %>" method="post">
 
 <input type="hidden"
 name="studentNo"
-value="${student.studentNo}">
+value="${student.gakusekiNo}">
+
+<input type="hidden"
+name="shidoId"
+value="${shidoId}">
 
 <table class="formTable">
 
@@ -231,7 +218,7 @@ value="${student.studentNo}">
 
 <input type="text"
 name="companyId"
-value="${guidance.companyId}">
+value="${company.id}">
 
 </td>
 
@@ -245,7 +232,7 @@ value="${guidance.companyId}">
 
 <input type="text"
 name="companyName"
-value="${guidance.companyName}">
+value="${company.name}">
 
 </td>
 
@@ -259,7 +246,7 @@ value="${guidance.companyName}">
 
 <input type="text"
 name="place"
-value="${guidance.place}">
+value="${chukan.shikenKaijo}">
 
 </td>
 
@@ -273,7 +260,7 @@ value="${guidance.place}">
 
 <input type="text"
 name="submitStatus"
-value="${guidance.submitStatus}">
+value="${chukan.teishutsuShoruiJokyo == 1 ? '済' : ''}">
 
 </td>
 
@@ -287,7 +274,7 @@ value="${guidance.submitStatus}">
 
 <input type="text"
 name="exam"
-value="${guidance.exam}">
+value="${chukan.shikenNaiyo}">
 
 </td>
 
@@ -295,13 +282,13 @@ value="${guidance.exam}">
 
 <tr>
 
-<td>試験日時</td>
+<td>試験日時<span style="color:red;">＊</span></td>
 
 <td>
 
 <input type="text"
 name="examDate"
-value="${guidance.examDate}">
+value="${chukan.shikenNichiji}">
 
 </td>
 
@@ -315,7 +302,7 @@ value="${guidance.examDate}">
 
 <input type="text"
 name="offerStatus"
-value="${guidance.offerStatus}">
+value="${employment.naiteiKakutei == 1 ? '内' : ''}">
 
 </td>
 
@@ -329,7 +316,7 @@ value="${guidance.offerStatus}">
 
 <input type="text"
 name="acceptDate"
-value="${guidance.acceptDate}">
+value="${employment.naiteiKakuteiBi}">
 
 </td>
 
@@ -342,7 +329,7 @@ value="${guidance.acceptDate}">
 <td>
 
 <textarea
-name="memo">${guidance.memo}</textarea>
+name="memo">${employment.biko}</textarea>
 
 </td>
 
@@ -354,7 +341,7 @@ name="memo">${guidance.memo}</textarea>
 
 <button class="submitButton">
 
-変更
+<%= "edit".equals(request.getAttribute("mode")) ? "変更" : "追加" %>
 
 </button>
 

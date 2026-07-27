@@ -26,7 +26,6 @@ public class StudentDAO {
 		 List<ModelStudent> StuList = new ArrayList<>(); 
 			StudentChukanDAO StuCukan = new StudentChukanDAO();
 
-			
 			InitialContext initCtx;
 			DataSource ds =null;
 			
@@ -63,72 +62,97 @@ public class StudentDAO {
 			return StuList;
 		}
 	
-	
-	public boolean create(StudentChukan Sdata) {
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver") ;
-		 } catch (ClassNotFoundException e) {
-				throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-			}
-		try(Connection conn = DriverManager.getConnection(JDBC_URL,DB_USER,DB_PASS)) {
-		
-		}catch(SQLException e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-	public List<StudentList> findByCompanyId(String companyId) {
-		// TODO 自動生成されたメソッド・スタブ
-		 List<StudentList> studentList = new ArrayList<>();
+	public boolean create(ModelStudent student) {
+	    String sql = "INSERT INTO 学生テーブル "
+	               + "(学籍番号, クラス, 氏名, 出席番号, 在籍状況, 県内外の希望, 性別, あっせん, 備考) "
+	               + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-		    String sql =
-		        "SELECT クラス番号, 出席番号, 氏名 "
-		      + "FROM 学生テーブル "
-		      + "WHERE 企業ID = ?";
+	    try (Connection conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+	         PreparedStatement pStmt = conn.prepareStatement(sql)) {
 
-		    try {
+	        pStmt.setInt(1, student.getGakusekiNo());
+	        pStmt.setString(2, student.getClassName());
+	        pStmt.setString(3, student.getName());
+	        pStmt.setInt(4, student.getAttendanceNo());
+	        pStmt.setInt(5, student.getZaisekiJokyo());
+	        pStmt.setString(6, student.getKenNaiGaiKibo());
+	        pStmt.setString(7, student.getSeibetsu());
+	        pStmt.setInt(8, student.getAssen());
+	        pStmt.setString(9, student.getBiko());
 
-		        Connection conn =
-		                DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+	        int result = pStmt.executeUpdate();
+	        return result > 0;
 
-		        PreparedStatement ps =
-		                conn.prepareStatement(sql);
-
-		        ps.setString(1, companyId);
-
-		        ResultSet rs = ps.executeQuery();
-
-		        while (rs.next()) {
-
-		            StudentList student = new StudentList();
-
-		            student.setClassNo(
-		                rs.getString("クラス番号")
-		            );
-
-		            student.setAttendanceNo(
-		                rs.getString("出席番号")
-		            );
-
-		            student.setStudentName(
-		                rs.getString("氏名")
-		            );
-
-		            studentList.add(student);
-		        }
-
-		    } catch(Exception e) {
-		        e.printStackTrace();
-		    }
-
-		    return studentList;
-		
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
 
+	// 学籍番号1件を取得（希望職種も含む）
+	public ModelStudent findByGakusekiNo(int gakusekiNo) {
+	    String sql = "SELECT 学籍番号, クラス, 氏名, 出席番号, 在籍状況, 県内外の希望, 性別, 備考, あっせん "
+	               + "FROM 学生テーブル WHERE 学籍番号 = ?";
+
+	    try (Connection conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+	         PreparedStatement pStmt = conn.prepareStatement(sql)) {
+
+	        pStmt.setInt(1, gakusekiNo);
+	        ResultSet rs = pStmt.executeQuery();
+
+	        if (rs.next()) {
+	            StudentChukanDAO chukanDao = new StudentChukanDAO();
+	            List<StudentChukan> list = chukanDao.findById(gakusekiNo);
+
+	            return new ModelStudent(
+	                rs.getInt("学籍番号"),
+	                rs.getString("クラス"),
+	                rs.getString("氏名"),
+	                rs.getInt("出席番号"),
+	                rs.getInt("在籍状況"),
+	                rs.getString("県内外の希望"),
+	                rs.getString("性別"),
+	                rs.getInt("あっせん"),
+	                rs.getString("備考"),
+	                list
+	            );
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return null;
+	}
+
+	// 学生メイン情報を更新
+	public boolean update(ModelStudent student) {
+	    String sql = "UPDATE 学生テーブル SET "
+	               + "クラス = ?, 氏名 = ?, 出席番号 = ?, 在籍状況 = ?, "
+	               + "県内外の希望 = ?, 性別 = ?, あっせん = ?, 備考 = ? "
+	               + "WHERE 学籍番号 = ?";
+
+	    try (Connection conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+	         PreparedStatement pStmt = conn.prepareStatement(sql)) {
+
+	        pStmt.setString(1, student.getClassName());
+	        pStmt.setString(2, student.getName());
+	        pStmt.setInt(3, student.getAttendanceNo());
+	        pStmt.setInt(4, student.getZaisekiJokyo());
+	        pStmt.setString(5, student.getKenNaiGaiKibo());
+	        pStmt.setString(6, student.getSeibetsu());
+	        pStmt.setInt(7, student.getAssen());
+	        pStmt.setString(8, student.getBiko());
+	        pStmt.setInt(9, student.getGakusekiNo());
+
+	        int result = pStmt.executeUpdate();
+	        return result > 0;
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
 
 	public String findCompanyName(String companyId) {
-		// TODO 自動生成されたメソッド・スタブ
 		 String companyName = null;
 
 		    String sql =
@@ -136,40 +160,155 @@ public class StudentDAO {
 		          + "FROM 企業テーブル "
 		          + "WHERE 企業ID = ?";
 
-
 		    try (
-
 		        Connection conn =
 		                DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
-
 
 		        PreparedStatement ps =
 		                conn.prepareStatement(sql);){
 
-
 		        ps.setString(1, companyId);
-
 
 		        ResultSet rs =
 		                ps.executeQuery();
 
-
 		        if (rs.next()) {
-
 		            companyName =
 		                    rs.getString("企業名");
-
 		        }
 
-		    
 		    } catch (Exception e) {
-
 		        e.printStackTrace();
-
 		    }
-
 
 		    return companyName;
 	}
-}
+	// 学籍番号を指定して削除
+	public boolean delete(int gakusekiNo) {
+	    String sql = "DELETE FROM 学生テーブル WHERE 学籍番号 = ?";
 
+	    try (Connection conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+	         PreparedStatement pStmt = conn.prepareStatement(sql)) {
+
+	        pStmt.setInt(1, gakusekiNo);
+	        int result = pStmt.executeUpdate();
+	        return result > 0;
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+	// キーワードで氏名を部分一致検索
+	public List<ModelStudent> findByKeyword(String keyword) {
+	    List<ModelStudent> StuList = new ArrayList<>();
+	    StudentChukanDAO StuCukan = new StudentChukanDAO();
+
+	    String sql = "SELECT 学籍番号, クラス, 氏名, 出席番号, 在籍状況, 県内外の希望, 性別, 備考, あっせん "
+	               + "FROM 学生テーブル WHERE 氏名 LIKE ?";
+
+	    try (Connection conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+	         PreparedStatement pStmt = conn.prepareStatement(sql)) {
+
+	        pStmt.setString(1, "%" + keyword + "%");
+	        ResultSet rs = pStmt.executeQuery();
+
+	        while (rs.next()) {
+	            int gakusekiNo = rs.getInt("学籍番号");
+	            String className = rs.getString("クラス");
+	            String name = rs.getString("氏名");
+	            int attendanceNo = rs.getInt("出席番号");
+	            int zaisekiJokyo = rs.getInt("在籍状況");
+	            String kenNaiGaiKibo = rs.getString("県内外の希望");
+	            String seibetsu = rs.getString("性別");
+	            int assen = rs.getInt("あっせん");
+	            String biko = rs.getString("備考");
+	            List<StudentChukan> list = StuCukan.findById(gakusekiNo);
+	            ModelStudent StuData = new ModelStudent(gakusekiNo, className, name, attendanceNo,
+	                    zaisekiJokyo, kenNaiGaiKibo, seibetsu, assen, biko, list);
+	            StuList.add(StuData);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return StuList;
+	}
+
+	public List<StudentList> findByCompanyId(String companyId) {
+
+        List<StudentList> list = new ArrayList<>();
+
+        String sql = """
+            SELECT s.学籍番号, s.クラス, s.氏名, s.出席番号, s.在籍状況,
+                   s.県内外の希望, s.性別, s.備考
+            FROM 学生テーブル s
+            INNER JOIN 就職情報テーブル j ON s.学籍番号 = j.学籍番号
+            WHERE j.企業ID = ?
+            """;
+
+        try (Connection con = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, companyId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                	StudentList student = new StudentList();
+
+                    student.setClassNo(rs.getString("クラス"));
+                    student.setStudentName(rs.getString("氏名"));
+                    student.setAttendanceNo(Integer.toString(rs.getInt("出席番号")));
+
+
+
+                    list.add(student);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("学生データ取得エラー: " + e.getMessage());
+        }
+        return list;
+    }
+	
+	public List<ModelStudent> findByCompanyI(String companyId) {
+
+        List<ModelStudent> list = new ArrayList<>();
+
+        String sql = """
+            SELECT s.学籍番号, s.クラス, s.氏名, s.出席番号, s.在籍状況,
+                   s.県内外の希望, s.性別, s.備考
+            FROM 学生テーブル s
+            INNER JOIN 就職情報テーブル j ON s.学籍番号 = j.学籍番号
+            WHERE j.企業ID = ?
+            """;
+
+        try (Connection con = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, companyId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                	ModelStudent student = new ModelStudent();
+                    student.setGakusekiNo(rs.getInt("学籍番号"));
+                    student.setClassName(rs.getString("クラス"));
+                    student.setName(rs.getString("氏名"));
+                    student.setAttendanceNo(rs.getInt("出席番号"));
+                    student.setZaisekiJokyo(rs.getInt("在籍状況"));
+                    student.setKenNaiGaiKibo(rs.getString("県内外の希望"));
+                    student.setSeibetsu(rs.getString("性別"));
+                    student.setBiko(rs.getString("備考"));
+
+                    list.add(student);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("学生データ取得エラー: " + e.getMessage());
+        }
+        return list;
+    }
+}

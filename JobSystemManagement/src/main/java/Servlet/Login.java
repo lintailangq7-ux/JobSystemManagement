@@ -46,6 +46,7 @@ public class Login extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+		System.out.println("Login");
 		LoginDAO LDao = new LoginDAO();
 		ModelLogin Login = new ModelLogin();
 		
@@ -53,6 +54,7 @@ public class Login extends HttpServlet {
         String password = request.getParameter("password");
 
         HttpSession session = request.getSession();
+        
         // TODO: 本来はDB照合処理を書く
         // 仮の認証（後で本物に置き換えてください）
         boolean isValid = false;
@@ -79,11 +81,11 @@ public class Login extends HttpServlet {
             		responsed = "jsp/Employment/EmploymentList.jsp";
             }
             
-     }
+        }
 
         if (isValid) {
 
-        	session.setAttribute("userId", userId.substring(2));
+        	session.setAttribute("userId", userId);
             session.setAttribute("userType", userId.startsWith("Te") ? "teacher" : "student");
             
             response.sendRedirect(responsed); // メインメニューへ
