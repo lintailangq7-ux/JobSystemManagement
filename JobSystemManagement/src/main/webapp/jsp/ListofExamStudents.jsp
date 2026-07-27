@@ -171,10 +171,8 @@ td{
 <div class="top-area">
 
     <!-- 戻るボタン -->
-    <button class="back-botton"
-        onclick="location.href='<%=request.getContextPath()%>/ListofCompanies'">
-        ◀
-    </button>
+    <button class="back-button" onclick="history.back()">◀</button>
+
 
     <!-- タイトル -->
     
