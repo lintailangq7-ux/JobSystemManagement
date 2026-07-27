@@ -1,34 +1,127 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="java.util.*" %>
+<%@ page import="java.time.*" %>
 <%@ page import="model.ModelStudent, model.ModelEmployment" %>
+<%!
+	// 追加された月（デフォルトの2〜6月以外）用に、週の区切りを自動生成する
+	// 1日〜10日 / 11日〜20日 / 21日〜月末日 の3分割
+	private List<String> weeksForMonth(int year, int month) {
+		java.time.YearMonth ym = java.time.YearMonth.of(year, month);
+		int lastDay = ym.lengthOfMonth();
+		List<String> weeks = new ArrayList<String>();
+		weeks.add("1日～10日");
+		weeks.add("11日～20日");
+		weeks.add("21日～" + lastDay + "日");
+		return weeks;
+	}
+%>
 <%
 	// ==== ReportSevlet から渡される想定 ====
 	// request.setAttribute("list", list);       ← List<ModelEmployment>（ReportLogic.execute()）
 	// request.setAttribute("StuList", StuList);  ← List<ModelStudent>（StudentLogic.execute()）
 	//
-	// MonthWeekMap / SelectedMonth は、月選択UI用に別途渡す想定（未実装ならダミー値で代用）。
-	// request.setAttribute("MonthWeekMap", monthWeekMap); ← LinkedHashMap<String,List<String>>
-	// request.setAttribute("SelectedMonth", "6月");
+	// MonthWeekMap / SelectedMonth / SelectedYear は、月選択UI用に別途渡す想定。
+	// 渡されなかった場合は、内定確定日の実データから年・月のリストを自動的に構築する
+	// （データが存在する年・月だけ選択肢に自動追加される）。
 	// クラス名は、後で実データに合わせて追記してください。
+
+	// 就職（内定）情報一覧。ModelEmploymentは gakusekiNo を直接持っているので、
+	// 学籍番号ごとにグルーピングして使う
+	@SuppressWarnings("unchecked")
+	List<ModelEmployment> employmentList = (List<ModelEmployment>) request.getAttribute("list");
+	if (employmentList == null) employmentList = new ArrayList<ModelEmployment>();
+
+	Map<Integer, List<ModelEmployment>> employmentMap = new HashMap<Integer, List<ModelEmployment>>();
+	for (ModelEmployment em : employmentList) {
+		List<ModelEmployment> emList = employmentMap.get(em.getGakusekiNo());
+		if (emList == null) {
+			emList = new ArrayList<ModelEmployment>();
+			employmentMap.put(em.getGakusekiNo(), emList);
+		}
+		emList.add(em);
+	}
+
+	// ==== 実データ（内定確定日）から、データが存在する「年」と「年ごとの月」を収集 ====
+	TreeSet<Integer> yearsWithData = new TreeSet<Integer>();
+	Map<Integer, TreeSet<Integer>> monthsByYear = new HashMap<Integer, TreeSet<Integer>>();
+	for (ModelEmployment em : employmentList) {
+		if (em != null && em.getNaiteiKakutei() == 2 && em.getNaiteiKakuteiBi() != null) {
+			int y = em.getNaiteiKakuteiBi().getYear();
+			int m = em.getNaiteiKakuteiBi().getMonthValue();
+			yearsWithData.add(y);
+			TreeSet<Integer> months = monthsByYear.get(y);
+			if (months == null) {
+				months = new TreeSet<Integer>();
+				monthsByYear.put(y, months);
+			}
+			months.add(m);
+		}
+	}
+
+	// 選択中の年：URLパラメータ(?year=2026)があれば優先。無ければrequest属性、
+	// それも無ければ実データの最新年、それも無ければ現在の年をデフォルトにする
+	String selectedYearStr = request.getParameter("year");
+	if (selectedYearStr == null) {
+		Object attrYear = request.getAttribute("SelectedYear");
+		if (attrYear != null) selectedYearStr = String.valueOf(attrYear);
+	}
+	int selectedYear;
+	if (selectedYearStr != null && !selectedYearStr.isEmpty()) {
+		selectedYear = Integer.parseInt(selectedYearStr);
+	} else if (!yearsWithData.isEmpty()) {
+		selectedYear = yearsWithData.last();
+	} else {
+		selectedYear = Calendar.getInstance().get(Calendar.YEAR);
+	}
+	yearsWithData.add(selectedYear); // 選択中の年は必ず年リストに含める
+
+	// 年の前後移動用（データが存在する年の間だけ移動できる）
+	List<Integer> yearList = new ArrayList<Integer>(yearsWithData);
+	Integer prevYear = null, nextYear = null;
+	int selYearIdx = yearList.indexOf(selectedYear);
+	if (selYearIdx > 0) prevYear = yearList.get(selYearIdx - 1);
+	if (selYearIdx >= 0 && selYearIdx < yearList.size() - 1) nextYear = yearList.get(selYearIdx + 1);
 
 	// 月 → 週リスト（あっせん報告の対象週）
 	@SuppressWarnings("unchecked")
 	LinkedHashMap<String, List<String>> monthWeekMap =
 			(LinkedHashMap<String, List<String>>) request.getAttribute("MonthWeekMap");
+
 	if (monthWeekMap == null) {
+		// サーブレットから渡されなかった場合のフォールバック：
+		// デフォルト（2〜6月）をベースに、実データが存在する月があれば自動的に追加する
+		LinkedHashMap<Integer, List<String>> baseMap = new LinkedHashMap<Integer, List<String>>();
+		baseMap.put(6, Arrays.asList("4日～8日", "11日～15日", "18日～31日"));
+		baseMap.put(5, Arrays.asList("7日～11日", "14日～18日", "21日～31日"));
+		baseMap.put(4, Arrays.asList("1日～5日", "8日～12日", "15日～30日"));
+		baseMap.put(3, Arrays.asList("2日～6日", "9日～13日", "16日～31日"));
+		baseMap.put(2, Arrays.asList("2日～6日", "9日～13日", "16日～28日"));
+
+		TreeSet<Integer> monthsForYear = monthsByYear.get(selectedYear);
+		if (monthsForYear != null) {
+			for (Integer m : monthsForYear) {
+				if (!baseMap.containsKey(m)) {
+					baseMap.put(m, weeksForMonth(selectedYear, m));
+				}
+			}
+		}
+
+		// 月の降順（新しい月が上）で並び替えて表示用マップを構築
+		List<Integer> sortedMonths = new ArrayList<Integer>(baseMap.keySet());
+		Collections.sort(sortedMonths, Collections.reverseOrder());
 		monthWeekMap = new LinkedHashMap<String, List<String>>();
-		monthWeekMap.put("6月", Arrays.asList("4日～8日", "11日～15日", "18日～31日"));
-		monthWeekMap.put("5月", Arrays.asList("7日～11日", "14日～18日", "21日～31日"));
-		monthWeekMap.put("4月", Arrays.asList("1日～5日", "8日～12日", "15日～30日"));
-		monthWeekMap.put("3月", Arrays.asList("2日～6日", "9日～13日", "16日～31日"));
-		monthWeekMap.put("2月", Arrays.asList("2日～6日", "9日～13日", "16日～28日"));
+		for (Integer m : sortedMonths) {
+			monthWeekMap.put(m + "月", baseMap.get(m));
+		}
 	}
 
-	// 選択中の月：URLパラメータ(?month=6月)があれば優先。無ければrequest属性、それも無ければデフォルト
+	// 選択中の月：URLパラメータ(?month=6月)があれば優先。無ければrequest属性、それも無ければデフォルト（月リストの先頭）
 	String selectedMonth = request.getParameter("month");
 	if (selectedMonth == null) selectedMonth = (String) request.getAttribute("SelectedMonth");
-	if (selectedMonth == null) selectedMonth = "6月";
+	if (selectedMonth == null) {
+		selectedMonth = monthWeekMap.isEmpty() ? "6月" : monthWeekMap.keySet().iterator().next();
+	}
 
 	// 選択中の月を数値化（"6月" → 6）
 	int targetMonth = Integer.parseInt(selectedMonth.replace("月", ""));
@@ -53,21 +146,12 @@
 	List<ModelStudent> stuList = (List<ModelStudent>) request.getAttribute("StuList");
 	if (stuList == null) stuList = new ArrayList<ModelStudent>();
 
-	// 就職（内定）情報一覧。ModelEmploymentは gakusekiNo を直接持っているので、
-	// 学籍番号ごとにグルーピングして使う
-	@SuppressWarnings("unchecked")
-	List<ModelEmployment> employmentList = (List<ModelEmployment>) request.getAttribute("list");
-	if (employmentList == null) employmentList = new ArrayList<ModelEmployment>();
-
-	Map<Integer, List<ModelEmployment>> employmentMap = new HashMap<Integer, List<ModelEmployment>>();
-	for (ModelEmployment em : employmentList) {
-		List<ModelEmployment> emList = employmentMap.get(em.getGakusekiNo());
-		if (emList == null) {
-			emList = new ArrayList<ModelEmployment>();
-			employmentMap.put(em.getGakusekiNo(), emList);
-		}
-		emList.add(em);
-	}
+	// 集計の基準日（選択中の年・月・[週]の末日）。この日以前に内定確定した学生を累計でカウントする
+	int lastDayOfTargetMonth = YearMonth.of(selectedYear, targetMonth).lengthOfMonth();
+	int cutoffDay = (weekStartDay != null && weekEndDay != null)
+			? Math.min(weekEndDay, lastDayOfTargetMonth)
+			: lastDayOfTargetMonth;
+	LocalDate cutoffDate = LocalDate.of(selectedYear, targetMonth, cutoffDay);
 
 	int maleTotal = 0, femaleTotal = 0;
 	int naiteiMale = 0, naiteiFemale = 0;
@@ -79,26 +163,17 @@
 		if (isMale)   maleTotal++;
 		if (isFemale) femaleTotal++;
 
-		// その学生の就職情報（複数件）の中に、選択月（・週）時点で「内定確定」しているものが
-		// 1件でもあれば、その学生を内定者としてカウントする
+		// その学生の就職情報（複数件）の中に、選択年月（・週）時点で「内定確定」しているものが
+		// 1件でもあれば、その学生を内定者としてカウントする（累計）
 		List<ModelEmployment> emList = employmentMap.get(sd.getGakusekiNo());
 		boolean naiteiKakutei = false;
 		if (emList != null) {
 			for (ModelEmployment em : emList) {
 				if (em != null && em.getNaiteiKakutei() == 2 && em.getNaiteiKakuteiBi() != null) {
-					int kakuteiMonth = em.getNaiteiKakuteiBi().getMonthValue();
-					// 選択月「以前」に確定した内定を、その月時点の内定としてカウント（累計）
-					if (kakuteiMonth <= targetMonth) {
-						boolean withinWeek = true;
-						// 週が指定されている場合は、対象月内の確定分のみ日付範囲でさらに絞り込む
-						if (kakuteiMonth == targetMonth && weekStartDay != null && weekEndDay != null) {
-							int day = em.getNaiteiKakuteiBi().getDayOfMonth();
-							withinWeek = (day >= weekStartDay && day <= weekEndDay);
-						}
-						if (withinWeek) {
-							naiteiKakutei = true;
-							break;
-						}
+					LocalDate kakuteiDate = em.getNaiteiKakuteiBi().toLocalDate();
+					if (!kakuteiDate.isAfter(cutoffDate)) {
+						naiteiKakutei = true;
+						break;
 					}
 				}
 			}
@@ -214,6 +289,29 @@
   .year-label {
     font-size: 15px;
     margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .year-nav-btn {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #29abe2;
+    background: #fff;
+    color: #29abe2;
+    font-size: 12px;
+    line-height: 1;
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  .year-nav-btn:disabled {
+    border-color: #ccc;
+    color: #ccc;
+    cursor: default;
   }
   .month-list {
     display: flex;
@@ -238,6 +336,7 @@
     padding-left: 10px;
     font-size: 15px;
     font-weight: bold;
+    cursor: pointer;
   }
   .month-triangle {
     width: 34px;
@@ -368,10 +467,15 @@
 
   <div class="main-row">
 
-    <!-- 年 ＋ 月リスト -->
+    <!-- 年 ＋ 月リスト（データが存在する年・月は自動的に選択肢へ追加される） -->
     <div class="year-block">
-      <!-- TODO: 実データに差し替え（対象年） -->
-      <div class="year-label">2026年</div>
+      <div class="year-label">
+        <button type="button" class="year-nav-btn" id="prevYearBtn"
+                data-year="<%= prevYear != null ? prevYear : "" %>" <%= prevYear == null ? "disabled" : "" %>>‹</button>
+        <span><%= selectedYear %>年</span>
+        <button type="button" class="year-nav-btn" id="nextYearBtn"
+                data-year="<%= nextYear != null ? nextYear : "" %>" <%= nextYear == null ? "disabled" : "" %>>›</button>
+      </div>
       <div class="month-list">
       <% for (String month : monthWeekMap.keySet()) {
              boolean isSelected = month.equals(selectedMonth);
@@ -388,7 +492,7 @@
 
     <!-- 内定状況 -->
     <div class="content-block">
-      <div class="current-box" id="currentBox"><%= selectedMonth %><%= selectedWeek != null ? " " + selectedWeek : "" %>現在</div>
+      <div class="current-box" id="currentBox"><%= selectedYear %>年<%= selectedMonth %><%= selectedWeek != null ? " " + selectedWeek : "" %>現在</div>
 
       <table class="report-table">
         <tr>
@@ -447,6 +551,9 @@
   <% } %>
   };
 
+  // 現在表示中の年（月・週の切り替え時もこの年を維持する）
+  var CURRENT_YEAR = <%= selectedYear %>;
+
   var popup = document.getElementById('weekPopup');
   var popupHeader = document.getElementById('weekPopupHeader');
 
@@ -469,7 +576,7 @@
         b.textContent = w;
         b.addEventListener('click', function () {
           popup.style.display = 'none';
-          selectMonth(month, w);
+          selectMonth(month, w, CURRENT_YEAR);
         });
         popup.appendChild(b);
       });
@@ -485,14 +592,25 @@
   document.querySelectorAll('.month-item span').forEach(function (span) {
     span.addEventListener('click', function () {
       var item = span.closest('.month-item');
-      selectMonth(item.dataset.month, null);
+      selectMonth(item.dataset.month, null, CURRENT_YEAR);
     });
   });
 
-  function selectMonth(month, week) {
-    // ReportSevletに月（・週）をパラメータで渡して再読み込みし、
+  // 年の前後移動ボタン（データが存在する年のみ有効）
+  document.getElementById('prevYearBtn').addEventListener('click', function () {
+    if (!this.disabled && this.dataset.year) selectMonth(null, null, this.dataset.year);
+  });
+  document.getElementById('nextYearBtn').addEventListener('click', function () {
+    if (!this.disabled && this.dataset.year) selectMonth(null, null, this.dataset.year);
+  });
+
+  function selectMonth(month, week, year) {
+    // ReportSevletに年・月（・週）をパラメータで渡して再読み込みし、
     // サーバー側で内定者数などを再集計した最新データを表示する
-    var url = 'ReportSevlet?month=' + encodeURIComponent(month);
+    var url = 'ReportSevlet?year=' + encodeURIComponent(year);
+    if (month) {
+      url += '&month=' + encodeURIComponent(month);
+    }
     if (week) {
       url += '&week=' + encodeURIComponent(week);
     }
