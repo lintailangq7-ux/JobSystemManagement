@@ -483,7 +483,7 @@ td:last-child {
 </form>
 
 <!-- 「削除」もformでPOST送信する -->
-<form id="deleteForm" action="<%= request.getContextPath() %>/GuidanceDeleteServlet" method="get">
+<form id="deleteForm" action="<%= request.getContextPath() %>/EmploymentDeleteServlet" method="post">
     <input type="hidden" name="shidoId" id="deleteShidoId" value="">
 </form>
 
@@ -537,8 +537,10 @@ document.querySelectorAll('.ctx-menu button').forEach(item => {
 
         if (action === 'delete') {
             // 削除 → 確認モーダルを表示
-            const name = currentTr ? currentTr.querySelector('.name-cell').textContent : '';
-            modalTargetName.textContent = '指導ID ' + currentRow + '（' + name + '）';
+            // ※ このJSPには .name-cell が存在しないため、会社名セルをフォールバックとして使用
+            const nameCell = currentTr ? currentTr.querySelector('.name-cell, .company-cell') : null;
+            const name = nameCell ? nameCell.textContent.trim() : '';
+            modalTargetName.textContent = '指導ID ' + currentRow + (name ? '（' + name + '）' : '');
             modalOverlay.classList.add('open');
         } else if (action === 'edit') {
             // 変更 → 隠しformに指導IDをセットしてPOST送信で編集画面へ

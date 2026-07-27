@@ -1,6 +1,5 @@
 package Servlet;
 import java.io.IOException;
-import java.util.List;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -12,8 +11,6 @@ import jakarta.servlet.http.HttpSession;
 
 import DAO.LoginDAO;
 import DAO.StudentDetailDAO;
-import model.ModelLogin;
-import model.StudentDetail;
 
 /**
  * Servlet implementation class Login
@@ -55,34 +52,7 @@ public class Login extends HttpServlet {
         String redirectPath = null;
 
         if (userId != null && password != null) {
-            System.out.println("userId != null && password != null");
 
-            // ユーザー情報をDBから取得
-            ModelLogin login = loginDao.findId(userId);
-
-            if (login != null) {
-                if (userId.startsWith("Te")) {
-                    // 先生ログイン：パスワード照合
-                    if (password.equals(login.getPassword())) {
-                        isValid = true;
-                        List<StudentDetail> detailList = detailDao.findAllStudentDetail();
-                        session.setAttribute("detail", detailList);
-                        redirectPath = "jsp/Employment/TecherEmplymentList.jsp";
-                    }
-                } else if (userId.startsWith("Su")) {
-                    // 生徒ログイン：パスワード照合を追加
-                    System.out.println("Su");
-                    if (password.equals(login.getPassword())) {
-                        isValid = true;
-                        StudentDetail detail = detailDao.findByGakusekiNo(userId.substring(2));
-                        session.setAttribute("userId", userId);
-                        session.setAttribute("detail", detail);
-                        redirectPath = "jsp/Employment/EmploymentList.jsp";
-                    }
-                }
-            } else {
-                System.out.println("該当するユーザーが見つかりません: " + userId);
-            }
         }
 
         if (isValid) {

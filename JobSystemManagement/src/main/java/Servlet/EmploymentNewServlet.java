@@ -23,13 +23,7 @@ import model.StudentDetail;
 public class EmploymentNewServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * 追加画面表示。
-	 * 対象の生徒は、Login.java / ReportServlet等でセッションにセットされている
-	 * "detail"（StudentDetail、今まさに一覧を表示している生徒）から取得する。
-	 * request.getParameter("studentNo") で取ろうとしても、
-	 * EmploymentList.jspの「追加」ボタンはパラメータを渡していないため取得できない。
-	 */
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		StudentDetail detail = getStudentDetailFromSession(session);
@@ -39,7 +33,7 @@ public class EmploymentNewServlet extends HttpServlet {
 			request.setAttribute("student", detail.getStudent());
 		}
 
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/jsp/Employment/Stouroku.jsp");
 		dispatcher.forward(request, response);
 	}
 
@@ -93,10 +87,7 @@ public class EmploymentNewServlet extends HttpServlet {
 		}
 
 		// 試験日時はDB上、試験情報の複合主キー(指導ID + 試験日時)の一部であり
-		// NULLを許容しない。未入力のままDBへ書き込むと子テーブルのINSERTが
-		// 制約違反で失敗し、試験情報を持たない「孤立した」指導レコードが
-		// 就職情報テーブルにだけ残ってしまう（一覧画面がその後クラッシュする原因）。
-		// そのため、ここで必須チェックする。
+
 		if (examDate == null || examDate.trim().isEmpty()) {
 			request.setAttribute("mode", "add");
 			request.setAttribute("student", student);
@@ -131,11 +122,6 @@ public class EmploymentNewServlet extends HttpServlet {
 		response.sendRedirect(request.getContextPath() + "/ListofEmployment");
 	}
 
-	/**
-	 * セッションの "detail" 属性から StudentDetail を安全に取り出す。
-	 * 教師ログイン直後（生徒一覧選択前）は List&lt;StudentDetail&gt; が
-	 * 入っている場合があるため、その場合は null を返す。
-	 */
 	private StudentDetail getStudentDetailFromSession(HttpSession session) {
 		Object detailObj = session.getAttribute("detail");
 		if (detailObj instanceof StudentDetail) {
