@@ -398,7 +398,7 @@ td:last-child {
 </form>
 
 <!-- 「削除」もformでPOST送信する -->
-<form id="deleteForm" action="<%= request.getContextPath() %>/EmploymentDeleteServlet" method="get">
+<form id="deleteForm" action="<%= request.getContextPath() %>/EmploymentDeleteServlet" method="post">
     <input type="hidden" name="shidoId" id="deleteShidoId" value="">
 </form>
 

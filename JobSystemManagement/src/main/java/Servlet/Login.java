@@ -77,7 +77,6 @@ public class Login extends HttpServlet {
             		System.out.println("Su");
             		isValid = true;
             		StudentDetail detail = dao.findByGakusekiNo(userId.substring(2));
-            		session.setAttribute("userId", userId);
                     session.setAttribute("detail", detail);
             		responsed = "jsp/Employment/EmploymentList.jsp";
             }
