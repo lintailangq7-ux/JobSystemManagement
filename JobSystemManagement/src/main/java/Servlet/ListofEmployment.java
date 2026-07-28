@@ -38,6 +38,7 @@ public class ListofEmployment extends HttpServlet {
  
 		HttpSession session = request.getSession();
 		String userId = (String) session.getAttribute("userId");
+		System.out.println(userId + "ListofEmployment");
  
 		if (userId == null) {
 			// セッション切れ・未ログインの場合はログイン画面へ
@@ -59,7 +60,7 @@ public class ListofEmployment extends HttpServlet {
 			session.setAttribute("detail", detail);
 			responsed = "/jsp/Employment/TecherEmplymentList.jsp";
  
-		} else if (userId.startsWith("St")) {
+		} else if (userId.startsWith("Su")) {
 			StudentDetail detail = dao.findByGakusekiNo(userId.substring(2));
 			session.setAttribute("detail", detail);
 			responsed = "/jsp/Employment/EmploymentList.jsp";
