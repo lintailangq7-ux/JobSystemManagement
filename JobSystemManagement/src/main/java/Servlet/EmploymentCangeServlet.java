@@ -35,7 +35,11 @@ public class EmploymentCangeServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String shidoId = request.getParameter("shidoId");
+		
+		HttpSession session = request.getSession();
  
+		String userId = (String) session.getAttribute("userId"); 
+		System.out.println(userId + "EmploymentCangeServlet");
 		EmploymentDAO eDAO = new EmploymentDAO();
 		EmploymentChukanDAO ecDAO = new EmploymentChukanDAO();
 		CompanyDAO cDAO = new CompanyDAO();
@@ -60,7 +64,7 @@ public class EmploymentCangeServlet extends HttpServlet {
 		request.setAttribute("chukan", latestChukan);
  
 		// 表示用：左側の生徒情報ボックスに使う（今表示中の生徒＝セッションのdetail）
-		HttpSession session = request.getSession();
+
 		Object detailObj = session.getAttribute("detail");
 		if (detailObj instanceof StudentDetail) {
 			request.setAttribute("student", ((StudentDetail) detailObj).getStudent());
@@ -139,7 +143,7 @@ public class EmploymentCangeServlet extends HttpServlet {
  
 		EmploymentChukan ec = new EmploymentChukan(shidoId, examDateTime, exam, submitInt, place);
  
-		eDAO.updateGuidance(shidoId, C.getId(), acceptDateTime, offerInt, memo);
+		eDAO.updateGuidance(shidoId, C.getId(), acceptDateTime, offerInt, memo, ec);
 		boolean chukanOk = ecDAO.update(ec);
 		if (!chukanOk) {
 			request.setAttribute("mode", "edit");

@@ -361,7 +361,26 @@ td:last-child {
 		                </tr>
 		                <tr>
 		                    <td class="header">性別</td>
-		                    <td><%= detail.getStudent().getSeibetsu()%></td>
+ 							<%
+       						 String seibetsu = detail.getStudent().getSeibetsu();
+        						if (seibetsu.equals("M")) {
+    						%>
+        <					<td>男</td>
+    						<%
+        					} else if (seibetsu.equals("F")) {
+    						%>
+        					<td>女</td>
+    						<%
+       						} else if (seibetsu.equals("X")) {
+    						%>
+        					<td>どちらでもない</td>
+    						<%
+       						 } else {
+    						%>
+       						<td>未設定</td>
+    						<%
+       							 }
+    						%>
 		                </tr>
 		</table>
 
@@ -465,6 +484,7 @@ td:last-child {
         </div>
 
     </main>
+    
 </div>
 
 <div class="side-add-area">

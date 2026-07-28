@@ -210,33 +210,34 @@ public class EmploymentDAO {   // 指導＋就職情報
          * @return 更新できたら true
          */
         public boolean updateGuidance(String shidoId, String kigyoId,
-                                       LocalDateTime naiteiKakuteiBi, int naiteiKakutei, String biko) {
- 
-            String sql = "UPDATE 就職情報テーブル "
-                       + "SET 企業ID = ?, 内定確定日 = ?, 内定確定 = ?, 備考 = ? "
-                       + "WHERE 指導ID = ?";
- 
-            try (Connection con = DriverManager.getConnection(URL, USER, PASS);
-                 PreparedStatement ps = con.prepareStatement(sql)) {
- 
-                ps.setString(1, kigyoId);
- 
-                if (naiteiKakuteiBi != null) {
-                    ps.setTimestamp(2, Timestamp.valueOf(naiteiKakuteiBi));
-                } else {
-                    ps.setNull(2, java.sql.Types.TIMESTAMP);
-                }
- 
-                ps.setInt(3, naiteiKakutei);
-                ps.setString(4, biko);
-                ps.setString(5, shidoId);
- 
-                return ps.executeUpdate() > 0;
- 
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return false;
-            }
+                LocalDateTime naiteiKakuteiBi, int naiteiKakutei, String biko,
+                EmploymentChukan chukan) {
+
+        		String sql = "UPDATE 就職情報テーブル "
+        				+ "SET 企業ID = ?, 内定確定日 = ?, 内定確定 = ?, 備考 = ? "
+        				+ "WHERE 指導ID = ?";
+
+        		try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        				PreparedStatement ps = con.prepareStatement(sql)) {
+
+        			ps.setString(1, kigyoId);
+
+        			if (naiteiKakuteiBi != null) {
+        				ps.setTimestamp(2, Timestamp.valueOf(naiteiKakuteiBi));
+        			} else {
+        				ps.setNull(2, java.sql.Types.TIMESTAMP);
+        			}
+
+        			ps.setInt(3, naiteiKakutei);
+        			ps.setString(4, biko);
+        			ps.setString(5, shidoId);
+
+        			return ps.executeUpdate() > 0;
+
+        		} catch (SQLException e) {
+        			e.printStackTrace();
+        			return false;
+        		}
         }
  
         /**

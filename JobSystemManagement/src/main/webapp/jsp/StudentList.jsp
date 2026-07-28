@@ -388,6 +388,7 @@ dialog button:hover {
 			<% }else if(Sei.equals("X")){%>
 				 <td>未</td>
 			 <%} %>		
+			 <td>辞退</td>
 			 <%
 			   int zai = SD.getZaisekiJokyo();
 			   if(zai == 1){%>
@@ -399,7 +400,6 @@ dialog button:hover {
 			 <% }else if(zai ==4){ %>
 				<td>留年</td>
 			<%}%>
-			<td>辞退</td>
 			<td><%=SD.getKenNaiGaiKibo() %></td>
 			<%
 			  List<StudentChukan> chukanList = SD.getGakuseiChukanList();
