@@ -387,8 +387,14 @@ dialog button:hover {
 				 <td>男</td>
 			<% }else if(Sei.equals("X")){%>
 				 <td>未</td>
-			 <%} %>		
+			 <%} %>
+			 <%
+			 int assen = SD.getAssen();
+			 if(assen ==1){%>
+				 <td>あっせん中</td>
+			 <%}else if(assen ==2) {%>
 			 <td>辞退</td>
+			 <%} %>
 			 <%
 			   int zai = SD.getZaisekiJokyo();
 			   if(zai == 1){%>
@@ -530,3 +536,4 @@ dialog button:hover {
 
 </body>
 </html>
+y
