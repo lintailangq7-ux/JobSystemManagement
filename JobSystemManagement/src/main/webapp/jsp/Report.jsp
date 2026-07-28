@@ -76,12 +76,9 @@
 	}
 	yearsWithData.add(selectedYear); // 選択中の年は必ず年リストに含める
 
-	// 年の前後移動用（データが存在する年の間だけ移動できる）
-	List<Integer> yearList = new ArrayList<Integer>(yearsWithData);
-	Integer prevYear = null, nextYear = null;
-	int selYearIdx = yearList.indexOf(selectedYear);
-	if (selYearIdx > 0) prevYear = yearList.get(selYearIdx - 1);
-	if (selYearIdx >= 0 && selYearIdx < yearList.size() - 1) nextYear = yearList.get(selYearIdx + 1);
+	// 年の前後移動：実データの有無にかかわらず、常に選択中の年の前後1年へ移動できるようにする
+	Integer prevYear = selectedYear - 1;
+	Integer nextYear = selectedYear + 1;
 
 	// 月 → 週リスト（あっせん報告の対象週）
 	@SuppressWarnings("unchecked")
