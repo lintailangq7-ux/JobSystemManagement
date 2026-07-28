@@ -14,154 +14,142 @@
 <meta charset="UTF-8">
 <title>学生一覧</title>
 <style>
-  body {
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
     font-family: "MS PGothic", "Meiryo", sans-serif;
-    background: #ffffff;
-    padding: 20px;
-  }
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    position: relative;
-  }
+}
 
-  /* header */
-  .header-row {
+/* ==============================
+   全体レイアウト（左サイドバー＋メイン）
+============================== */
+.page-layout {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
-  .title-box {
-    display: flex;
-    align-items: center;
-    border: 1px solid #999;
-    width: 300px;
-    height: 60px;
+    height: 100vh;
+}
+
+/* ==============================
+   左サイドバー
+============================== */
+.sidebar {
+    width: 220px;
     flex-shrink: 0;
-  }
-  .title-arrow {
-    width: 60px;
-    height: 100%;
-    background: #29ABE2;
+    border-right: 2px solid #ccc;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.sidebar-header {
     display: flex;
     align-items: center;
-    justify-content: center;
-  }
-  .title-arrow svg { width: 30px; height: 30px; }
-  .title-text {
+    gap: 8px;
+}
+.back-button {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #4aa3df;
+    background: #4aa3df;
+    color: #fff35c;
     font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+}
+.page-title-box {
+    border: 2px solid #000;
+    padding: 8px 10px;
+    font-size: 16px;
     font-weight: bold;
-    margin-left: 14px;
-  }
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
-  .search-area {
-    margin-left: auto;
-  }
-
-  .search-box {
-    display: inline-block;
-    border: 2px solid #29abe2;
+/* ==============================
+   メインエリア
+============================== */
+.main-content {
+    flex: 1;
+    padding: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.search-area {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 0 10px 0;
+}
+.search-box {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+}
+.search-box input {
+    width: 250px;
+    height: 30px;
+    border: 3px solid #5b9bd5;
     border-radius: 20px;
-    padding: 4px 8px;
-  }
-
-  .search-box input {
-    border: none;
+    font-size: 16px;
     outline: none;
-    background: transparent;
-    font-size: 14px;
-  }
-
-  .search-btn {
+    padding-left: 10px;
+}
+.search-btn {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
     border: none;
     background: transparent;
     cursor: pointer;
-    font-size: 16px;
-  }
+    font-size: 18px;
+}
 
-  /* スクロール関係div=""で使う */
-  .table-wrapper {
-    max-height: 440px;
+/* テーブルを画面内でスクロールさせるための枠 */
+.table-wrapper {
+    flex: 1;
     overflow-y: auto;
-    border: 1px solid #999;
+    border: 1px solid #000;
+}
+table {
     width: 100%;
-  }
-
-  /* table */
-  table {
     border-collapse: collapse;
-    width: 100%;
-  }
-  th {
-    background: #1f5fa8;
+}
+th {
+    background: #0d6fb8;
     color: #fff;
-    font-size: 13px;
-    padding: 6px 4px;
-    border: 1px solid #999;
+    padding: 10px;
+    border: 1px solid #000;
     position: sticky;
     top: 0;
     z-index: 1;
-  }
-  td {
-    border: 1px solid #999;
     font-size: 13px;
-    padding: 6px 4px;
+}
+td {
+    border: 1px solid #000;
+    padding: 8px;
+    font-size: 14px;
     text-align: center;
-    height: 26px;
-  }
-  td.rowhead {
+}
+td.rowhead {
     background: #29ABE2;
     color: #003366;
     font-weight: bold;
-  }
-  tr.empty td.rowhead {
-    background: #29ABE2;
-  }
-  .btn-more {
-    background: #999;
-    color: #fff;
-    border: none;
-    padding: 3px 10px;
-    font-size: 12px;
-    cursor: pointer;
-  }
+}
+td:last-child {
+    text-align: center;
+}
 
-  /* scroll arrow */
-  .scroll-arrow {
-    position: absolute;
-    right: -70px;
-    top: 90px;
-    width: 40px;
-    height: 400px;
-    background: #ddd;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    box-sizing: border-box;
-  }
-
-  .footer-row {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 16px;
-  }
-  button.register {
-    background: #d9001b;
-    color: #fff;
-    font-weight: bold;
-    font-size: 16px;
-    padding: 10px 30px;
-    border: none;
-    cursor: pointer;
-  }
-
-  /* ...ボタン */
-  .more-btn {
-    width: 22px;
-    height: 22px;
+/* 「...」ボタン */
+.more-btn {
+    width: 26px;
+    height: 26px;
     background: #ddd;
     border: 1px solid #999;
     color: #333;
@@ -170,41 +158,50 @@
     line-height: 1;
     cursor: pointer;
     border-radius: 3px;
-  }
-  .more-btn:hover {
+}
+.more-btn:hover {
     background: #ccc;
-  }
+}
 
-  /* 右クリック風メニュー */
-  .ctx-menu {
+/* 右クリック風メニュー */
+.ctx-menu {
     position: fixed;
     background: #fff;
     border: 1px solid #999;
     box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-    min-width: 140px;
-    padding: 4px 0;
+    min-width: 100px;
+    padding: 0;
     font-size: 13px;
     z-index: 1000;
     display: none;
-  }
-  .ctx-menu button {
+    overflow: hidden;
+}
+.ctx-menu button {
     display: block;
     width: 100%;
-    text-align: left;
-    padding: 6px 12px;
-    background: none;
+    text-align: center;
+    padding: 10px 12px;
     border: none;
-    font-size: 13px;
+    font-size: 14px;
+    font-weight: bold;
     cursor: pointer;
-    color: #222;
-  }
-  .ctx-menu button:hover {
-    background: #1f5fa8;
     color: #fff;
-  }
+}
+.ctx-menu button[data-action="edit"] {
+    background: #29ABE2;
+}
+.ctx-menu button[data-action="edit"]:hover {
+    background: #1f8fc0;
+}
+.ctx-menu button[data-action="delete"] {
+    background: #d9001b;
+}
+.ctx-menu button[data-action="delete"]:hover {
+    background: #b40016;
+}
 
-  /* 削除確認モーダル */
-  .modal-overlay {
+/* 削除確認モーダル */
+.modal-overlay {
     display: none;
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -212,71 +209,90 @@
     z-index: 2000;
     align-items: center;
     justify-content: center;
-  }
-  .modal-overlay.open {
+}
+.modal-overlay.open {
     display: flex;
-  }
-  .modal-box {
+}
+.modal-box {
     background: #fff;
     border: 1px solid #999;
     width: 320px;
     padding: 20px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  }
-  .modal-box h3 {
+}
+.modal-box h3 {
     margin: 0 0 12px;
     font-size: 15px;
     border-left: 4px solid #d9001b;
     padding-left: 8px;
-  }
-  .modal-box p {
+}
+.modal-box p {
     font-size: 13px;
     color: #333;
     margin: 0 0 20px;
-  }
-  .modal-box .target-name {
+}
+.modal-box .target-name {
     font-weight: bold;
     color: #003366;
-  }
-  .modal-buttons {
+}
+.modal-buttons {
     display: flex;
     justify-content: flex-end;
     gap: 8px;
-  }
-  .modal-buttons button {
+}
+.modal-buttons button {
     font-size: 13px;
     padding: 6px 16px;
     border: none;
     cursor: pointer;
-  }
-  .btn-cancel {
+}
+.btn-cancel {
     background: #ccc;
     color: #333;
-  }
-  .btn-delete {
+}
+.btn-delete {
     background: #d9001b;
     color: #fff;
     font-weight: bold;
-  }
+}
 
-  dialog {
+/* 追加（登録）ボタン */
+.add-button {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    width: 100px;
+    height: 60px;
+    background: #ff0000;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.add-button:hover {
+    background: #d40000;
+}
+
+dialog {
     border: none;
     border-radius: 8px;
     padding: 24px 30px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     min-width: 280px;
     text-align: center;
-  }
-  dialog::backdrop {
+}
+dialog::backdrop {
     background: rgba(0,0,0,0.5);
-  }
-  dialog p {
+}
+dialog p {
     margin: 0 0 20px 0;
     font-size: 15px;
     color: #333;
     white-space: pre-line;
-  }
-  dialog button {
+}
+dialog button {
     padding: 6px 28px;
     background: #2b6cb0;
     color: #fff;
@@ -284,10 +300,10 @@
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
-  }
-  dialog button:hover {
+}
+dialog button:hover {
     background: #245a94;
-  }
+}
 
 </style>
 </head>
@@ -316,47 +332,48 @@
     });
 </script>
 
-<div class="container">
+<div class="page-layout">
 
-<div class="header-row">
-	  <div class="title-box">
-	 
-	    <button class="title-arrow"onclick="history.back()">
-	      <svg viewBox="0 0 24 24"><polygon points="18,2 18,22 4,12" fill="#FFE600"/></svg>
-	    </button>
-	    <div class="title-text">学生情報一覧</div>
-	  </div>
+    <!-- ============ 左サイドバー ============ -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <button class="back-button" title="ひとつ前の画面に遷移" onclick="history.back()">◀</button>
+            <div class="page-title-box">学生情報一覧</div>
+        </div>
+    </aside>
 
-	  <div class="search-area">
-	    <form action="<%= request.getContextPath() %>/StudentSearchServlet" method="get">
-	      <div class="search-box">
-	        <input type="text" name="keyword" placeholder="氏名で検索" value="<%= keyword != null ? keyword : "" %>">
-	        <button type="submit" class="search-btn">🔍</button>
-	      </div>
-	    </form>
-	  </div>
-	</div>
+    <!-- ============ メインエリア ============ -->
+    <main class="main-content">
 
+        <div class="search-area">
+            <form action="<%= request.getContextPath() %>/StudentSearchServlet" method="get">
+                <div class="search-box">
+                    <input type="text" name="keyword" placeholder="氏名で検索" value="<%= keyword != null ? keyword : "" %>">
+                    <button type="submit" class="search-btn">🔍</button>
+                </div>
+            </form>
+        </div>
 
-	<div class="table-wrapper">
-	<table>
-		<tr>
-			<th>学籍番号</th>
-			<th>クラス</th>
-			<th>番号</th>
-			<th>氏名</th>
-			<th>性別</th>
-			<th>あっせん状況</th>
-			<th>在籍状況</th>
-			<th>希望地域</th>
-			<th>希望業種1</th>
-			<th>希望業種2</th>
-			<th>希望業種3</th>
-			<th>備考</th>
-			<th>　</th>
-		</tr>
-
-		
+        <div class="table-wrapper">
+        <table>
+            <thead>
+            <tr>
+                <th>学籍番号</th>
+                <th>クラス</th>
+                <th>番号</th>
+                <th>氏名</th>
+                <th>性別</th>
+                <th>あっせん状況</th>
+                <th>在籍状況</th>
+                <th>希望地域</th>
+                <th>希望業種1</th>
+                <th>希望業種2</th>
+                <th>希望業種3</th>
+                <th>備考</th>
+                <th>　</th>
+            </tr>
+            </thead>
+            <tbody>
 	<% for(ModelStudent SD : StuList){ %>
 		<tr data-id=<%= SD.getGakusekiNo()%>>
 			<td class="rowhead"><%=SD.getGakusekiNo() %></td>
@@ -400,43 +417,40 @@
 			<td><button class="more-btn" data-row=<%=SD.getGakusekiNo() %>>&hellip;</button></td>
 		</tr>
 		<%} %>
-	</table>
-	</div>
+            </tbody>
+        </table>
+        </div>
 
-	<div class="ctx-menu" id="ctxMenu">
-	  <button data-action="edit">変更</button>
-	  <button data-action="delete">削除</button>
-  	</div>
+    </main>
+</div>
 
-	<!-- 「変更」はformでPOST送信して遷移する（隠しinputに学籍番号をセットしてsubmit） -->
-	<form id="editForm" action="StudentCenageSevlet" method="post">
-	  <input type="hidden" name="gakusekiNo" id="editGakusekiNo" value="">
-	</form>
+<button class="add-button" title="学生登録" onclick="location.href='StudentNewSevlet'">登録</button>
 
-	<!-- 「削除」もformでPOST送信する -->
-	<form id="deleteForm" action="StudentDeleteServlet" method="post">
-	  <input type="hidden" name="gakusekiNo" id="deleteGakusekiNo" value="">
-	</form>
+<div class="ctx-menu" id="ctxMenu">
+  <button data-action="edit">変更</button>
+  <button data-action="delete">削除</button>
+</div>
 
-	<!-- 削除確認モーダル -->
-	<div class="modal-overlay" id="modalOverlay">
-	  <div class="modal-box">
-	    <h3>削除の確認</h3>
-	    <p><span class="target-name" id="modalTargetName"></span> を削除します。<br>この操作は元に戻せません。</p>
-	    <div class="modal-buttons">
-	      <button class="btn-cancel" id="modalCancel">キャンセル</button>
-	      <button class="btn-delete" id="modalConfirm">削除する</button>
-	    </div>
-	  </div>
-	</div>
+<!-- 「変更」はformでPOST送信して遷移する（隠しinputに学籍番号をセットしてsubmit） -->
+<form id="editForm" action="StudentCenageSevlet" method="post">
+  <input type="hidden" name="gakusekiNo" id="editGakusekiNo" value="">
+</form>
 
-	<br>
-	<div class="footer-row">
-	<form action ="StudentNewSevlet" method="get">
-	<button class="register" type="submit">登録</button>
-	</form>
-	</div>
+<!-- 「削除」もformでPOST送信する -->
+<form id="deleteForm" action="StudentDeleteServlet" method="post">
+  <input type="hidden" name="gakusekiNo" id="deleteGakusekiNo" value="">
+</form>
 
+<!-- 削除確認モーダル -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <h3>削除の確認</h3>
+    <p><span class="target-name" id="modalTargetName"></span> を削除します。<br>この操作は元に戻せません。</p>
+    <div class="modal-buttons">
+      <button class="btn-cancel" id="modalCancel">キャンセル</button>
+      <button class="btn-delete" id="modalConfirm">削除する</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -516,4 +530,3 @@
 
 </body>
 </html>
-
