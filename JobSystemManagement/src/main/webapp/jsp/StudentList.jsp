@@ -20,7 +20,8 @@
     padding: 20px;
   }
   .container {
-    max-width: 900px;
+    max-width: 1200px;
+    margin: 0 auto;
     position: relative;
   }
 
@@ -28,6 +29,7 @@
   .header-row {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     margin-bottom: 20px;
   }
   .title-box {
@@ -36,6 +38,7 @@
     border: 1px solid #999;
     width: 300px;
     height: 60px;
+    flex-shrink: 0;
   }
   .title-arrow {
     width: 60px;
@@ -53,7 +56,7 @@
   }
 
   .search-area {
-    margin-left: 20px;
+    margin-left: auto;
   }
 
   .search-box {
@@ -82,6 +85,7 @@
     max-height: 440px;
     overflow-y: auto;
     border: 1px solid #999;
+    width: 100%;
   }
 
   /* table */
@@ -512,3 +516,4 @@
 
 </body>
 </html>
+
