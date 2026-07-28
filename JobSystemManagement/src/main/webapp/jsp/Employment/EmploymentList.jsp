@@ -459,7 +459,7 @@ td:last-child {
 						<%for(GuidanceDetail Gu:  detail.getGuidanceList()){ %>
 					    <tr data-id="<%= Gu.getShidoId() %>">
 					        <td class="id-cell"><%= Gu.getShidoId() %></td>
-					        <td class="company-cell"><%= Gu.getCompany().getKaishaName() %></td>
+					        <td class="company-cell"><%= Gu.getCompany().getKaishaName() %></td> 
 					        <td><%= Gu.getLatestExam().getShikenNaiyo() %></td>
 					        <td><%= Gu.getLatestExam().getShikenNichiji() %></td>
 					        
