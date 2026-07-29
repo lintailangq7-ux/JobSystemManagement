@@ -23,6 +23,7 @@ public class StudentListServlet extends HttpServlet {
         List<ModelStudent> StuList = StuDAO.findAll();
         request.setAttribute("StuList", StuList);
 
+
         // セッションに一時保存されたメッセージがあれば取り出して、その場で消す
         HttpSession session = request.getSession(false);
         if (session != null) {

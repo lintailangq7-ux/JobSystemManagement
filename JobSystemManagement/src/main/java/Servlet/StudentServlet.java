@@ -22,6 +22,7 @@ public class StudentServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		StudentLogic StuLogic = new StudentLogic();
 		List<ModelStudent> StuList = StuLogic.execute();
+        System.out.println(StuList.get(0).getAssen() + " あっせん");
 		request.setAttribute("StuList",StuList);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/jsp/StudentList.jsp");
 		dispatcher.forward(request, response);
