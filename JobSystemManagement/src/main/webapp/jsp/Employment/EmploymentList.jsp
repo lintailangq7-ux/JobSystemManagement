@@ -335,7 +335,10 @@ td:last-child {
 		System.out.println(detail + "detail");
 		System.out.println(detail.getStudent() + "detail.getStudent()");
 	    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("M/d");
+
 	    //がきせきでーたをここでなにかする
+
+	    branch 'main' of git@github.com:lintailangq7-ux/JobSystemManagement.git
 	%>
 
 <div class="page-layout">
@@ -366,7 +369,7 @@ td:last-child {
        						 String seibetsu = detail.getStudent().getSeibetsu();
         						if (seibetsu.equals("M")) {
     						%>
-        <					<td>男</td>
+       						<td>男</td>
     						<%
         					} else if (seibetsu.equals("F")) {
     						%>
@@ -388,12 +391,18 @@ td:last-child {
 		<br>
 
 		<table class="student-table">
-		<%for(StudentChukan Sc:  detail.getStudent().getGakuseiChukanList()){ %>
-		    <tr>
-		        <td class="header">志望業種</td>
-		        <td><%= Sc.getKibouShokushu() %></td>
-		    </tr>
-		 <%} %>
+		<%
+	    int idx = 1;
+	    for(StudentChukan Sc : detail.getStudent().getGakuseiChukanList()){
+	%>
+	    <tr>
+	        <td class="header">志望業種<%= idx %></td>
+	        <td><%= (Sc.getKibouShokushu() != null) ? Sc.getKibouShokushu() : "-" %></td>
+	    </tr>
+	<%
+	        idx++;
+	    }
+	%>
 		    <tr>
 		        <td class="header">志望地域</td>
 		        <td><%= detail.getStudent().getKenNaiGaiKibo()%></td>
