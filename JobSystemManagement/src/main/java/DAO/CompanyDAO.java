@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -208,8 +209,73 @@ public class CompanyDAO {
 	 
 	        return null;
 	    }
+	   public boolean create(ModelCompany MC) {
 
+		    String sql = "INSERT INTO 企業テーブル "
+		               + "(企業ID, 企業名, 住所, 電話番号, メールアドレス, 採用実績, 勤務地) "
+		               + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+		    System.out.println("=== create()呼ばれた ===");
+		    System.out.println("企業ID=" + MC.getKaishaId());
+		    System.out.println("企業名=" + MC.getKaishaName());
+
+		    try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
+		         PreparedStatement pStmt = conn.prepareStatement(sql)) {
+
+		        System.out.println("接続URL=" + conn.getMetaData().getURL());
+
+		        pStmt.setString(1, MC.getKaishaId());
+		        pStmt.setString(2, MC.getKaishaName());
+		        pStmt.setString(3, MC.getAddress());
+		        pStmt.setString(4, MC.getTel());
+		        pStmt.setString(5, MC.getEmail());
+		        pStmt.setInt(6, MC.getSaiyoJisseki());
+		        pStmt.setString(7, MC.getKinmuChi());
+
+		        int result = pStmt.executeUpdate();
+		        System.out.println("=== executeUpdate結果 result=" + result + " ===");
+		        return result > 0;
+
+		    } catch (SQLException e) {
+		        System.out.println("=== INSERT失敗（例外） ===");
+		        e.printStackTrace();
+		        return false;
+		    }
+		}
+	   /**
+	    * 企業IDを新規発番する（例: C0001, C0002, ...）
+	    */
+	   public String generateNewKaishaId() {
+	       String sql = "SELECT 企業ID FROM 企業テーブル ORDER BY 企業ID DESC LIMIT 1";
+	       String newId = "C0001"; // データが1件もない場合の初期値
+
+	       try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+	            PreparedStatement ps = con.prepareStatement(sql);
+	            ResultSet rs = ps.executeQuery()) {
+
+	           if (rs.next()) {
+	               String lastId = rs.getString("企業ID"); // 例: "C0007"
+	               String numPart = lastId.substring(1);   // "C" を除いた "0007"
+	               int num = Integer.parseInt(numPart);     // 7
+	               num++;                                   // 8
+
+	               newId = String.format("C%04d", num);     // "C0008"
+	           }
+
+	       } catch (Exception e) {
+	           e.printStackTrace();
+	           System.out.println("企業ID採番エラー: " + e.getMessage());
+	       }
+
+	       return newId;
+	   }
 }
 
 	        
-
+//String kaishaId;      // 企業ID
+//String kaishaName;    // 企業名
+//String address;       // 住所
+//String tel;           // 電話番号
+//String email;         // メールアドレス
+//int saiyoJisseki;     // 採用実績
+//String kinmuChi;      // 勤務地
