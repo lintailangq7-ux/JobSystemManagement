@@ -143,7 +143,7 @@ body{
 
         <button class="backButton"
                 type="button"
-                onclick="history.back()">
+                onclick="location.href='<%= request.getContextPath() %>/ListofCompanies'">
         </button>
 
         <h2>企業変更</h2>

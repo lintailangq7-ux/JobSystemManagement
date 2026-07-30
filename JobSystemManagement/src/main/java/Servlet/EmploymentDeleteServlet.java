@@ -37,7 +37,6 @@ public class EmploymentDeleteServlet extends HttpServlet {
 		EmploymentDAO eDAO = new EmploymentDAO();
 		
 		System.out.println("delete");
-		ecDAO.delete(shidoId);
 		eDAO.deleteGuidance(shidoId);
 
 		

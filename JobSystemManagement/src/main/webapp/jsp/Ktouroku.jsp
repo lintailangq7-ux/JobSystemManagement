@@ -202,7 +202,7 @@ dialog button:hover {
 
         <button class="backButton"
                 type="button"
-                onclick="history.back()">
+                onclick="location.href='<%= request.getContextPath() %>/ListofCompanies'">
         </button>
 
         <h2>企業登録</h2>

@@ -218,7 +218,7 @@
 <body>
 
  <div class="top-area">
-<button class="back-button" onclick="history.back()">◀</button>
+<button class="back-button" onclick="location.href='<%= request.getContextPath() %>/ListofEmployment'">◀</button>
 
 <h1>企業一覧</h1>
 </div>
