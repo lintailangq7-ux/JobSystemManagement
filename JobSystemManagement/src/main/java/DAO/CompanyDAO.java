@@ -1,23 +1,22 @@
 package DAO;
-
+ 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import model.Company;
 import model.ModelCompany;   // 企業モデルクラス
-
+ 
 public class CompanyDAO {
-
+ 
     private static final String URL = "jdbc:mysql://localhost:3306/jop_managment_system?useSSL=false&serverTimezone=Asia/Tokyo";
     private static final String USER = "root";
     private static final String PASS = "kcsf";
 	private String sql;
-
+ 
     /**
      * 企業テーブルから全件を取得
      */
@@ -27,17 +26,17 @@ public class CompanyDAO {
         String sql = "SELECT * " +
                      "FROM 企業テーブル " +
                      "ORDER BY 企業ID";
-
+ 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-
+ 
             try (Connection con = DriverManager.getConnection(URL, USER, PASS);
                  PreparedStatement ps = con.prepareStatement(sql);
                  ResultSet rs = ps.executeQuery()) {
-
+ 
                 while (rs.next()) {
                 	ModelCompany c = new ModelCompany();
-
+ 
                     c.setKaishaId(rs.getString("企業ID"));
                     c.setKaishaName(rs.getString("企業名"));
                     c.setAddress(rs.getString("住所"));
@@ -46,7 +45,7 @@ public class CompanyDAO {
                     c.setSaiyoJisseki(rs.getInt("採用実績"));
                     c.setKinmuChi(rs.getString("勤務地"));
                     
-                    c.setKaishaChukanList(CompanyChukanDAO.findById(rs.getString("企業ID"))); 
+                    c.setKaishaChukanList(CompanyChukanDAO.findById(rs.getString("企業ID")));
                     
                     list.add(c);
                 }
@@ -57,181 +56,176 @@ public class CompanyDAO {
         }
         return list;
     }
-
+ 
 	public List<Company> findAllCompany() {
 		System.out.println("findAllCompany開始");
 		// TODO 自動生成されたメソッド・スタブ
 		 List<Company> companyList = new ArrayList<>();
-		  String sql ="SELECT 企業ID, 企業名, 住所, 電話番号, メールアドレス, 採用実績 FROM `企業テーブル`";;
-
+String sql ="SELECT 企業ID, 企業名, 住所, 電話番号, メールアドレス, 採用実績 FROM `企業テーブル`";;
+ 
 	        try {
-	            Class.forName("com.mysql.cj.jdbc.Driver");
-		    try (Connection con = DriverManager.getConnection(URL,USER,PASS);
-		    		 PreparedStatement ps = con.prepareStatement(sql);
-		    		ResultSet rs = ps.executeQuery()){
-
-
+           Class.forName("com.mysql.cj.jdbc.Driver");
+   try (Connection con = DriverManager.getConnection(URL,USER,PASS);
+   		 PreparedStatement ps = con.prepareStatement(sql);
+   		ResultSet rs = ps.executeQuery()){
+ 
+ 
 		        while (rs.next()) {
-		      
-
+     
+ 
 		        	System.out.println("企業ID：" + rs.getString("企業ID"));
-		        	System.out.println(rs.getString("企業名"));
-		        	System.out.println("データ取得しました");
-		            Company company = new Company();
-
+       	System.out.println(rs.getString("企業名"));
+       	System.out.println("データ取得しました");
+           Company company = new Company();
+ 
 		            company.setId(rs.getString("企業ID"));
-		            company.setName(rs.getString("企業名"));
-		            company.setAddress(rs.getString("住所"));
-		            company.setTel(rs.getString("電話番号"));
-		            company.setMail(rs.getString("メールアドレス"));
-		            company.setJobtype(rs.getString("採用実績"));
-
+           company.setName(rs.getString("企業名"));
+           company.setAddress(rs.getString("住所"));
+           company.setTel(rs.getString("電話番号"));
+           company.setMail(rs.getString("メールアドレス"));
+           company.setJobtype(rs.getString("採用実績"));
+ 
 		            companyList.add(company);
-		            
-		        }
-		    
-		    }
-		    
-		    } catch (Exception e) {
-		        e.printStackTrace();
-		        System.out.println("DAOエラー：" + e.getMessage());
-		    }
-
+           
+       }
+   
+   }
+   
+   } catch (Exception e) {
+       e.printStackTrace();
+       System.out.println("DAOエラー：" + e.getMessage());
+   }
+ 
 		    return companyList;
-	        }
-	
-	
-
+       }
+ 
+ 
 	public List<Company> search(String keyword) {
 		// TODO 自動生成されたメソッド・スタブ
 		 List<Company> companyList = new ArrayList<>();
 		 String sql = "SELECT 企業ID, 企業名, 住所, 電話番号, メールアドレス, 採用実績 "
                  + "FROM `企業テーブル` WHERE 企業名 LIKE ?";
-	        try {
-	            Class.forName("com.mysql.cj.jdbc.Driver");
-		    try (Connection con = DriverManager.getConnection(URL,USER,PASS);
-		    		 PreparedStatement ps = con.prepareStatement(sql)){
+       try {
+           Class.forName("com.mysql.cj.jdbc.Driver");
+   try (Connection con = DriverManager.getConnection(URL,USER,PASS);
+   		 PreparedStatement ps = con.prepareStatement(sql)){
+      
+ 
 		       
-
-		       
-		        ps.setString(1, "%" + keyword + "%");
-
+       ps.setString(1, "%" + keyword + "%");
+ 
 		        ResultSet rs = ps.executeQuery();
-
+ 
 		        while (rs.next()) {
-
+ 
 		            Company company = new Company();
-
+ 
 		            company.setId(rs.getString("企業ID"));
-		            company.setName(rs.getString("企業名"));
-		            company.setAddress(rs.getString("住所"));
-		            company.setTel(rs.getString("電話番号"));
-		            company.setMail(rs.getString("メールアドレス"));
-		            company.setJobtype(rs.getString("採用実績"));
-
+           company.setName(rs.getString("企業名"));
+           company.setAddress(rs.getString("住所"));
+           company.setTel(rs.getString("電話番号"));
+           company.setMail(rs.getString("メールアドレス"));
+           company.setJobtype(rs.getString("採用実績"));
+ 
 		            companyList.add(company);
-		        }
-		    }
-		    } catch (Exception e) {
-		        e.printStackTrace();
-		    }
-
+       }
+   }
+   } catch (Exception e) {
+       e.printStackTrace();
+   }
+ 
 		    return companyList;
-	        
-
+       
+ 
 	
 	}
-	
-
+ 
+ 
 	 public Company findById(String companyId) {
-		 
-	        String sql = "SELECT 企業ID, 企業名, 住所, 電話番号, メールアドレス, 採用実績 "
-	                   + "FROM `企業テーブル` WHERE 企業ID = ?";
-	 
-	        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
-	             PreparedStatement ps = con.prepareStatement(sql)) {
-	 
-	            ps.setString(1, companyId);
-	 
-	            try (ResultSet rs = ps.executeQuery()) {
-	                if (rs.next()) {
-	                    Company company = new Company();
-	 
-	                    company.setId(rs.getString("企業ID"));
-	                    company.setName(rs.getString("企業名"));
-	                    company.setAddress(rs.getString("住所"));
-	                    company.setTel(rs.getString("電話番号"));
-	                    company.setMail(rs.getString("メールアドレス"));
-	                    company.setJobtype(rs.getString("採用実績"));
-	 
-	                    return company;
-	                }
-	            }
-	 
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            System.out.println("企業取得エラー: " + e.getMessage());
-	        }
-	 
-	        return null;
-	    }
-	
-	
-	   public Company findByName(String companyName) {
+ 
+       String sql = "SELECT 企業ID, 企業名, 住所, 電話番号, メールアドレス, 採用実績 "
+                  + "FROM `企業テーブル` WHERE 企業ID = ?";
+ 
+       try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+            PreparedStatement ps = con.prepareStatement(sql)) {
+ 
+           ps.setString(1, companyId);
+ 
+           try (ResultSet rs = ps.executeQuery()) {
+               if (rs.next()) {
+                   Company company = new Company();
+ 
+                   company.setId(rs.getString("企業ID"));
+                   company.setName(rs.getString("企業名"));
+                   company.setAddress(rs.getString("住所"));
+                   company.setTel(rs.getString("電話番号"));
+                   company.setMail(rs.getString("メールアドレス"));
+                   company.setJobtype(rs.getString("採用実績"));
+ 
+                   return company;
+               }
+           }
+ 
+       } catch (Exception e) {
+           e.printStackTrace();
+           System.out.println("企業取得エラー: " + e.getMessage());
+       }
+ 
+       return null;
+   }
+ 
+  public Company findByName(String companyName) {
            	System.out.println("企業名検索OK1");
-	        String sql = "SELECT 企業ID, 企業名, 住所, 電話番号, メールアドレス, 採用実績 "
-	                   + "FROM `企業テーブル` WHERE 企業名 = ?";
-	 
-	        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
-	             PreparedStatement ps = con.prepareStatement(sql)) {
+       String sql = "SELECT 企業ID, 企業名, 住所, 電話番号, メールアドレス, 採用実績 "
+                  + "FROM `企業テーブル` WHERE 企業名 = ?";
+ 
+       try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+            PreparedStatement ps = con.prepareStatement(sql)) {
                 System.out.println("企業名検索OK2");
-	            ps.setString(1, companyName);
-	 
-	            try (ResultSet rs = ps.executeQuery()) {
-	                if (rs.next()) {
-	                    Company company = new Company();
-	 
-	                    company.setId(rs.getString("企業ID"));
-	                    company.setName(rs.getString("企業名"));
-	                    company.setAddress(rs.getString("住所"));
-	                    company.setTel(rs.getString("電話番号"));
-	                    company.setMail(rs.getString("メールアドレス"));
-	                    company.setJobtype(rs.getString("採用実績"));
-	                    
-	                    System.out.println("企業名検索OK3");
-	                    return company;
-	                }
-	            }
-	 
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            System.out.println("企業取得エラー: " + e.getMessage());
-	        }
-	 
-	        return null;
-	    }
-	   public boolean create(ModelCompany MC) {
-
-<<<<<<< HEAD
-
-
-
-
+           ps.setString(1, companyName);
+ 
+           try (ResultSet rs = ps.executeQuery()) {
+               if (rs.next()) {
+                   Company company = new Company();
+ 
+                   company.setId(rs.getString("企業ID"));
+                   company.setName(rs.getString("企業名"));
+                   company.setAddress(rs.getString("住所"));
+                   company.setTel(rs.getString("電話番号"));
+                   company.setMail(rs.getString("メールアドレス"));
+                   company.setJobtype(rs.getString("採用実績"));
+                   
+                   System.out.println("企業名検索OK3");
+                   return company;
+               }
+           }
+ 
+       } catch (Exception e) {
+           e.printStackTrace();
+           System.out.println("企業取得エラー: " + e.getMessage());
+       }
+ 
+       return null;
+   }
+ 
+ 
+ 
+ 
 public void addCompany(Company company) {
-
+ 
     String sql =
         "INSERT INTO 企業テーブル "
       + "(企業ID,企業名, 住所, 電話番号, メールアドレス, 採用実績) "
       + "VALUES (?,?, ?, ?, ?, ?)";
-
+ 
     try {
         Connection conn =
                 DriverManager.getConnection(URL, USER, PASS);
         
-
+ 
         // 企業ID作成
         String companyId = createCompanyId(conn);
-
+ 
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, companyId);
         ps.setString(2, company.getName());
@@ -239,167 +233,122 @@ public void addCompany(Company company) {
         ps.setString(4, company.getTel());
         ps.setString(5, company.getMail());
         ps.setInt(6, Integer.parseInt(company.getJobtype()));
-
+ 
         ps.executeUpdate();
-
+ 
         ps.close();
         conn.close();
-
+ 
     } catch (Exception e) {
         e.printStackTrace();
     }
-=======
-		    String sql = "INSERT INTO 企業テーブル "
-		               + "(企業ID, 企業名, 住所, 電話番号, メールアドレス, 採用実績, 勤務地) "
-		               + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-		    System.out.println("=== create()呼ばれた ===");
-		    System.out.println("企業ID=" + MC.getKaishaId());
-		    System.out.println("企業名=" + MC.getKaishaName());
-
-		    try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
-		         PreparedStatement pStmt = conn.prepareStatement(sql)) {
-
-		        System.out.println("接続URL=" + conn.getMetaData().getURL());
-
-		        pStmt.setString(1, MC.getKaishaId());
-		        pStmt.setString(2, MC.getKaishaName());
-		        pStmt.setString(3, MC.getAddress());
-		        pStmt.setString(4, MC.getTel());
-		        pStmt.setString(5, MC.getEmail());
-		        pStmt.setInt(6, MC.getSaiyoJisseki());
-		        pStmt.setString(7, MC.getKinmuChi());
-
-		        int result = pStmt.executeUpdate();
-		        System.out.println("=== executeUpdate結果 result=" + result + " ===");
-		        return result > 0;
-
-		    } catch (SQLException e) {
-		        System.out.println("=== INSERT失敗（例外） ===");
-		        e.printStackTrace();
-		        return false;
-		    }
-		}
-	   /**
-	    * 企業IDを新規発番する（例: C0001, C0002, ...）
-	    */
-	   public String generateNewKaishaId() {
-	       String sql = "SELECT 企業ID FROM 企業テーブル ORDER BY 企業ID DESC LIMIT 1";
-	       String newId = "C0001"; // データが1件もない場合の初期値
-
-	       try (Connection con = DriverManager.getConnection(URL, USER, PASS);
-	            PreparedStatement ps = con.prepareStatement(sql);
-	            ResultSet rs = ps.executeQuery()) {
-
-	           if (rs.next()) {
-	               String lastId = rs.getString("企業ID"); // 例: "C0007"
-	               String numPart = lastId.substring(1);   // "C" を除いた "0007"
-	               int num = Integer.parseInt(numPart);     // 7
-	               num++;                                   // 8
-
-	               newId = String.format("C%04d", num);     // "C0008"
-	           }
-
-	       } catch (Exception e) {
-	           e.printStackTrace();
-	           System.out.println("企業ID採番エラー: " + e.getMessage());
-	       }
-
-	       return newId;
-	   }
->>>>>>> branch 'main' of git@github.com:lintailangq7-ux/JobSystemManagement.git
 }
-
-<<<<<<< HEAD
+ 
+  public String generateNewKaishaId() {
+      String sql = "SELECT 企業ID FROM 企業テーブル ORDER BY 企業ID DESC LIMIT 1";
+      String newId = "C0001"; // データが1件もない場合の初期値
+ 
+	       try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+           PreparedStatement ps = con.prepareStatement(sql);
+           ResultSet rs = ps.executeQuery()) {
+ 
+	           if (rs.next()) {
+              String lastId = rs.getString("企業ID"); // 例: "C0007"
+              String numPart = lastId.substring(1);   // "C" を除いた "0007"
+              int num = Integer.parseInt(numPart);     // 7
+              num++;                                   // 8
+ 
+	               newId = String.format("C%04d", num);     // "C0008"
+          }
+ 
+	       } catch (Exception e) {
+          e.printStackTrace();
+          System.out.println("企業ID採番エラー: " + e.getMessage());
+      }
+ 
+	       return newId;
+  }
+ 
 private String createCompanyId(Connection conn) throws Exception {
-
+ 
     String sql =
         "SELECT MAX(企業ID) FROM 企業テーブル";
-
+ 
     PreparedStatement ps =
         conn.prepareStatement(sql);
-
+ 
     ResultSet rs = ps.executeQuery();
-
+ 
     if(rs.next() && rs.getString(1) != null) {
-
+ 
         String lastId = rs.getString(1);
-
+ 
         int number =
             Integer.parseInt(lastId.substring(1));
-
+ 
         return String.format("C%04d", number + 1);
-
+ 
     } else {
-
+ 
         return "C0001";
     }
 }
-
+ 
 public void updateCompany(Company company) {
 	// TODO 自動生成されたメソッド・スタブ
-	
 	 String sql =
-		        "UPDATE 企業テーブル SET "
-		      + "企業名=?, 住所=?, 電話番号=?, メールアドレス=?, 採用実績=? "
-		      + "WHERE 企業ID=?";
-
+       "UPDATE 企業テーブル SET "
+     + "企業名=?, 住所=?, 電話番号=?, メールアドレス=?, 採用実績=? "
+     + "WHERE 企業ID=?";
+ 
 		    try {
-
+ 
 		        Connection conn =
-		            DriverManager.getConnection(URL, USER, PASS);
-
+           DriverManager.getConnection(URL, USER, PASS);
+ 
 		        PreparedStatement ps =
-		            conn.prepareStatement(sql);
-
+           conn.prepareStatement(sql);
+ 
 		        ps.setString(1, company.getName());
-		        ps.setString(2, company.getAddress());
-		        ps.setString(3, company.getTel());
-		        ps.setString(4, company.getMail());
-		        ps.setInt(5, Integer.parseInt(company.getJobtype()));
-		        ps.setString(6, company.getId());
-
+       ps.setString(2, company.getAddress());
+       ps.setString(3, company.getTel());
+       ps.setString(4, company.getMail());
+       ps.setInt(5, Integer.parseInt(company.getJobtype()));
+       ps.setString(6, company.getId());
+ 
 		       
-		        int count = ps.executeUpdate();
-		        System.out.println("更新件数：" + count);
-
+       int count = ps.executeUpdate();
+       System.out.println("更新件数：" + count);
+ 
 		    } catch(Exception e) {
-		        e.printStackTrace();
-		    }
+       e.printStackTrace();
+   }
 }
-
-
-
+ 
+ 
 public void deleteCompany(String companyId) {
-
+ 
     String sql = "DELETE FROM 企業テーブル WHERE 企業ID = ?";
-
+ 
     try {
         Connection conn =
                 DriverManager.getConnection(URL, USER, PASS);
-
+ 
         PreparedStatement ps =
                 conn.prepareStatement(sql);
-
+ 
         ps.setString(1, companyId);
-
+ 
         ps.executeUpdate();
-
+ 
         ps.close();
         conn.close();
-
+ 
     } catch (Exception e) {
         e.printStackTrace();
     }
 }
 }
-=======
-	        
-//String kaishaId;      // 企業ID
-//String kaishaName;    // 企業名
-//String address;       // 住所
-//String tel;           // 電話番号
-//String email;         // メールアドレス
-//int saiyoJisseki;     // 採用実績
-//String kinmuChi;      // 勤務地
->>>>>>> branch 'main' of git@github.com:lintailangq7-ux/JobSystemManagement.git
+ 
+ 
+ 
