@@ -346,7 +346,7 @@ td:last-child {
                     <tr data-id="<%= g.getShidoId() %>">
                         <td><%= g.getShidoId() %></td>
                         <td>
-                            <a href="<%= request.getContextPath() %>/ListofExamStudents?companyId=<%= d.getStudent().getGakusekiNo() %>">
+                            <a href="<%= request.getContextPath() %>/ListofExamStudents?companyId=<%= d.getStudents().getId() %>">
                                 <%= g.getCompany().getKaishaName() %>
                             </a>
                         </td>
