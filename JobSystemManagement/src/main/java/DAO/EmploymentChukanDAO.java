@@ -85,24 +85,24 @@ public class EmploymentChukanDAO {
      * @param oldShikenNichiji 更新前の試験日時（WHERE句のキーとして使用）
      * @return 更新できたら true
      */
-    public boolean update(EmploymentChukan ec) {
- 
+    public boolean update(EmploymentChukan ec, LocalDateTime oldShikenNichiji) {
+
         String sql = "UPDATE 就職情報中間テーブル "
                    + "SET 試験日時 = ?, 試験内容 = ?, 提出書類状況 = ?, 試験会場 = ? "
-                   + "WHERE 指導ID = ?";
- 
+                   + "WHERE 指導ID = ? AND 試験日時 = ?";
+
         try (Connection con = DriverManager.getConnection(URL, USER, PASS);
              PreparedStatement ps = con.prepareStatement(sql)) {
- 
+
             setTimestampOrNull(ps, 1, ec.getShikenNichiji());
             ps.setString(2, ec.getShikenNaiyo());
             ps.setInt(3, ec.getTeishutsuShoruiJokyo());
             ps.setString(4, ec.getShikenKaijo());
             ps.setString(5, ec.getShidoId());
+            setTimestampOrNull(ps, 6, oldShikenNichiji);
 
- 
             return ps.executeUpdate() > 0;
- 
+
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("試験情報更新エラー: " + e.getMessage());

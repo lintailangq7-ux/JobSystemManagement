@@ -78,82 +78,80 @@ public class EmploymentCangeServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		CompanyDAO cDAO = new CompanyDAO();
-		EmploymentDAO eDAO = new EmploymentDAO();
-		EmploymentChukanDAO ecDAO = new EmploymentChukanDAO();
-		int submitInt;
-		int offerInt;
- 
-		// 更新対象のキーは必ずフォームのhidden項目から受け取った shidoId を使う。
-		// （修正前はここでログインユーザーのIDを使っており、更新先の行を取り違えていた）
-		String shidoId = request.getParameter("shidoId");
-		String companyName  = request.getParameter("companyName");
-		String place         = request.getParameter("place");
-		String submitStatus  = request.getParameter("submitStatus");
-		String exam           = request.getParameter("exam");
-		String examDate       = request.getParameter("examDate");
-		String offerStatus    = request.getParameter("offerStatus");
-		String acceptDate     = request.getParameter("acceptDate");
-		String memo            = request.getParameter("memo");
- 
-		// ---- 入力チェック ----
-		if (shidoId == null || shidoId.isEmpty()) {
-			response.sendRedirect(request.getContextPath() + "/ListofEmployment");
-			return;
-		}
-		if (companyName == null || companyName.trim().isEmpty()) {
-			request.setAttribute("mode", "edit");
-			request.setAttribute("shidoId", shidoId);
-			request.setAttribute("errorMessage", "企業名は必須です。入力してください。");
-			request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
-			return;
-		}
- 
-		Company C = cDAO.findByName(companyName);
-		if (C == null) {
-			request.setAttribute("mode", "edit");
-			request.setAttribute("shidoId", shidoId);
-			request.setAttribute("errorMessage", "入力された企業名「" + companyName + "」は登録されていません。");
-			request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
-			return;
-		}
- 
-		// 試験日時は複合主キー(指導ID + 試験日時)の一部でNULL不可。
-		// 未入力のままUPDATEすると制約違反になるため必須チェックする。
-		if (examDate == null || examDate.trim().isEmpty()) {
-			request.setAttribute("mode", "edit");
-			request.setAttribute("shidoId", shidoId);
-			request.setAttribute("errorMessage", "試験日時は必須です。入力してください。");
-			request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
-			return;
-		}
- 
-		submitInt = "済".equals(submitStatus) ? 1 : 0;
-		offerInt  = "内".equals(offerStatus) ? 1 : 0;
- 
-		LocalDateTime examDateTime = null;
-		if (examDate != null && !examDate.isEmpty()) {
-			examDateTime = LocalDateTime.parse(examDate);
-		}
- 
-		LocalDateTime acceptDateTime = null;
-		if (acceptDate != null && !acceptDate.isEmpty()) {
-			acceptDateTime = LocalDateTime.parse(acceptDate);
-		}
- 
-		EmploymentChukan ec = new EmploymentChukan(shidoId, examDateTime, exam, submitInt, place);
- 
-		eDAO.updateGuidance(shidoId, C.getId(), acceptDateTime, offerInt, memo, ec);
-		boolean chukanOk = ecDAO.update(ec);
-		if (!chukanOk) {
-			request.setAttribute("mode", "edit");
-			request.setAttribute("shidoId", shidoId);
-			request.setAttribute("errorMessage", "試験情報の更新に失敗しました。入力内容を確認してください。");
-			request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
-			return;
-		}
- 
-		response.sendRedirect(request.getContextPath() + "/ListofEmployment");
+	    CompanyDAO cDAO = new CompanyDAO();
+	    EmploymentDAO eDAO = new EmploymentDAO();
+	    EmploymentChukanDAO ecDAO = new EmploymentChukanDAO();
+	    int submitInt;
+	    int offerInt;
+
+	    String shidoId = request.getParameter("shidoId");
+	    String companyName  = request.getParameter("companyName");
+	    String place         = request.getParameter("place");
+	    String submitStatus  = request.getParameter("submitStatus");
+	    String exam           = request.getParameter("exam");
+	    String examDate       = request.getParameter("examDate");
+	    String oldExamDate    = request.getParameter("oldExamDate"); // 追加：更新前の試験日時
+	    String offerStatus    = request.getParameter("offerStatus");
+	    String acceptDate     = request.getParameter("acceptDate");
+	    String memo            = request.getParameter("memo");
+
+	    // ---- 入力チェック ----
+	    if (shidoId == null || shidoId.isEmpty()) {
+	        response.sendRedirect(request.getContextPath() + "/ListofEmployment");
+	        return;
+	    }
+	    if (companyName == null || companyName.trim().isEmpty()) {
+	        request.setAttribute("mode", "edit");
+	        request.setAttribute("shidoId", shidoId);
+	        request.setAttribute("errorMessage", "企業名は必須です。入力してください。");
+	        request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
+	        return;
+	    }
+
+	    Company C = cDAO.findByName(companyName);
+	    if (C == null) {
+	        request.setAttribute("mode", "edit");
+	        request.setAttribute("shidoId", shidoId);
+	        request.setAttribute("errorMessage", "入力された企業名「" + companyName + "」は登録されていません。");
+	        request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
+	        return;
+	    }
+
+	    if (examDate == null || examDate.trim().isEmpty()) {
+	        request.setAttribute("mode", "edit");
+	        request.setAttribute("shidoId", shidoId);
+	        request.setAttribute("errorMessage", "試験日時は必須です。入力してください。");
+	        request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
+	        return;
+	    }
+
+	    submitInt = "済".equals(submitStatus) ? 1 : 0;
+	    offerInt  = "内".equals(offerStatus) ? 1 : 0;
+
+	    LocalDateTime examDateTime = LocalDateTime.parse(examDate);
+
+	    // 更新前の試験日時（キー特定用）。無ければ新しい日時と同じとみなす（＝日時を変更していないケース）
+	    LocalDateTime oldExamDateTime = (oldExamDate != null && !oldExamDate.isEmpty())
+	            ? LocalDateTime.parse(oldExamDate)
+	            : examDateTime;
+
+	    LocalDateTime acceptDateTime = null;
+	    if (acceptDate != null && !acceptDate.isEmpty()) {
+	        acceptDateTime = LocalDateTime.parse(acceptDate);
+	    }
+
+	    EmploymentChukan ec = new EmploymentChukan(shidoId, examDateTime, exam, submitInt, place);
+
+	    eDAO.updateGuidance(shidoId, C.getId(), acceptDateTime, offerInt, memo, ec);
+	    boolean chukanOk = ecDAO.update(ec, oldExamDateTime); // 更新前日時を渡す
+	    if (!chukanOk) {
+	        request.setAttribute("mode", "edit");
+	        request.setAttribute("shidoId", shidoId);
+	        request.setAttribute("errorMessage", "試験情報の更新に失敗しました。入力内容を確認してください。");
+	        request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
+	        return;
+	    }
+
+	    response.sendRedirect(request.getContextPath() + "/ListofEmployment");
 	}
- 
 }

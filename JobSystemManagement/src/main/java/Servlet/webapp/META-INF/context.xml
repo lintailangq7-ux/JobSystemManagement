@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+<Resource name="jdbc/jop_managment_system"
+            auth="Container"
+            type="javax.sql.DataSource"
+            driverClassName="com.mysql.cj.jdbc.Driver"
+            url="jdbc:mysql://localhost:3306/jop_managment_system"
+            username="root"
+            password="kcsf"
+            maxTotal="20"
+            maxIdle="10"/>
+</Context>

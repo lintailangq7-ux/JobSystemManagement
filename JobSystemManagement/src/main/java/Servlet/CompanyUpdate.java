@@ -23,12 +23,11 @@ public class CompanyUpdate extends HttpServlet {
         if (companyId != null && !companyId.isEmpty()) {
             // 編集の場合：既存データを取得してフォームに渡す
             CompanyDAO dao = new CompanyDAO();
-            Company company = dao.findById(companyId); // ※findByIdは要実装/既存メソッド名に合わせる
+            Company company = dao.findById(companyId);
             request.setAttribute("company", company);
         }
         // companyIdが無ければ新規登録なので何もセットしない(空フォームになる)
 
-        // 登録・編集用の入力フォームJSPを表示するだけ。DB更新はしない。
         request.getRequestDispatcher("/jsp/Ktouroku.jsp").forward(request, response);
     }
 
@@ -53,8 +52,16 @@ public class CompanyUpdate extends HttpServlet {
         company.setJobtype(result);
 
         CompanyDAO dao = new CompanyDAO();
-        dao.updateCompany(company);
 
-        response.sendRedirect(request.getContextPath() + "/Ktouroku");
+        if (id == null || id.isEmpty()) {
+            // 新規登録
+            dao.addCompany(company);
+        } else {
+            // 更新
+            dao.updateCompany(company);
+        }
+
+        // 更新/登録が終わったら一覧画面に戻す
+        response.sendRedirect(request.getContextPath() + "/ListofCompanies");
     }
 }

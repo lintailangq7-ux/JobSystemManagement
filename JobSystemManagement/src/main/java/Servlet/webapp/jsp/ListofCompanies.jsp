@@ -283,7 +283,7 @@ if(list != null){
 </div>
 
 <!-- 「変更」はformでGET送信して遷移する -->
-<form id="editForm" action="<%= request.getContextPath() %>/CompanyEditServlet" method="get">
+<form id="editForm" action="<%= request.getContextPath() %>CompanyUpdateServlet" method="get">
     <input type="hidden" name="companyId" id="editCompanyId" value="">
 </form>
 
