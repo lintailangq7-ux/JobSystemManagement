@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 package Servlet;
 
 import java.io.IOException;
@@ -179,4 +179,3 @@ public class CompanyRegisterServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 }
->>>>>>> branch 'main' of git@github.com:lintailangq7-ux/JobSystemManagement.git
