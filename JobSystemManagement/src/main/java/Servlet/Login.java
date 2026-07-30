@@ -55,7 +55,7 @@ public class Login extends HttpServlet {
         String redirectPath = null;
 
         if (userId != null && password != null) {
-            System.out.println("userId != null && password != null");
+            System.out.println("userId !="+userId+" && password !="+password);
 
             // ユーザー情報をDBから取得
             ModelLogin login = loginDao.findId(userId);

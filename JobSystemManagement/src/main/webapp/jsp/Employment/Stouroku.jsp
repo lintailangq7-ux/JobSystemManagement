@@ -1,5 +1,15 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@	page import="java.time.format.DateTimeFormatter,
+            DAO.StudentDetailDAO, model.StudentDetail,
+            model.GuidanceDetail, model.ModelStudent,
+            model.EmploymentChukan, java.util.List,
+            model.StudentChukan, model.CompanyChukan" %>
+    <%
+     StudentDetail detail = (StudentDetail) session.getAttribute("detail");
+    
+    
+    
+    %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -185,26 +195,42 @@ textarea{
 
 <tr>
 <td>名前</td>
-<td>${student.studentName}</td>
+<td><%= detail.getStudent().getName() %></td>
 </tr>
 
 <tr>
 <td>クラス</td>
-<td>${student.className}</td>
+<td><%= detail.getStudent().getClassName()%></td>
 </tr>
 
 <tr>
-<td>希望職種</td>
-<td>
-${student.job1}
-${student.job2}
-${student.job3}
-</td>
-</tr>
-
+<%
+	    int idx = 1;
+	    for(StudentChukan Sc : detail.getStudent().getGakuseiChukanList()){
+	%>
+	    <tr>
+	        <td class="header">志望業種<%= idx %></td>
+	        <td><%= (Sc.getKibouShokushu() != null) ? Sc.getKibouShokushu() : "-" %></td>
+	    </tr>
+	<%
+	        idx++;
+	    }
+	%>
 <tr>
 <td>内定状況</td>
-<td>${student.offerStatus}</td>
+			<%
+			boolean naitei = false;
+
+			for (GuidanceDetail Ed : detail.getGuidanceList()) {
+				if (Ed.getNaiteiKakutei() == 1) {
+					naitei = true;
+					break; // 1件見つかったら終了
+				}
+			}
+			%>
+
+				<td><%= naitei ? "内" : "未" %></td>
+		        
 </tr>
 
 </table>
@@ -215,11 +241,9 @@ ${student.job3}
 
 <div class="right">
 
-<form action="GuidanceUpdateServlet" method="post">
+<form action="EmploymentNewServlet" method="Post">
 
-<input type="hidden"
-name="studentNo"
-value="${student.studentNo}">
+<input type="hidden"name="studentNo"value="<%  detail.getStudent().getGakusekiNo();%>">
 
 <table class="formTable">
 
@@ -229,9 +253,7 @@ value="${student.studentNo}">
 
 <td>
 
-<input type="text"
-name="companyId"
-value="${guidance.companyId}">
+<input type="text"name="companyId"value="${guidance.companyId}">
 
 </td>
 
@@ -243,9 +265,7 @@ value="${guidance.companyId}">
 
 <td>
 
-<input type="text"
-name="companyName"
-value="${guidance.companyName}">
+<input type="text"name="companyName"value="${guidance.companyName}">
 
 </td>
 
@@ -271,9 +291,7 @@ value="${guidance.place}">
 
 <td>
 
-<input type="text"
-name="submitStatus"
-value="${guidance.submitStatus}">
+<input type="text"name="submitStatus"value="${guidance.submitStatus}">
 
 </td>
 
@@ -285,9 +303,7 @@ value="${guidance.submitStatus}">
 
 <td>
 
-<input type="text"
-name="exam"
-value="${guidance.exam}">
+<input type="text"name="exam"value="${guidance.exam}">
 
 </td>
 
@@ -299,9 +315,7 @@ value="${guidance.exam}">
 
 <td>
 
-<input type="text"
-name="examDate"
-value="${guidance.examDate}">
+<input type="text"name="examDate"value="${guidance.examDate}">
 
 </td>
 
@@ -314,8 +328,7 @@ value="${guidance.examDate}">
 
 <td>
 
-<textarea
-name="memo">${guidance.memo}</textarea>
+<textarea name="memo">${guidance.memo}</textarea>
 
 </td>
 
