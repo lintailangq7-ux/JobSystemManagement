@@ -91,14 +91,7 @@ public class EmploymentNewServlet extends HttpServlet {
 			return;
 		}
 
-		// 試験日時はDB上、試験情報の複合主キー(指導ID + 試験日時)の一部であり
-		if (examDate == null || examDate.trim().isEmpty()) {
-			request.setAttribute("mode", "add");
-			request.setAttribute("student", student);
-			request.setAttribute("errorMessage", "試験日時は必須です。入力してください。");
-			request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
-			return;
-		}
+
 
 		submitInt = "済".equals(submitStatus) ? 1 : 0;
 		offerInt  = "内".equals(offerStatus) ? 1 : 0;

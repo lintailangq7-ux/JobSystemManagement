@@ -353,15 +353,15 @@ td:last-child {
 		<table class="student-table">
 		                <tr>
 		                    <td class="header">氏名</td>
-		                    <td><%= detail.getStudent().getName() %></td>
+		                    <td><%= (detail.getStudent().getName() != null) ? detail.getStudent().getName() : "-"%></td>
 		                </tr>
 		                <tr>
 		                    <td class="header">クラス</td>
-		                    <td><%= detail.getStudent().getClassName()%></td>
+		                    <td><%= (detail.getStudent().getClassName() != null) ? detail.getStudent().getClassName() : "-"%></td>
 		                </tr>
 		                <tr>
 		                    <td class="header">番号</td>
-		                    <td class="number"><%= detail.getStudent().getAttendanceNo()%></td>
+		                    <td class="number"><%= (detail.getStudent().getAttendanceNo() != 0) ? detail.getStudent().getAttendanceNo() : "-"%></td>
 		                </tr>
 		                <tr>
 		                    <td class="header">性別</td>
@@ -405,7 +405,7 @@ td:last-child {
 	%>
 		    <tr>
 		        <td class="header">志望地域</td>
-		        <td><%= detail.getStudent().getKenNaiGaiKibo()%></td>
+		        <td><%= (detail.getStudent().getKenNaiGaiKibo() != null) ? detail.getStudent().getKenNaiGaiKibo() : "-"%></td>
 		    </tr>
 		    <tr>
 		        <td class="header">内定状況</td>
@@ -425,7 +425,7 @@ td:last-child {
 		        
 		    </tr>
 		</table>
-			<div class="remarks-box"><%= detail.getStudent().getBiko()%></div>
+			<div class="remarks-box"><%= (detail.getStudent().getBiko() != null) ? detail.getStudent().getBiko() : "備考" %></div>
 			<table>
 
 		</table>
@@ -470,10 +470,10 @@ td:last-child {
 					<tbody>
 						<%for(GuidanceDetail Gu:  detail.getGuidanceList()){ %>
 					    <tr data-id="<%= Gu.getShidoId() %>">
-					        <td class="id-cell"><%= Gu.getShidoId() %></td>
-					        <td class="company-cell"><%= Gu.getCompany().getKaishaName() %></td> 
-					        <td><%= Gu.getLatestExam().getShikenNaiyo() %></td>
-					        <td><%= Gu.getLatestExam().getShikenNichiji() %></td>
+					        <td class="id-cell"><%= (Gu.getShidoId() != null) ? Gu.getShidoId()  : "-" %></td>
+					        <td class="company-cell"><%= (Gu.getCompany().getKaishaName() != null) ? Gu.getCompany().getKaishaName() : "-"  %></td> 
+					        <td><%= (Gu.getLatestExam().getShikenNaiyo() != null) ? Gu.getLatestExam().getShikenNaiyo() : "-"  %></td>
+					        <td><%= (Gu.getLatestExam().getShikenNichiji() != null) ? Gu.getLatestExam().getShikenNichiji()  : "-"  %></td>
 					        
 					        <td>
 							<%
@@ -485,7 +485,7 @@ td:last-child {
 							%>
 							</td>
 					        
-					        <td><%= Gu.getBiko() %></td>
+					        <td><%= (Gu.getBiko() != null) ? Gu.getBiko() : "-" %></td>
 					        <td class="action-col">
 					            <button class="more-btn" data-row="<%= Gu.getShidoId() %>">&hellip;</button>
 							</td>
