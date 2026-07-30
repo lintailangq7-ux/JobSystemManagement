@@ -209,7 +209,7 @@ dialog button:hover {
 
     </div>
 
-<form action="CompanyRegisterServlet" method="post">
+<form action="<%= request.getContextPath() %>/CompanyRegisterServlet" method="post">
 
 <div class="formArea">
 
