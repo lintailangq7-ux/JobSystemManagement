@@ -332,7 +332,6 @@ td:last-child {
                         <th>氏名</th>
                         <th>選考状況</th>
                         <th>備考</th>
-                        <th>　</th>
                     </tr>
                 </thead>
                 <tbody id="companyTable">
@@ -344,10 +343,10 @@ td:last-child {
                                 List<EmploymentChukan> examList = g.getExamHistory();
                 %>
                     <tr data-id="<%= g.getShidoId() %>">
-                        <td><%= g.getShidoId() %></td>
+                        <td><%= (g.getShidoId() != null) ? g.getShidoId()  : "-" %></td>
                         <td>
                             <a href="<%= request.getContextPath() %>/ListofExamStudents?companyId=<%= g.getCompany().getKaishaId() %>">
-                                <%= g.getCompany().getKaishaName() %>
+                                <%= (g.getCompany().getKaishaName() != null) ? g.getCompany().getKaishaName() : "-"  %>
                             </a>
                         </td>
                         <td class="name-cell"><%= d.getStudent().getName() %></td>
@@ -361,14 +360,11 @@ td:last-child {
                         %><%= examList.get(i).getShikenNaiyo() %><%
                                 }
                             } else {
-                        %>&nbsp;<%
+                        %>-<%
                             }
                         %>
                         </td>
-                        <td><%= g.getBiko() %></td>
-                        <td>
-                            <button class="more-btn" data-row="<%= g.getShidoId() %>">&hellip;</button>
-                        </td>
+                        <td><%= (g.getBiko() != null) ? g.getBiko() : "-" %></td>
                     </tr>
                 <%
                             }

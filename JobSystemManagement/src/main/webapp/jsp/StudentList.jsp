@@ -419,7 +419,7 @@ dialog button:hover {
 			        	        <td>-</td>
 			        	   <%} %>
 			<%} %>
-			<td><%=SD.getBiko() %></td>
+			<td><%= (SD.getBiko() != null) ? SD.getBiko() : "-" %></td>
 			<td><button class="more-btn" data-row=<%=SD.getGakusekiNo() %>>&hellip;</button></td>
 		</tr>
 		<%} %>
