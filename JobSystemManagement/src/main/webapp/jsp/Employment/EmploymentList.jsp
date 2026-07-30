@@ -337,8 +337,6 @@ td:last-child {
 	    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("M/d");
 
 	    //がきせきでーたをここでなにかする
-
-	    branch 'main' of git@github.com:lintailangq7-ux/JobSystemManagement.git
 	%>
 
 <div class="page-layout">
