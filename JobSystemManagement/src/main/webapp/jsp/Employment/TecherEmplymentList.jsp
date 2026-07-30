@@ -358,7 +358,7 @@ td:last-child {
                                     if (i > 0) {
                         %>・<%
                                     }
-                        %><%= examList.get(i).getShikenNaiyo() %><%
+                        %><%= (examList.get(i).getShikenNaiyo() != null) ? examList.get(i).getShikenNaiyo() : "-" %><%
                                 }
                             } else {
                         %>-<%
