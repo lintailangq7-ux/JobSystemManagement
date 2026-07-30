@@ -1,7 +1,10 @@
 package Servlet;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -23,6 +26,8 @@ import model.StudentDetail;
 public class EmploymentNewServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	// 日付の入力フォーマット（例: 2026/06/26）
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
@@ -87,7 +92,6 @@ public class EmploymentNewServlet extends HttpServlet {
 		}
 
 		// 試験日時はDB上、試験情報の複合主キー(指導ID + 試験日時)の一部であり
-
 		if (examDate == null || examDate.trim().isEmpty()) {
 			request.setAttribute("mode", "add");
 			request.setAttribute("student", student);
@@ -99,17 +103,38 @@ public class EmploymentNewServlet extends HttpServlet {
 		submitInt = "済".equals(submitStatus) ? 1 : 0;
 		offerInt  = "内".equals(offerStatus) ? 1 : 0;
 
+		// ---- 試験日時のパース（yyyy/MM/dd 形式） ----
 		LocalDateTime examDateTime = null;
-		if (examDate != null && !examDate.isEmpty()) {
-			examDateTime = LocalDateTime.parse(examDate);
+		if (examDate != null && !examDate.trim().isEmpty()) {
+			try {
+				LocalDate d = LocalDate.parse(examDate.trim(), DATE_FORMATTER);
+				examDateTime = d.atStartOfDay(); // 時刻情報がないので00:00として扱う
+			} catch (DateTimeParseException e) {
+				request.setAttribute("mode", "add");
+				request.setAttribute("student", student);
+				request.setAttribute("errorMessage", "試験日時の形式が正しくありません。（例：2026/06/26）");
+				request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
+				return;
+			}
 		}
 
+		// ---- 内定日のパース（yyyy/MM/dd 形式） ----
 		LocalDateTime acceptDateTime = null;
-		if (acceptDate != null && !acceptDate.isEmpty()) {
-			acceptDateTime = LocalDateTime.parse(acceptDate);
+		if (acceptDate != null && !acceptDate.trim().isEmpty()) {
+			try {
+				LocalDate d = LocalDate.parse(acceptDate.trim(), DATE_FORMATTER);
+				acceptDateTime = d.atStartOfDay();
+			} catch (DateTimeParseException e) {
+				request.setAttribute("mode", "add");
+				request.setAttribute("student", student);
+				request.setAttribute("errorMessage", "内定日の形式が正しくありません。（例：2026/06/26）");
+				request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
+				return;
+			}
 		}
+
 		EmploymentChukan ec = new EmploymentChukan("", examDateTime, exam, submitInt, place);
-		String newId = eDAO.insertGuidanceWithExam (gakusekiNo, C.getId(), acceptDateTime, offerInt, memo, ec);
+		String newId = eDAO.insertGuidanceWithExam(gakusekiNo, C.getId(), acceptDateTime, offerInt, memo, ec);
 		if (newId == null) {
 			request.setAttribute("mode", "add");
 			request.setAttribute("student", student);
@@ -117,7 +142,6 @@ public class EmploymentNewServlet extends HttpServlet {
 			request.getRequestDispatcher("/jsp/Employment/Shenkou.jsp").forward(request, response);
 			return;
 		}
-
 
 		response.sendRedirect(request.getContextPath() + "/ListofEmployment");
 	}

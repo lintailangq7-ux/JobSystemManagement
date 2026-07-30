@@ -336,7 +336,9 @@ td:last-child {
 		System.out.println(detail.getStudent() + "detail.getStudent()");
 	    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("M/d");
 
+
 	    //がきせきでーたをここでなにかする
+
 	%>
 
 <div class="page-layout">
@@ -423,8 +425,10 @@ td:last-child {
 		        
 		    </tr>
 		</table>
-		
-		<div class="remarks-box">備考</div>
+			<div class="remarks-box">備考</div>
+			<table>
+			<td><%= detail.getStudent().getBiko()%></td>
+		</table>
 		</div>
 		
 

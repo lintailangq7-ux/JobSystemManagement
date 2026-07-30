@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%
+    String emg = (String) request.getAttribute("emg");
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -131,11 +134,67 @@ body{
     background:#d10000;
 }
 
+/*======================
+ エラー表示ダイアログ
+=======================*/
+dialog {
+    border: none;
+    border-radius: 8px;
+    padding: 24px 30px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    min-width: 280px;
+    text-align: center;
+}
+dialog::backdrop {
+    background: rgba(0,0,0,0.5);
+}
+dialog p {
+    margin: 0 0 20px 0;
+    font-size: 15px;
+    color: #333;
+    white-space: pre-line;
+}
+dialog button {
+    padding: 6px 28px;
+    background: #2b6cb0;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+dialog button:hover {
+    background: #245a94;
+}
+
 </style>
 
 </head>
 
 <body>
+
+<dialog id="okDialog">
+    <p><%= emg %></p>
+    <button onclick="document.getElementById('okDialog').close()">OK</button>
+</dialog>
+
+<script>
+    window.onload = function() {
+        <% if (emg != null && !emg.isEmpty()) { %>
+            document.getElementById('okDialog').showModal();
+        <% } %>
+    };
+
+    // 「戻る」でキャッシュから復元された場合はダイアログを表示しない
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            const dialog = document.getElementById('okDialog');
+            if (dialog.open) {
+                dialog.close();
+            }
+        }
+    });
+</script>
 
 <div class="container">
 
@@ -150,7 +209,7 @@ body{
 
     </div>
 
-<form action="CompanyRegisterServlet" method="post">
+<form action="<%= request.getContextPath() %>/CompanyRegisterServlet" method="post">
 
 <div class="formArea">
 
@@ -159,7 +218,7 @@ body{
         <label>企業名</label>
 
         <input type="text"
-               name="companyName">
+               name="name">
 
     </div>
 
@@ -186,7 +245,16 @@ body{
         <label>メールアドレス</label>
 
         <input type="text"
-               name="mail">
+               name="email">
+
+    </div>
+
+    <div class="row">
+
+        <label>勤務地</label>
+
+        <input type="text"
+               name="kinmuchi">
 
     </div>
 
@@ -194,11 +262,11 @@ body{
 
         <label>採用実績</label>
 
-        <select name="result">
+        <select name="saiyoJisseki">
 
-            <option value="あり">あり</option>
+            <option value="1">あり</option>
 
-            <option value="なし">なし</option>
+            <option value="0">なし</option>
 
         </select>
 

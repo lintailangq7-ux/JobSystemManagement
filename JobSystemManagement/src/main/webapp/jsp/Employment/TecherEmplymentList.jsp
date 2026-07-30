@@ -296,7 +296,7 @@ td:last-child {
     <!-- ============ 左サイドバー ============ -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <button class="back-button" title="ひとつ前の画面に遷移" onclick="location.href='<%= request.getContextPath() %>/Servlet/Login.java'">◀</button>
+           <button class="back-button" title="ひとつ前の画面に遷移" onclick="location.href='<%= request.getContextPath() %>/Login'">◀</button>
             <div class="page-title-box">指導一覧</div>
         </div>
 
@@ -346,7 +346,7 @@ td:last-child {
                     <tr data-id="<%= g.getShidoId() %>">
                         <td><%= g.getShidoId() %></td>
                         <td>
-                            <a href="<%= request.getContextPath() %>/ListofExamStudents?companyId=<%= d.getStudent().getGakusekiNo() %>">
+                            <a href="<%= request.getContextPath() %>/ListofExamStudents?companyId=<%= g.getCompany().getKaishaId() %>">
                                 <%= g.getCompany().getKaishaName() %>
                             </a>
                         </td>

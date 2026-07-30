@@ -150,12 +150,12 @@ body{
 
     </div>
 
-<form action="CompanyUpdateServlet" method="post">
+<form action="<%= request.getContextPath() %>/CompanyUpdate" method="post">
 
     <!-- 更新対象のID -->
     <input type="hidden"
            name="companyId"
-           value="${company.companyId}">
+           value="${company.id}">
 
 <div class="formArea">
 
@@ -165,7 +165,7 @@ body{
 
         <input type="text"
                name="companyName"
-               value="${company.companyName}">
+               value="${company.name}">
 
     </div>
 
@@ -205,13 +205,13 @@ body{
 
         <select name="result">
 
-            <option value="あり"
-                ${company.result=="あり"?"selected":""}>
+            <option value="1"
+                ${company.jobtype=="1"?"selected":""}>
                 あり
             </option>
 
-            <option value="なし"
-                ${company.result=="なし"?"selected":""}>
+            <option value="0"
+                ${company.jobtype=="0"?"selected":""}>
                 なし
             </option>
 
