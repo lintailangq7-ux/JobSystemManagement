@@ -242,7 +242,8 @@
 			<th>住所</th>
 			<th>TEL</th>
 			<th>メールアドレス</th>
-			<th>募集職種</th>
+			<th>採用実績</th>
+			
 			<th class="action-col"></th>
 		</tr>
 		

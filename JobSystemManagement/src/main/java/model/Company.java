@@ -9,10 +9,11 @@ public class Company {
 	    private String tel;//電話番号
 	    private String mail;//メールアドレス
 	    private String jobtype;//募集職種
+	    private String location;//勤務地
 
 private List<Company>CompanyList;
 public Company() {}
-public Company(String id,String name,String address,String tel,String mail,String jobtype,List<Company> CompanyList) {
+public Company(String id,String name,String address,String tel,String mail,String jobtype,List<Company> CompanyList,String location) {
 	this.id=id;
 	this.name=name;
 	this.address=address;
@@ -20,6 +21,7 @@ public Company(String id,String name,String address,String tel,String mail,Strin
 	this.mail=mail;
 	this.jobtype=jobtype;
 	this.CompanyList=CompanyList;
+	this.location=location;
 }
 	    
 		public String getId() {
@@ -57,6 +59,7 @@ public Company(String id,String name,String address,String tel,String mail,Strin
 	        this.tel = tel;
 	    }
 
+	    
 
 	    public String getMail() {
 	        return mail;
@@ -80,5 +83,11 @@ public Company(String id,String name,String address,String tel,String mail,Strin
 	    }
 	    public void setCompanyList(List<Company> companyList) {
 	    	this.CompanyList=companyList;
+	    }
+	    public String getLocation() {
+	    	return location;
+	    }
+	    public void setLocation(String location) {
+	    	this.location=location;
 	    }
 }

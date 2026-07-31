@@ -37,20 +37,21 @@ public class CompanyUpdate extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         String id = request.getParameter("companyId");
-        String name = request.getParameter("companyName");
+        String name = request.getParameter("name");
         String address = request.getParameter("address");
         String tel = request.getParameter("tel");
         String mail = request.getParameter("mail");
-        String result = request.getParameter("result");
-
+        String jobtype = request.getParameter("jobtype");
+       String location = request.getParameter("location");
+       System.out.println("勤務地：" + location);
         Company company = new Company();
         company.setId(id);
         company.setName(name);
         company.setAddress(address);
         company.setTel(tel);
         company.setMail(mail);
-        company.setJobtype(result);
-
+        company.setJobtype(jobtype);
+        company.setLocation(location);
         CompanyDAO dao = new CompanyDAO();
 
         if (id == null || id.isEmpty()) {
