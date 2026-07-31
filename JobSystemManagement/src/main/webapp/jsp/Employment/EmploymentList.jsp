@@ -326,6 +326,36 @@ td:last-child {
     font-weight: bold;
     text-align: center;
 }
+
+dialog {
+    border: none;
+    border-radius: 8px;
+    padding: 24px 30px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    min-width: 280px;
+    text-align: center;
+}
+dialog::backdrop {
+    background: rgba(0,0,0,0.5);
+}
+dialog p {
+    margin: 0 0 20px 0;
+    font-size: 15px;
+    color: #333;
+    white-space: pre-line;
+}
+dialog button {
+    padding: 6px 28px;
+    background: #2b6cb0;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+dialog button:hover {
+    background: #245a94;
+}
 </style>
 </head>
 <body>
@@ -337,10 +367,25 @@ td:last-child {
 		System.out.println(detail.getStudent() + "detail.getStudent()");
 	    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("M/d");
 
-
-	    //がきせきでーたをここでなにかする
-
+	    // セッションに一時保存された変更完了メッセージがあれば取り出して、その場で消す
+	    String emg = (String) session.getAttribute("emg");
+	    if (emg != null) {
+	        session.removeAttribute("emg");
+	    }
 	%>
+
+<dialog id="okDialog">
+    <p><%= (emg != null) ? emg : "" %></p>
+    <button onclick="document.getElementById('okDialog').close()">OK</button>
+</dialog>
+
+<script>
+    window.onload = function() {
+        <% if (emg != null && !emg.isEmpty()) { %>
+            document.getElementById('okDialog').showModal();
+        <% } %>
+    };
+</script>
 
 <div class="page-layout">
 
@@ -434,6 +479,7 @@ td:last-child {
 		
 
         <nav class="side-nav">
+            <button class="nav-btn" onclick="location.href='<%= request.getContextPath() %>/StudentAreaJobUpdateServlet'">学生情報変更</button>
             <button class="nav-btn" onclick="location.href='<%= request.getContextPath() %>/ListofCompanies'">企業一覧</button>
             <button class="nav-btn" onclick="location.href='<%= request.getContextPath() %>/ReportSevlet'">活動状況報告</button>
         </nav>

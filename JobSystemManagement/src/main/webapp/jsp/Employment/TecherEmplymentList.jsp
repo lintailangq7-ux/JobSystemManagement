@@ -354,7 +354,11 @@ td:last-child {
                                 <%= (g.getCompany().getKaishaName() != null) ? g.getCompany().getKaishaName() : "-"  %>
                             </a>
                         </td>
-                        <td class="name-cell"><%= d.getStudent().getName() %></td>
+                        <td class="name-cell">
+                            <a href="<%= request.getContextPath() %>/StudentServlet?gakusekiNo=<%= d.getStudent().getGakusekiNo() %>">
+                                <%= d.getStudent().getName() %>
+                            </a>
+                        </td>
                         <td>
                         <%
                             if (examList != null && !examList.isEmpty()) {

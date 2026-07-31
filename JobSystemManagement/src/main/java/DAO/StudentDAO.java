@@ -152,6 +152,34 @@ public class StudentDAO {
 	    }
 	}
 
+	/**
+	 * 希望地域（県内外の希望）だけをピンポイントで更新する。
+	 * 生徒本人が自分の希望地域・希望職種だけを変更できる画面用。
+	 * 他の項目（クラス、氏名、性別、あっせん状況など）には一切触れない。
+	 *
+	 * @param gakusekiNo 学籍番号
+	 * @param area       希望地域（"県内" / "県外" / "その他" などDBに保存されている値そのもの）
+	 * @return 更新できたら true
+	 */
+	public boolean updateAreaOnly(int gakusekiNo, String area) {
+	    String sql = "UPDATE 学生テーブル SET 県内外の希望 = ? WHERE 学籍番号 = ?";
+
+	    try (Connection conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+	         PreparedStatement pStmt = conn.prepareStatement(sql)) {
+
+	        pStmt.setString(1, area);
+	        pStmt.setInt(2, gakusekiNo);
+
+	        int result = pStmt.executeUpdate();
+	        return result > 0;
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        System.out.println("希望地域更新エラー: " + e.getMessage());
+	        return false;
+	    }
+	}
+
 	public String findCompanyName(String companyId) {
 		 String companyName = null;
 
