@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import DAO.CompanyDAO;
 import model.Company;
 
-@WebServlet("/CompanyUpdateServlet")
+@WebServlet("/CompanyUpdate")
 public class CompanyUpdate extends HttpServlet {
 
     @Override
