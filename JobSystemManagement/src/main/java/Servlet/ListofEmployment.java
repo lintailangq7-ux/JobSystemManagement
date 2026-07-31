@@ -61,7 +61,14 @@ public class ListofEmployment extends HttpServlet {
 			responsed = "/jsp/Employment/TecherEmplymentList.jsp";
  
 		} else if (userId.startsWith("Su")) {
-			StudentDetail detail = dao.findByGakusekiNo(userId.substring(2));
+			StudentDetail detail ;
+
+		    if (keyword == null || keyword.trim().isEmpty()) {
+		        detail = dao.findByGakusekiNo(userId.substring(2));
+		    } else {
+		        detail = dao.findByGakusekiNoAndCompanyKeyword(
+		                    userId.substring(2), keyword);
+		    }
 			session.setAttribute("detail", detail);
 			responsed = "/jsp/Employment/EmploymentList.jsp";
  
@@ -73,7 +80,8 @@ public class ListofEmployment extends HttpServlet {
  
 		session.setAttribute("userType", userId.startsWith("Te") ? "teacher" : "student");
  
-		response.sendRedirect(request.getContextPath() + responsed);
+		request.getRequestDispatcher(responsed)
+	       .forward(request, response);
 	}
  
 	/**

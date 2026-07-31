@@ -327,5 +327,8 @@ public class EmploymentDAO {   // 指導＋就職情報
                     }
                 }
             }
+            
+            
+        }	
         }
-    }
+    

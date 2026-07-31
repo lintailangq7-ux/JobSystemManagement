@@ -267,6 +267,76 @@ public class StudentDetailDAO {
         }
         return list;
     }
- 
+
+	public StudentDetail findByGakusekiNoAndCompanyKeyword(String gakusekiNo, String keyword) {
+		// TODO 自動生成されたメソッド・スタブ
+		  ModelStudent student = findStudent(gakusekiNo);
+
+		    if (student == null) {
+		        return null;
+		    }
+
+		    List<GuidanceDetail> guidanceList = new ArrayList<>();
+
+		    String sql =
+		        "SELECT j.指導ID, j.内定確定日, j.内定確定, j.備考 AS 指導備考, " +
+		        "c.企業ID, c.企業名, c.住所, c.電話番号, c.メールアドレス, c.採用実績, c.勤務地 " +
+		        "FROM 就職情報テーブル j " +
+		        "INNER JOIN 企業テーブル c ON j.企業ID = c.企業ID " +
+		        "WHERE j.学籍番号 = ? " +
+		        "AND c.企業名 LIKE ? " +
+		        "ORDER BY j.指導ID";
+
+
+		    try(Connection con = DriverManager.getConnection(URL, USER, PASS);
+		        PreparedStatement ps = con.prepareStatement(sql)) {
+
+		        ps.setString(1, gakusekiNo);
+		        ps.setString(1, "%" + keyword + "%");
+
+
+		        ResultSet rs = ps.executeQuery();
+
+		        while(rs.next()) {
+
+		            GuidanceDetail gd = new GuidanceDetail();
+
+		            gd.setShidoId(rs.getString("指導ID"));
+		            gd.setNaiteiKakutei(rs.getInt("内定確定"));
+
+		            Timestamp ts = rs.getTimestamp("内定確定日");
+		            if(ts != null){
+		                gd.setNaiteiKakuteiBi(ts.toLocalDateTime());
+		            }
+
+		            gd.setBiko(rs.getString("指導備考"));
+
+
+		            ModelCompany company = new ModelCompany();
+
+		            company.setKaishaId(rs.getString("企業ID"));
+		            company.setKaishaName(rs.getString("企業名"));
+		            company.setAddress(rs.getString("住所"));
+		            company.setTel(rs.getString("電話番号"));
+		            company.setEmail(rs.getString("メールアドレス"));
+		            company.setSaiyoJisseki(rs.getInt("採用実績"));
+		            company.setKinmuChi(rs.getString("勤務地"));
+
+		            gd.setCompany(company);
+
+		            guidanceList.add(gd);
+		        }
+
+		    }catch(Exception e){
+		        e.printStackTrace();
+		    }
+
+
+		    return new StudentDetail(student, guidanceList);
+		
+		
+	}
+
+	
 }
  
