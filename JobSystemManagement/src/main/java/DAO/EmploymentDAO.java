@@ -210,12 +210,11 @@ public class EmploymentDAO {   // 指導＋就職情報
          * @return 更新できたら true
          */
         public boolean updateGuidance(String shidoId, String kigyoId,
-                LocalDateTime naiteiKakuteiBi, int naiteiKakutei, String biko,
-                EmploymentChukan chukan) {
+                LocalDateTime naiteiKakuteiBi, int naiteiKakutei, String biko) {
 
         		String sql = "UPDATE 就職情報テーブル "
-        				+ "SET 企業ID = ?, 内定確定日 = ?, 内定確定 = ?, 備考 = ? "
-        				+ "WHERE 指導ID = ?";
+        					+ "SET 企業ID = ?, 内定確定日 = ?, 内定確定 = ?, 備考 = ? "
+        					+ "WHERE 指導ID = ?";
 
         		try (Connection con = DriverManager.getConnection(URL, USER, PASS);
         				PreparedStatement ps = con.prepareStatement(sql)) {
@@ -236,6 +235,7 @@ public class EmploymentDAO {   // 指導＋就職情報
 
         		} catch (SQLException e) {
         			e.printStackTrace();
+        			System.out.println("指導情報更新エラー: " + e.getMessage());
         			return false;
         		}
         }

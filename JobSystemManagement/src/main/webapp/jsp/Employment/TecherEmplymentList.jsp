@@ -302,6 +302,7 @@ td:last-child {
 
         <nav class="side-nav">
             <button class="nav-btn" onclick="location.href='<%= request.getContextPath() %>/StudentServlet'">学生一覧</button>
+			<button class="nav-btn" onclick="location.href='<%= request.getContextPath() %>/ListofCompanies'">企業一覧</button> 
             <button class="nav-btn" onclick="location.href='<%= request.getContextPath() %>/ReportSevlet'">活動状況報告</button>
         </nav>
     </aside>
@@ -332,7 +333,6 @@ td:last-child {
                         <th>氏名</th>
                         <th>選考状況</th>
                         <th>備考</th>
-                        <th>　</th>
                     </tr>
                 </thead>
                 <tbody id="companyTable">
@@ -344,14 +344,18 @@ td:last-child {
                                 List<EmploymentChukan> examList = g.getExamHistory();
                 %>
                     <tr data-id="<%= g.getShidoId() %>">
-                        <td><%= g.getShidoId() %></td>
+                        <td><%= (g.getShidoId() != null) ? g.getShidoId()  : "-" %></td>
                         <td>
 <<<<<<< HEAD
                             <a href="<%= request.getContextPath() %>/ListofExamStudents?companyId=<%= d.getStudents().getId() %>">
 =======
                             <a href="<%= request.getContextPath() %>/ListofExamStudents?companyId=<%= g.getCompany().getKaishaId() %>">
+<<<<<<< HEAD
 >>>>>>> branch 'main' of git@github.com:lintailangq7-ux/JobSystemManagement.git
                                 <%= g.getCompany().getKaishaName() %>
+=======
+                                <%= (g.getCompany().getKaishaName() != null) ? g.getCompany().getKaishaName() : "-"  %>
+>>>>>>> branch 'main' of git@github.com:lintailangq7-ux/JobSystemManagement.git
                             </a>
                         </td>
                         <td class="name-cell"><%= d.getStudent().getName() %></td>
@@ -362,17 +366,14 @@ td:last-child {
                                     if (i > 0) {
                         %>・<%
                                     }
-                        %><%= examList.get(i).getShikenNaiyo() %><%
+                        %><%= (examList.get(i).getShikenNaiyo() != null) ? examList.get(i).getShikenNaiyo() : "-" %><%
                                 }
                             } else {
-                        %>&nbsp;<%
+                        %>-<%
                             }
                         %>
                         </td>
-                        <td><%= g.getBiko() %></td>
-                        <td>
-                            <button class="more-btn" data-row="<%= g.getShidoId() %>">&hellip;</button>
-                        </td>
+                        <td><%= (g.getBiko() != null) ? g.getBiko() : "-" %></td>
                     </tr>
                 <%
                             }

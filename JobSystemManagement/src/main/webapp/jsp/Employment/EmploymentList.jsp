@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
     import="java.time.format.DateTimeFormatter,
+            java.time.LocalDateTime,
             DAO.StudentDetailDAO, model.StudentDetail,
             model.GuidanceDetail, model.ModelStudent,
             model.EmploymentChukan, java.util.List,
@@ -353,15 +354,15 @@ td:last-child {
 		<table class="student-table">
 		                <tr>
 		                    <td class="header">氏名</td>
-		                    <td><%= detail.getStudent().getName() %></td>
+		                    <td><%= (detail.getStudent().getName() != null) ? detail.getStudent().getName() : "-"%></td>
 		                </tr>
 		                <tr>
 		                    <td class="header">クラス</td>
-		                    <td><%= detail.getStudent().getClassName()%></td>
+		                    <td><%= (detail.getStudent().getClassName() != null) ? detail.getStudent().getClassName() : "-"%></td>
 		                </tr>
 		                <tr>
 		                    <td class="header">番号</td>
-		                    <td class="number"><%= detail.getStudent().getAttendanceNo()%></td>
+		                    <td class="number"><%= (detail.getStudent().getAttendanceNo() != 0) ? detail.getStudent().getAttendanceNo() : "-"%></td>
 		                </tr>
 		                <tr>
 		                    <td class="header">性別</td>
@@ -405,7 +406,7 @@ td:last-child {
 	%>
 		    <tr>
 		        <td class="header">志望地域</td>
-		        <td><%= detail.getStudent().getKenNaiGaiKibo()%></td>
+		        <td><%= (detail.getStudent().getKenNaiGaiKibo() != null) ? detail.getStudent().getKenNaiGaiKibo() : "-"%></td>
 		    </tr>
 		    <tr>
 		        <td class="header">内定状況</td>
@@ -425,7 +426,7 @@ td:last-child {
 		        
 		    </tr>
 		</table>
-			<div class="remarks-box"><%= detail.getStudent().getBiko()%></div>
+			<div class="remarks-box"><%= (detail.getStudent().getBiko() != null) ? detail.getStudent().getBiko() : "備考" %></div>
 			<table>
 
 		</table>
@@ -458,41 +459,125 @@ td:last-child {
 				    <tr>
 				        <th>指導ID</th>
 				        <th>企業名</th>
+						<th>業種</th>
 				        <th>選考状況</th>
+				        <th>試験会場</th>
 				        <th>試験日時</th>
-				        <th>業種</th>
+				        <th>提出状況</th>
 				        <th>備考</th>
 				        <th class="action-col"></th>
 				    </tr>
 				</thead>
-                <tbody id="companyTable">
-         
-					<tbody>
-						<%for(GuidanceDetail Gu:  detail.getGuidanceList()){ %>
-					    <tr data-id="<%= Gu.getShidoId() %>">
-					        <td class="id-cell"><%= Gu.getShidoId() %></td>
-					        <td class="company-cell"><%= Gu.getCompany().getKaishaName() %></td> 
-					        <td><%= Gu.getLatestExam().getShikenNaiyo() %></td>
-					        <td><%= Gu.getLatestExam().getShikenNichiji() %></td>
-					        
-					        <td>
-							<%
-							for(CompanyChukan Mc : Gu.getCompany().getCompanyChukanList()){
-							%>
-								 <%= Mc.getBoshuShokushu() %>・<br>
-							<%
-							}
-							%>
-							</td>
-					        
-					        <td><%= Gu.getBiko() %></td>
-					        <td class="action-col">
-					            <button class="more-btn" data-row="<%= Gu.getShidoId() %>">&hellip;</button>
-							</td>
-						</tr>
-						<%} %>
-					</tbody>
-            </table>
+				<tbody id="companyTable">
+				<%
+				    DateTimeFormatter dtFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+				    for (GuidanceDetail Gu : detail.getGuidanceList()) {
+				        List<EmploymentChukan> examList = Gu.getExamHistory();
+				%>
+				    <tr data-id="<%= Gu.getShidoId() %>">
+				        <!-- 指導ID -->
+				        <td class="id-cell">
+				            <%= (Gu.getShidoId() != null) ? Gu.getShidoId() : "-" %>
+				        </td>
+
+				        <!-- 企業名 -->
+				        <td class="company-cell">
+				            <%= (Gu.getCompany() != null && Gu.getCompany().getKaishaName() != null)
+				                    ? Gu.getCompany().getKaishaName() : "-" %>
+				        </td>
+						
+						<!-- 業種 -->
+						<td>
+						<%
+						    if (Gu.getCompany() != null
+						            && Gu.getCompany().getCompanyChukanList() != null
+						            && !Gu.getCompany().getCompanyChukanList().isEmpty()) {
+						        for (CompanyChukan Mc : Gu.getCompany().getCompanyChukanList()) {
+						            String shokushu = Mc.getBoshuShokushu();
+						            if (shokushu != null && !shokushu.isEmpty()) {
+						                out.print(shokushu + "・<br>");
+						            }
+						        }
+						    } else {
+						        out.print("-");
+						    }
+						%>
+						</td>
+						
+				        <!-- 選考状況（複数） -->
+				        <td>
+				        <%
+				            if (examList != null && !examList.isEmpty()) {
+				                for (int i = 0; i < examList.size(); i++) {
+				                    if (i > 0) out.print("<br>");
+				                    String naiyo = examList.get(i).getShikenNaiyo();
+				                    out.print(naiyo != null && !naiyo.isEmpty() ? naiyo : "-");
+				                }
+				            } else {
+				                out.print("-");
+				            }
+				        %>
+				        </td>
+
+				        <!-- 試験会場（複数） -->
+				        <td>
+				        <%
+				            if (examList != null && !examList.isEmpty()) {
+				                for (int i = 0; i < examList.size(); i++) {
+				                    if (i > 0) out.print("<br>");
+				                    String kaijo = examList.get(i).getShikenKaijo();
+				                    out.print(kaijo != null && !kaijo.isEmpty() ? kaijo : "-");
+				                }
+				            } else {
+				                out.print("-");
+				            }
+				        %>
+				        </td>
+
+				        <!-- 試験日時（複数） -->
+				        <td>
+				        <%
+				            if (examList != null && !examList.isEmpty()) {
+				                for (int i = 0; i < examList.size(); i++) {
+				                    if (i > 0) out.print("<br>");
+				                    LocalDateTime dt = examList.get(i).getShikenNichiji();
+				                    out.print(dt != null ? dtFmt.format(dt) : "-");
+				                }
+				            } else {
+				                out.print("-");
+				            }
+				        %>
+				        </td>
+
+				        <!-- 提出状況（複数） -->
+				        <td>
+				        <%
+				            if (examList != null && !examList.isEmpty()) {
+				                for (int i = 0; i < examList.size(); i++) {
+				                    if (i > 0) out.print("<br>");
+				                    int status = examList.get(i).getTeishutsuShoruiJokyo();
+				                    out.print(status == 1 ? "済" : "未");
+				                }
+				            } else {
+				                out.print("-");
+				            }
+				        %>
+				        </td>
+
+
+
+				        <!-- 備考 -->
+				        <td><%= (Gu.getBiko() != null) ? Gu.getBiko() : "-" %></td>
+
+				        <!-- …ボタン -->
+				        <td class="action-col">
+				            <button class="more-btn" data-row="<%= Gu.getShidoId() %>">&hellip;</button>
+				        </td>
+				    </tr>
+				<%
+				    }
+				%>
+				</tbody>
         </div>
 
     </main>

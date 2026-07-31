@@ -337,7 +337,7 @@ dialog button:hover {
     <!-- ============ 左サイドバー ============ -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <button class="back-button" title="ひとつ前の画面に遷移" onclick="history.back()">◀</button>
+            <button class="back-button" title="ひとつ前の画面に遷移" onclick="location.href='<%= request.getContextPath() %>/ListofEmployment'">◀</button>
             <div class="page-title-box">学生情報一覧</div>
         </div>
     </aside>
@@ -374,55 +374,83 @@ dialog button:hover {
             </tr>
             </thead>
             <tbody>
-	<% for(ModelStudent SD : StuList){ %>
-		<tr data-id=<%= SD.getGakusekiNo()%>>
-			<td class="rowhead"><%=SD.getGakusekiNo() %></td>
-			<td><%=SD.getClassName() %></td>
-			<td><%=SD.getAttendanceNo() %></td>
-			<td class="name-cell"><%=SD.getName() %></td>
-			<%String Sei = SD.getSeibetsu();
-			  if(Sei.equals("F")){ %>
-			  	<td>女</td>
-			<% }else if(Sei.equals("M")){%>
-				 <td>男</td>
-			<% }else if(Sei.equals("X")){%>
-				 <td>未</td>
-			 <%} %>
-			 <%
-			 int assen = SD.getAssen();
-			 if(assen ==1){%>
-				 <td>あっせん中</td>
-			 <%}else if(assen ==2) {%>
-			 <td>辞退</td>
-			 <%} %>
-			 <%
-			   int zai = SD.getZaisekiJokyo();
-			   if(zai == 1){%>
-			 	<td>在学</td>
-			 <% }else if(zai ==2){ %>
-			 	<td>卒業</td>
-			 <% }else if(zai ==3){ %>
-			 	<td>退学</td>
-			 <% }else if(zai ==4){ %>
-				<td>留年</td>
-			<%}%>
-			<td><%=SD.getKenNaiGaiKibo() %></td>
-			<%
-			  List<StudentChukan> chukanList = SD.getGakuseiChukanList();
-			    for (int i = 0; i <= 2; i++) { 
-			        if (chukanList != null && i < chukanList.size()) {
-			        	%>
-			        	        <td><%= chukanList.get(i).getKibouShokushu() %></td>
-			        	<%
-			        	        } else {
-			        	%>
-			        	        <td>-</td>
-			        	   <%} %>
-			<%} %>
-			<td><%=SD.getBiko() %></td>
-			<td><button class="more-btn" data-row=<%=SD.getGakusekiNo() %>>&hellip;</button></td>
-		</tr>
-		<%} %>
+				<% for(ModelStudent SD : StuList){ %>
+				<tr data-id="<%= SD.getGakusekiNo() %>">
+				    <td class="rowhead"><%= SD.getGakusekiNo() %></td>
+				    <td><%= SD.getClassName() %></td>
+				    <td><%= SD.getAttendanceNo() %></td>
+				    <td class="name-cell"><%= SD.getName() %></td>
+
+				    <!-- 性別（必ず1つのtdを出力） -->
+				    <td>
+				    <%
+				        String Sei = SD.getSeibetsu();
+				        if ("F".equals(Sei)) {
+				            out.print("女");
+				        } else if ("M".equals(Sei)) {
+				            out.print("男");
+				        } else if ("X".equals(Sei)) {
+				            out.print("未");
+				        } else {
+				            out.print("-");
+				        }
+				    %>
+				    </td>
+
+				    <!-- あっせん状況（必ず1つのtdを出力） -->
+				    <td>
+				    <%
+				        int assen = SD.getAssen();
+				        if (assen == 1) {
+				            out.print("あっせん中");
+				        } else if (assen == 2) {
+				            out.print("辞退");
+				        } else {
+				            out.print("-");   // 0 やその他
+				        }
+				    %>
+				    </td>
+
+				    <!-- 在籍状況（必ず1つのtdを出力） -->
+				    <td>
+				    <%
+				        int zai = SD.getZaisekiJokyo();
+				        if (zai == 1) {
+				            out.print("在学");
+				        } else if (zai == 2) {
+				            out.print("卒業");
+				        } else if (zai == 3) {
+				            out.print("退学");
+				        } else if (zai == 4) {
+				            out.print("留年");
+				        } else {
+				            out.print("-");   // 0 やその他（休学など）
+				        }
+				    %>
+				    </td>
+
+				    <td><%= SD.getKenNaiGaiKibo() != null ? SD.getKenNaiGaiKibo() : "-" %></td>
+
+				    <!-- 希望業種1〜3 -->
+				    <%
+				        List<StudentChukan> chukanList = SD.getGakuseiChukanList();
+				        for (int i = 0; i <= 2; i++) {
+				            if (chukanList != null && i < chukanList.size()) {
+				    %>
+				                <td><%= chukanList.get(i).getKibouShokushu() %></td>
+				    <%
+				            } else {
+				    %>
+				                <td>-</td>
+				    <%
+				            }
+				        }
+				    %>
+
+				    <td><%= (SD.getBiko() != null) ? SD.getBiko() : "-" %></td>
+				    <td><button class="more-btn" data-row="<%= SD.getGakusekiNo() %>">&hellip;</button></td>
+				</tr>
+				<% } %>
             </tbody>
         </table>
         </div>
