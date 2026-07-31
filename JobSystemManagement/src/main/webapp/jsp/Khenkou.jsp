@@ -73,6 +73,18 @@ body{
     margin:0 auto;
 }
 
+.errorMessage{
+    width:500px;
+    margin:0 auto 20px auto;
+    padding:12px 16px;
+    color:#b00020;
+    background:#fdecea;
+    border:1px solid #b00020;
+    border-radius:6px;
+    font-size:16px;
+    font-weight:bold;
+}
+
 .row{
     display:flex;
     align-items:center;
@@ -150,6 +162,10 @@ body{
 
     </div>
 
+<% if (request.getAttribute("errorMessage") != null) { %>
+    <div class="errorMessage"><%= request.getAttribute("errorMessage") %></div>
+<% } %>
+
 <form action="<%= request.getContextPath() %>/CompanyUpdate" method="post">
     <!-- 更新対象のID -->
     <input type="hidden"
@@ -195,6 +211,16 @@ body{
         <input type="text"
                name="mail"
                value="${company.mail}">
+
+    </div>
+
+    <div class="row">
+
+        <label>勤務地</label>
+
+        <input type="text"
+               name="location"
+               value="${company.location}">
 
     </div>
 

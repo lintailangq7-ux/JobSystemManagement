@@ -218,7 +218,8 @@ dialog button:hover {
         <label>企業名</label>
 
         <input type="text"
-               name="name">
+               name="name"
+               value="${company.name}">
 
     </div>
 
@@ -227,7 +228,8 @@ dialog button:hover {
         <label>住所</label>
 
         <input type="text"
-               name="address">
+               name="address"
+               value="${company.address}">
 
     </div>
 
@@ -236,7 +238,8 @@ dialog button:hover {
         <label>電話番号</label>
 
         <input type="text"
-               name="tel">
+               name="tel"
+               value="${company.tel}">
 
     </div>
 
@@ -245,7 +248,8 @@ dialog button:hover {
         <label>メールアドレス</label>
 
         <input type="text"
-               name="email">
+               name="email"
+               value="${company.mail}">
 
     </div>
 
@@ -254,7 +258,8 @@ dialog button:hover {
         <label>勤務地</label>
 
         <input type="text"
-               name="location">
+               name="location"
+               value="${company.location}">
 
     </div>
 
@@ -264,9 +269,15 @@ dialog button:hover {
 
         <select name="jobtype">
 
-            <option value="1">あり</option>
+            <option value="1"
+                ${company.jobtype=="1"?"selected":""}>
+                あり
+            </option>
 
-            <option value="0">なし</option>
+            <option value="0"
+                ${company.jobtype=="0"?"selected":""}>
+                なし
+            </option>
 
         </select>
 

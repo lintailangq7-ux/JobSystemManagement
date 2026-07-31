@@ -263,7 +263,7 @@ if(list != null){
 				<td><%= c.getAddress() %></td>
 				<td><%= c.getTel() %></td>
 				<td><%= c.getMail() %></td>
-				<td><%= c.getJobtype() %></td>
+				<td><%= "1".equals(c.getJobtype()) ? "あり" : "なし" %></td>
 
 
 		
