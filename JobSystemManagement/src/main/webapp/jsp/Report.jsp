@@ -434,7 +434,7 @@
 
   <div class="header-row">
     <div class="title-box">
-      <button class="title-arrow" onclick="history.back()">
+      <button class="title-arrow" onclick="location.href='<%= request.getContextPath() %>/ListofEmployment'">
         <svg viewBox="0 0 24 24"><polygon points="18,2 18,22 4,12" fill="#FFE600"/></svg>
       </button>
       <div class="title-text">活動報告</div>

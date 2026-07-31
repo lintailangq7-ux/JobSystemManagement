@@ -182,7 +182,7 @@ dialog button:hover {
 
 <button type="button"
 class="backButton"
-onclick="history.back()"
+onclick="location.href='<%= request.getContextPath() %>/StudentListServlet'"
 title="戻る">
 </button>
 
