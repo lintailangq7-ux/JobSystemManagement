@@ -150,7 +150,7 @@ body{
 
     </div>
 
-<form action="<%= request.getContextPath() %>/CompanyUpdateServlet" method="post">
+<form action="<%= request.getContextPath() %>/CompanyUpdate" method="post">
     <!-- 更新対象のID -->
     <input type="hidden"
            name="companyId"
