@@ -35,6 +35,7 @@ public class ListofEmployment extends HttpServlet {
 			throws ServletException, IOException {
  
 		String keyword = request.getParameter("keyword");
+		System.out.println("検索キーワード：" + keyword);
  
 		HttpSession session = request.getSession();
 		String userId = (String) session.getAttribute("userId");
@@ -69,6 +70,7 @@ public class ListofEmployment extends HttpServlet {
 		        detail = dao.findByGakusekiNoAndCompanyKeyword(
 		                    userId.substring(2), keyword);
 		    }
+		    System.out.println("検索結果：" + detail.getGuidanceList().size());
 			session.setAttribute("detail", detail);
 			responsed = "/jsp/Employment/EmploymentList.jsp";
  
