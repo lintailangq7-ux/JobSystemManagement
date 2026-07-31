@@ -287,7 +287,7 @@ if(list != null){
 
 </table>
 
-<button class="add-button" type="button" onclick="location.href='CompanyUpdateServlet'">登録</button>
+<button class="add-button" type="button" onclick="location.href='CompanyUpdate'">登録</button>
 
 <!-- 右クリック風メニュー -->
 <div class="ctx-menu" id="ctxMenu">
