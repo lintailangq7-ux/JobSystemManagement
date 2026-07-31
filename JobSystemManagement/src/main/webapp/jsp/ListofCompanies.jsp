@@ -242,7 +242,8 @@
 			<th>住所</th>
 			<th>TEL</th>
 			<th>メールアドレス</th>
-			<th>募集職種</th>
+			<th>採用実績</th>
+			
 			<th class="action-col"></th>
 		</tr>
 		
@@ -287,11 +288,8 @@ if(list != null){
 
 </table>
 
-<button class="add-button" type="button" onclick="location.href='/CompanyUpdate'">登録</button>
+<button class="add-button" type="button" onclick="location.href='<%=request.getContextPath()%>/CompanyUpdate'">登録</button>
 
-<button class="add-button" type="button" onclick="location.href='CompanyUpdateServlet'">登録</button>
-
-<button class="add-button" type="button" onclick="location.href='CompanyUpdate'">登録</button>
 
 
 <!-- 右クリック風メニュー -->

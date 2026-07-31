@@ -311,17 +311,17 @@ String sql ="SELECT 企業ID, 企業名, 住所, 電話番号, メールアド�
    }
  
 
-
-
+  
 public void addCompany(Company company) {
-
+	 System.out.println("DAO勤務地：" + company.getLocation());
+	 
     String sql =
 
         "INSERT INTO 企業テーブル "
 
-      + "(企業ID,企業名, 住所, 電話番号, メールアドレス, 採用実績) "
+      + "(企業ID,企業名, 住所, 電話番号, メールアドレス, 採用実績,勤務地) "
 
-      + "VALUES (?,?, ?, ?, ?, ?)";
+      + "VALUES (?,?, ?, ?, ?, ?,?)";
 
     try {
 
@@ -347,7 +347,12 @@ public void addCompany(Company company) {
         ps.setString(5, company.getMail());
 
         ps.setInt(6, Integer.parseInt(company.getJobtype()));
+        
+       
+        ps.setString(7,company.getLocation());
+        int result = ps.executeUpdate();
 
+        System.out.println("登録件数：" + result);
         ps.executeUpdate();
 
         ps.close();
@@ -357,6 +362,7 @@ public void addCompany(Company company) {
     } catch (Exception e) {
 
         e.printStackTrace();
+        System.out.println("登録エラー");
 
     }
 

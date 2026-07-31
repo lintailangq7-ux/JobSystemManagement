@@ -209,7 +209,7 @@ dialog button:hover {
 
     </div>
 
-<form action="<%= request.getContextPath() %>/CompanyRegisterServlet" method="post">
+<form action="<%= request.getContextPath() %>/CompanyUpdate" method="post">
 
 <div class="formArea">
 
@@ -254,7 +254,7 @@ dialog button:hover {
         <label>勤務地</label>
 
         <input type="text"
-               name="kinmuchi">
+               name="location">
 
     </div>
 
@@ -262,7 +262,7 @@ dialog button:hover {
 
         <label>採用実績</label>
 
-        <select name="saiyoJisseki">
+        <select name="jobtype">
 
             <option value="1">あり</option>
 
