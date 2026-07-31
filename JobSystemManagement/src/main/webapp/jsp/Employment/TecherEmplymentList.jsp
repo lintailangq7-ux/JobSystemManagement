@@ -303,9 +303,7 @@ td:last-child {
         <nav class="side-nav">
             <button class="nav-btn" onclick="location.href='<%= request.getContextPath() %>/StudentServlet'">学生一覧</button>
 
-            <button class="nav-btn" onclick="location.href='<%= request.getContextPath() %>/ListofCompanies'">企業一覧</button>
-
-			<button class="nav-btn" onclick="location.href='<%= request.getContextPath() %>/ListofCompanies'">企業一覧</button> 
+            <button class="nav-btn" onclick="location.href='<%= request.getContextPath() %>/ListofCompanies'">企業一覧</button> 
 
             <button class="nav-btn" onclick="location.href='<%= request.getContextPath() %>/ReportSevlet'">活動状況報告</button>
         </nav>
