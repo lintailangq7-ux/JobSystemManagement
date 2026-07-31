@@ -22,7 +22,7 @@ public class EmploymentChukanDAO {
     // ==============================
     public List<EmploymentChukan> findById(String shidoId) {
         List<EmploymentChukan> list = new ArrayList<>();
-        String sql = "SELECT * FROM 就職情報中間テーブル WHERE 指導ID = ? ORDER BY 試験ID";
+        String sql = "SELECT * FROM 就職情報中間テーブル WHERE 指導ID = ? ORDER BY 指導ID";
 
         try (Connection con = DriverManager.getConnection(URL, USER, PASS);
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -32,7 +32,7 @@ public class EmploymentChukanDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     EmploymentChukan ec = new EmploymentChukan();
-                    ec.setShikenId(rs.getInt("試験ID"));          // ★追加
+                    ec.setShikenId(rs.getInt("指導ID"));          // ★追加
                     ec.setShidoId(rs.getString("指導ID"));
                     Timestamp ts = rs.getTimestamp("試験日時");
                     if (ts != null) {
@@ -82,7 +82,7 @@ public class EmploymentChukanDAO {
     public boolean updateById(EmploymentChukan ec) {
         String sql = "UPDATE 就職情報中間テーブル "
                    + "SET 試験日時 = ?, 試験内容 = ?, 提出書類状況 = ?, 試験会場 = ? "
-                   + "WHERE 試験ID = ?";
+                   + "WHERE 指導ID = ?";
 
         try (Connection con = DriverManager.getConnection(URL, USER, PASS);
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -105,7 +105,7 @@ public class EmploymentChukanDAO {
     // 試験IDで削除
     // ==============================
     public boolean deleteById(int shikenId) {
-        String sql = "DELETE FROM 就職情報中間テーブル WHERE 試験ID = ?";
+        String sql = "DELETE FROM 就職情報中間テーブル WHERE 指導ID = ?";
 
         try (Connection con = DriverManager.getConnection(URL, USER, PASS);
              PreparedStatement ps = con.prepareStatement(sql)) {
