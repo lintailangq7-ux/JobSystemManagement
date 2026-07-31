@@ -350,16 +350,8 @@ td:last-child {
                     <tr data-id="<%= g.getShidoId() %>">
                         <td><%= (g.getShidoId() != null) ? g.getShidoId()  : "-" %></td>
                         <td>
-<<<<<<< HEAD
-                            <a href="<%= request.getContextPath() %>/ListofExamStudents?companyId=<%= d.getStudents().getId() %>">
-=======
                             <a href="<%= request.getContextPath() %>/ListofExamStudents?companyId=<%= g.getCompany().getKaishaId() %>">
-<<<<<<< HEAD
->>>>>>> branch 'main' of git@github.com:lintailangq7-ux/JobSystemManagement.git
-                                <%= g.getCompany().getKaishaName() %>
-=======
                                 <%= (g.getCompany().getKaishaName() != null) ? g.getCompany().getKaishaName() : "-"  %>
->>>>>>> branch 'main' of git@github.com:lintailangq7-ux/JobSystemManagement.git
                             </a>
                         </td>
                         <td class="name-cell"><%= d.getStudent().getName() %></td>
