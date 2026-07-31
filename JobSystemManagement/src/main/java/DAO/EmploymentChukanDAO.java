@@ -80,12 +80,13 @@ public class EmploymentChukanDAO {
     // 試験IDで更新（推奨）
     // ==============================
     public boolean updateById(EmploymentChukan ec) {
+
         String sql = "UPDATE 就職情報中間テーブル "
                    + "SET 試験日時 = ?, 試験内容 = ?, 提出書類状況 = ?, 試験会場 = ? "
-                   + "WHERE 指導ID = ?";
+                   + "WHERE 試験ID = ?";
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try(Connection con = DriverManager.getConnection(URL, USER, PASS);
+            PreparedStatement ps = con.prepareStatement(sql)) {
 
             setTimestampOrNull(ps, 1, ec.getShikenNichiji());
             ps.setString(2, ec.getShikenNaiyo());
@@ -94,9 +95,9 @@ public class EmploymentChukanDAO {
             ps.setInt(5, ec.getShikenId());
 
             return ps.executeUpdate() > 0;
-        } catch (Exception e) {
+
+        } catch(Exception e){
             e.printStackTrace();
-            System.out.println("試験情報更新エラー: " + e.getMessage());
             return false;
         }
     }
@@ -123,7 +124,7 @@ public class EmploymentChukanDAO {
     // 指導IDで全件削除
     // ==============================
     public boolean deleteAllByShidoId(String shidoId) {
-        String sql = "DELETE FROM 就職情報中間テーブル WHERE 指導ID = ?";
+    	String sql = "DELETE FROM 就職情報中間テーブル WHERE 試験ID = ?";
 
         try (Connection con = DriverManager.getConnection(URL, USER, PASS);
              PreparedStatement ps = con.prepareStatement(sql)) {

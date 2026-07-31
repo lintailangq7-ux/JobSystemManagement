@@ -102,7 +102,7 @@ textarea { width: 430px; height: 120px; border: 2px solid black; font-size: 16px
 <% } %>
 
 <div class="titleArea">
-    <button class="backButton" type="button" onclick="history.back()"></button>
+    <button class="backButton" type="button" onclick="location.href='<%= request.getContextPath() %>/ListofEmployment'"></button>
     <div class="title">指導変更</div>
 </div>
 
@@ -233,7 +233,7 @@ textarea { width: 430px; height: 120px; border: 2px solid black; font-size: 16px
 
                 <!-- 6. 備考 -->
                 <tr>
-                    <td><label>備考</label></td>
+                    <td><label>備考(100文字)</label></td>
                     <td>
                         <textarea name="memo">${employment.biko}</textarea>
                     </td>

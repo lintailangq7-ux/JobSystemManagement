@@ -115,6 +115,8 @@ public class EmploymentDAO {   // 指導＋就職情報
  
         /**
          * 指導情報を新規追加する。指導IDは自動採番（G001, G002, ... の形式）。
+         * 試験情報は1件のみ登録する旧バージョン（互換用に残置）。
+         * 複数件登録する場合は insertGuidanceWithExams を使用すること。
          *
          * @param gakusekiNo      学籍番号
          * @param kigyoId         企業ID
@@ -126,14 +128,39 @@ public class EmploymentDAO {   // 指導＋就職情報
     public String insertGuidanceWithExam(String gakusekiNo, String kigyoId,
             LocalDateTime naiteiKakuteiBi, int naiteiKakutei, String biko,
             EmploymentChukan chukan) {
-
+ 
+        List<EmploymentChukan> list = new ArrayList<>();
+        if (chukan != null) {
+            list.add(chukan);
+        }
+        return insertGuidanceWithExams(gakusekiNo, kigyoId, naiteiKakuteiBi, naiteiKakutei, biko, list);
+    }
+ 
+    /**
+     * 指導情報を新規追加し、あわせて複数件の試験情報（就職情報中間テーブル）を
+     * 同一トランザクションでまとめて登録する。
+     * 指導IDの採番、就職情報テーブルへのINSERT、試験情報の一括INSERTが
+     * すべて成功した場合のみコミットする。
+     *
+     * @param gakusekiNo      学籍番号
+     * @param kigyoId         企業ID
+     * @param naiteiKakuteiBi 内定確定日（未定の場合は null）
+     * @param naiteiKakutei   内定確定フラグ（0 or 1）
+     * @param biko            備考
+     * @param examList        登録する試験情報のリスト（0件でも可）
+     * @return 発行された指導ID。失敗した場合は null。
+     */
+    public String insertGuidanceWithExams(String gakusekiNo, String kigyoId,
+            LocalDateTime naiteiKakuteiBi, int naiteiKakutei, String biko,
+            List<EmploymentChukan> examList) {
+ 
         Connection con = null;
         try {
             con = DriverManager.getConnection(URL, USER, PASS);
             con.setAutoCommit(false);
-
+ 
             String newId = generateNewShidoId(con);
-
+ 
             try (PreparedStatement ps1 = con.prepareStatement(
                     "INSERT INTO 就職情報テーブル (指導ID,学籍番号,企業ID,内定確定日,内定確定,備考) VALUES (?,?,?,?,?,?)")) {
                 ps1.setString(1, newId);
@@ -145,26 +172,32 @@ public class EmploymentDAO {   // 指導＋就職情報
                 ps1.setString(6, biko);
                 ps1.executeUpdate();
             }
-
-            try (PreparedStatement ps2 = con.prepareStatement(
-                    "INSERT INTO 就職情報中間テーブル (指導ID,試験日時,試験内容,提出書類状況,試験会場) VALUES (?,?,?,?,?)")) {
-                ps2.setString(1, newId);
-                if (chukan.getShikenNichiji() != null) ps2.setTimestamp(2, Timestamp.valueOf(chukan.getShikenNichiji()));
-                else ps2.setNull(2, java.sql.Types.TIMESTAMP);
-                ps2.setString(3, chukan.getShikenNaiyo());
-                ps2.setInt(4, chukan.getTeishutsuShoruiJokyo());
-                ps2.setString(5, chukan.getShikenKaijo());
-                ps2.executeUpdate();
+ 
+            if (examList != null && !examList.isEmpty()) {
+                try (PreparedStatement ps2 = con.prepareStatement(
+                        "INSERT INTO 就職情報中間テーブル (指導ID,試験日時,試験内容,提出書類状況,試験会場) VALUES (?,?,?,?,?)")) {
+ 
+                    for (EmploymentChukan chukan : examList) {
+                        ps2.setString(1, newId);
+                        if (chukan.getShikenNichiji() != null) ps2.setTimestamp(2, Timestamp.valueOf(chukan.getShikenNichiji()));
+                        else ps2.setNull(2, java.sql.Types.TIMESTAMP);
+                        ps2.setString(3, chukan.getShikenNaiyo());
+                        ps2.setInt(4, chukan.getTeishutsuShoruiJokyo());
+                        ps2.setString(5, chukan.getShikenKaijo());
+                        ps2.addBatch();
+                    }
+                    ps2.executeBatch();
+                }
             }
-
-            con.commit();  // 両方成功して初めて確定
+ 
+            con.commit();  // すべて成功して初めて確定
             return newId;
-
+ 
         } catch (SQLException e) {
             if (con != null) try { con.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
             e.printStackTrace();
             return null; // 呼び出し元は「失敗した」と正しく認識できる
-
+ 
         } finally {
             if (con != null) try { con.setAutoCommit(true); con.close(); } catch (SQLException ex) { ex.printStackTrace(); }
         }
@@ -211,28 +244,28 @@ public class EmploymentDAO {   // 指導＋就職情報
          */
         public boolean updateGuidance(String shidoId, String kigyoId,
                 LocalDateTime naiteiKakuteiBi, int naiteiKakutei, String biko) {
-
+ 
         		String sql = "UPDATE 就職情報テーブル "
         					+ "SET 企業ID = ?, 内定確定日 = ?, 内定確定 = ?, 備考 = ? "
         					+ "WHERE 指導ID = ?";
-
+ 
         		try (Connection con = DriverManager.getConnection(URL, USER, PASS);
         				PreparedStatement ps = con.prepareStatement(sql)) {
-
+ 
         			ps.setString(1, kigyoId);
-
+ 
         			if (naiteiKakuteiBi != null) {
         				ps.setTimestamp(2, Timestamp.valueOf(naiteiKakuteiBi));
         			} else {
         				ps.setNull(2, java.sql.Types.TIMESTAMP);
         			}
-
+ 
         			ps.setInt(3, naiteiKakutei);
         			ps.setString(4, biko);
         			ps.setString(5, shidoId);
-
+ 
         			return ps.executeUpdate() > 0;
-
+ 
         		} catch (SQLException e) {
         			e.printStackTrace();
         			System.out.println("指導情報更新エラー: " + e.getMessage());
@@ -330,5 +363,67 @@ public class EmploymentDAO {   // 指導＋就職情報
             
             
         }	
+        public String insertGuidance(
+                String gakusekiNo,
+                String kigyoId,
+                LocalDateTime naiteiKakuteiBi,
+                int naiteiKakutei,
+                String biko) {
+ 
+ 
+            try(Connection con =
+                DriverManager.getConnection(URL,USER,PASS)){
+ 
+ 
+                String newId = generateNewShidoId(con);
+ 
+ 
+                String sql =
+                    "INSERT INTO 就職情報テーブル "
+                  + "(指導ID,学籍番号,企業ID,内定確定日,内定確定,備考)"
+                  + " VALUES(?,?,?,?,?,?)";
+ 
+ 
+                try(PreparedStatement ps =
+                    con.prepareStatement(sql)){
+ 
+ 
+                    ps.setString(1,newId);
+                    ps.setString(2,gakusekiNo);
+                    ps.setString(3,kigyoId);
+ 
+ 
+                    if(naiteiKakuteiBi != null){
+ 
+                        ps.setTimestamp(
+                            4,
+                            Timestamp.valueOf(naiteiKakuteiBi)
+                        );
+ 
+                    }else{
+ 
+                        ps.setNull(
+                            4,
+                            java.sql.Types.TIMESTAMP
+                        );
+                    }
+ 
+ 
+                    ps.setInt(5,naiteiKakutei);
+                    ps.setString(6,biko);
+ 
+ 
+                    ps.executeUpdate();
+ 
+ 
+                    return newId;
+                }
+ 
+ 
+            }catch(Exception e){
+ 
+                e.printStackTrace();
+                return null;
+            }
         }
-    
+        }
