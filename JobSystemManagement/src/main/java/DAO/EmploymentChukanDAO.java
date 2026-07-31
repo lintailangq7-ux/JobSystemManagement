@@ -32,7 +32,7 @@ public class EmploymentChukanDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     EmploymentChukan ec = new EmploymentChukan();
-                    ec.setShikenId(rs.getInt("指導ID"));          // ★追加
+                    ec.setShikenId(rs.getInt("試験ID"));          // ★追加
                     ec.setShidoId(rs.getString("指導ID"));
                     Timestamp ts = rs.getTimestamp("試験日時");
                     if (ts != null) {

@@ -26,8 +26,8 @@ public class Login implements Filter {
 
         // ログイン関連ページはフィルターを通過させる
         if (requestURI.endsWith("/jsp/Login.jsp") || 
-            requestURI.endsWith("/LoginServlet") ||
-            requestURI.endsWith("/login")) {
+        	    requestURI.endsWith("/Login") ||
+        	    requestURI.endsWith("/login")) {
             
             chain.doFilter(request, response);
             return;

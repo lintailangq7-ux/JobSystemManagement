@@ -443,7 +443,7 @@ td:last-child {
     <main class="main-content">
 
         <div class="search-area">
-            <form action="<%= request.getContextPath() %>/ListofEmployment" method="get">
+             <form action="<%= request.getContextPath() %>/ListofEmployment" method="get">
                 <div class="search-box">
                     <input type="text" name="keyword" placeholder="企業名">
                     <button type="submit" class="search-btn">🔍</button>

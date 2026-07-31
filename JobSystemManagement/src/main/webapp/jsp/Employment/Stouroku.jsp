@@ -103,7 +103,7 @@ textarea { width: 430px; height: 120px; border: 2px solid black; font-size: 16px
 
 <div class="titleArea">
     <button class="backButton" type="button" onclick="history.back()"></button>
-    <div class="title">指導変更</div>
+    <div class="title">指導追加</div>
 </div>
 
 <div class="main">

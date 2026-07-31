@@ -292,7 +292,7 @@ public class StudentDetailDAO {
 		        PreparedStatement ps = con.prepareStatement(sql)) {
 
 		        ps.setString(1, gakusekiNo);
-		        ps.setString(1, "%" + keyword + "%");
+		        ps.setString(2, "%" + keyword + "%");
 
 
 		        ResultSet rs = ps.executeQuery();
@@ -331,7 +331,7 @@ public class StudentDetailDAO {
 		        e.printStackTrace();
 		    }
 
-
+		    
 		    return new StudentDetail(student, guidanceList);
 		
 		

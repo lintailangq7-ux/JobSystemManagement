@@ -35,7 +35,6 @@ public class ListofEmployment extends HttpServlet {
 			throws ServletException, IOException {
  
 		String keyword = request.getParameter("keyword");
-		System.out.println("検索キーワード：" + keyword);
  
 		HttpSession session = request.getSession();
 		String userId = (String) session.getAttribute("userId");
@@ -52,6 +51,7 @@ public class ListofEmployment extends HttpServlet {
  
 		if (userId.startsWith("Te")) {
 			List<StudentDetail> detail;
+			
 			if (keyword == null || keyword.trim().isEmpty()) {
 				detail = dao.findAllStudentDetail();
 			} else {
@@ -62,15 +62,15 @@ public class ListofEmployment extends HttpServlet {
 			responsed = "/jsp/Employment/TecherEmplymentList.jsp";
  
 		} else if (userId.startsWith("Su")) {
-			StudentDetail detail ;
-
-		    if (keyword == null || keyword.trim().isEmpty()) {
-		        detail = dao.findByGakusekiNo(userId.substring(2));
-		    } else {
-		        detail = dao.findByGakusekiNoAndCompanyKeyword(
-		                    userId.substring(2), keyword);
-		    }
-		    System.out.println("検索結果：" + detail.getGuidanceList().size());
+			StudentDetail detail;
+			
+			if (keyword == null || keyword.trim().isEmpty()) {
+				detail = dao.findByGakusekiNo(userId.substring(2));
+			} else {
+				System.out.println(userId.substring(2)+"なんで");
+				detail = dao.findByGakusekiNoAndCompanyKeyword(userId.substring(2), keyword);
+				System.out.println(detail + "fafaf");
+			}
 			session.setAttribute("detail", detail);
 			responsed = "/jsp/Employment/EmploymentList.jsp";
  
@@ -82,8 +82,7 @@ public class ListofEmployment extends HttpServlet {
  
 		session.setAttribute("userType", userId.startsWith("Te") ? "teacher" : "student");
  
-		request.getRequestDispatcher(responsed)
-	       .forward(request, response);
+		response.sendRedirect(request.getContextPath() + responsed);
 	}
  
 	/**
