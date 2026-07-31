@@ -24,7 +24,7 @@ public class ListofExamStudents extends HttpServlet {
 
 	        // 企業IDを受け取る
 	        String companyId = request.getParameter("companyId");
-
+	        
 	        StudentDAO dao = new StudentDAO();
 
 	        // 企業ごとの受験学生一覧を取得
@@ -33,7 +33,7 @@ public class ListofExamStudents extends HttpServlet {
 	        // 企業名を取得（今回は仮）
 	        
 	        String companyName =dao.findCompanyName(companyId);
-
+	       
 
 	        // JSPへ渡す
 	        request.setAttribute("companyName", companyName);
