@@ -287,153 +287,21 @@ td:last-child {
     color: #fff;
     font-weight: bold;
 }
-.student-info {
-    background-color: white;
-    border: 1px solid #333;
-    padding: 2px;
-    width: 100%
-    box-shadow: 3px 3px 8px rgba(0,0,0,0.15);
-}
-
-.student-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.student-table td {
-    padding: 6px 10px;
-    border: 1px solid #999;
-}
-
-.student-table .header {
-    background-color: #ffff00;
-    font-weight: bold;
-    width: 85px;
-    text-align: center;
-}
-
-.student-table .number {
-    background-color: #ffff99;
-    text-align: center;
-    font-weight: bold;
-}
-
-.remarks-box {
-    margin-top: 15px;
-    border: 2px solid #dc3545;
-    padding: 10px;
-    font-weight: bold;
-    text-align: center;
-}
 </style>
 </head>
 <body>
-	
-	<%
-
-		StudentDetail detail = (StudentDetail) session.getAttribute("detail");
-		System.out.println(detail + "detail");
-		System.out.println(detail.getStudent() + "detail.getStudent()");
-	    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("M/d");
-
-
-	    //がきせきでーたをここでなにかする
-
-	%>
 
 <div class="page-layout">
 
     <!-- ============ 左サイドバー ============ -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <button class="back-button" title="ひとつ前の画面に遷移" onclick="location.href='<%= request.getContextPath() %>/Login'">◀</button>
+           <button class="back-button" title="ひとつ前の画面に遷移" onclick="location.href='<%= request.getContextPath() %>/Login'">◀</button>
             <div class="page-title-box">指導一覧</div>
         </div>
-		<div class="student-info">
-		<table class="student-table">
-		                <tr>
-		                    <td class="header">氏名</td>
-		                    <td><%= detail.getStudent().getName() %></td>
-		                </tr>
-		                <tr>
-		                    <td class="header">クラス</td>
-		                    <td><%= detail.getStudent().getClassName()%></td>
-		                </tr>
-		                <tr>
-		                    <td class="header">番号</td>
-		                    <td class="number"><%= detail.getStudent().getAttendanceNo()%></td>
-		                </tr>
-		                <tr>
-		                    <td class="header">性別</td>
- 							<%
-       						 String seibetsu = detail.getStudent().getSeibetsu();
-        						if (seibetsu.equals("M")) {
-    						%>
-       						<td>男</td>
-    						<%
-        					} else if (seibetsu.equals("F")) {
-    						%>
-        					<td>女</td>
-    						<%
-       						} else if (seibetsu.equals("X")) {
-    						%>
-        					<td>どちらでもない</td>
-    						<%
-       						 } else {
-    						%>
-       						<td>未設定</td>
-    						<%
-       							 }
-    						%>
-		                </tr>
-		</table>
-
-		<br>
-
-		<table class="student-table">
-		<%
-	    int idx = 1;
-	    for(StudentChukan Sc : detail.getStudent().getGakuseiChukanList()){
-	%>
-	    <tr>
-	        <td class="header">志望業種<%= idx %></td>
-	        <td><%= (Sc.getKibouShokushu() != null) ? Sc.getKibouShokushu() : "-" %></td>
-	    </tr>
-	<%
-	        idx++;
-	    }
-	%>
-		    <tr>
-		        <td class="header">志望地域</td>
-		        <td><%= detail.getStudent().getKenNaiGaiKibo()%></td>
-		    </tr>
-		    <tr>
-		        <td class="header">内定状況</td>
-			<%
-			boolean naitei = false;
-
-			for (GuidanceDetail Ed : detail.getGuidanceList()) {
-				if (Ed.getNaiteiKakutei() == 1) {
-					naitei = true;
-					break; // 1件見つかったら終了
-				}
-			}
-			%>
-
-				<td><%= naitei ? "内" : "未" %></td>
-		        
-		        
-		    </tr>
-		</table>
-			<div class="remarks-box"><%= detail.getStudent().getBiko()%></div>
-			<table>
-
-		</table>
-		</div>
-		
 
         <nav class="side-nav">
-            <button class="nav-btn" onclick="location.href='<%= request.getContextPath() %>/ListofCompanies'">企業一覧</button>
+            <button class="nav-btn" onclick="location.href='<%= request.getContextPath() %>/StudentServlet'">学生一覧</button>
             <button class="nav-btn" onclick="location.href='<%= request.getContextPath() %>/ReportSevlet'">活動状況報告</button>
         </nav>
     </aside>
@@ -450,74 +318,70 @@ td:last-child {
             </form>
         </div>
 
-
+        <%
+            List<StudentDetail> detail = (List<StudentDetail>) session.getAttribute("detail");
+            DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("M/d");
+        %>
 
         <div class="table-wrapper">
             <table>
-				<thead>
-				    <tr>
-				        <th>指導ID</th>
-				        <th>企業名</th>
-				        <th>選考状況</th>
-				        <th>試験日時</th>
-				        <th>業種</th>
-				        <th>備考</th>
-				        <th class="action-col"></th>
-				    </tr>
-				</thead>
+                <thead>
+                    <tr>
+                        <th>指導ID</th>
+                        <th>企業名</th>
+                        <th>氏名</th>
+                        <th>選考状況</th>
+                        <th>備考</th>
+                        <th>　</th>
+                    </tr>
+                </thead>
                 <tbody id="companyTable">
-         
-					<tbody>
-						<%for(GuidanceDetail Gu:  detail.getGuidanceList()){ %>
-					    <tr data-id="<%= Gu.getShidoId() %>">
-					        <td class="id-cell"><%= Gu.getShidoId() %></td>
-					        <td class="company-cell"><%= Gu.getCompany().getKaishaName() %></td> 
-					        <td><%= Gu.getLatestExam().getShikenNaiyo() %></td>
-					        <td><%= Gu.getLatestExam().getShikenNichiji() %></td>
-					        
-					        <td>
-							<%
-							for(CompanyChukan Mc : Gu.getCompany().getCompanyChukanList()){
-							%>
-								 <%= Mc.getBoshuShokushu() %>・<br>
-							<%
-							}
-							%>
-							</td>
-					        
-					        <td><%= Gu.getBiko() %></td>
-					        <td class="action-col">
-					            <button class="more-btn" data-row="<%= Gu.getShidoId() %>">&hellip;</button>
-							</td>
-						</tr>
-						<%} %>
-					</tbody>
+                <%
+                    if (detail != null) {
+                        for (StudentDetail d : detail) {
+                            if (d.getGuidanceList() == null) continue;
+                            for (GuidanceDetail g : d.getGuidanceList()) {
+                                List<EmploymentChukan> examList = g.getExamHistory();
+                %>
+                    <tr data-id="<%= g.getShidoId() %>">
+                        <td><%= g.getShidoId() %></td>
+                        <td>
+                            <a href="<%= request.getContextPath() %>/ListofExamStudents?companyId=<%= g.getCompany().getKaishaId() %>">
+                                <%= g.getCompany().getKaishaName() %>
+                            </a>
+                        </td>
+                        <td class="name-cell"><%= d.getStudent().getName() %></td>
+                        <td>
+                        <%
+                            if (examList != null && !examList.isEmpty()) {
+                                for (int i = 0; i < examList.size(); i++) {
+                                    if (i > 0) {
+                        %>・<%
+                                    }
+                        %><%= examList.get(i).getShikenNaiyo() %><%
+                                }
+                            } else {
+                        %>&nbsp;<%
+                            }
+                        %>
+                        </td>
+                        <td><%= g.getBiko() %></td>
+                        <td>
+                            <button class="more-btn" data-row="<%= g.getShidoId() %>">&hellip;</button>
+                        </td>
+                    </tr>
+                <%
+                            }
+                        }
+                    }
+                %>
+                </tbody>
             </table>
         </div>
 
     </main>
-    
 </div>
 
-<div class="side-add-area">
-    <button class="add-button" title="指導追加" onclick="location.href='<%= request.getContextPath() %>/EmploymentNewServlet'">追加</button>
-</div>
-
-<!-- 右クリック風メニュー -->
-<div class="ctx-menu" id="ctxMenu">
-    <button data-action="edit">変更</button>
-    <button data-action="delete">削除</button>
-</div>
-
-<!-- 「変更」はformでPOST送信して遷移する -->
-<form id="editForm" action="<%= request.getContextPath() %>/EmploymentCangeServlet" method="get">
-    <input type="hidden" name="shidoId" id="editShidoId" value="">
-</form>
-
-<!-- 「削除」もformでPOST送信する -->
-<form id="deleteForm" action="<%= request.getContextPath() %>/EmploymentDeleteServlet" method="post">
-    <input type="hidden" name="shidoId" id="deleteShidoId" value="">
-</form>
 
 <!-- 削除確認モーダル -->
 <div class="modal-overlay" id="modalOverlay">
@@ -569,10 +433,8 @@ document.querySelectorAll('.ctx-menu button').forEach(item => {
 
         if (action === 'delete') {
             // 削除 → 確認モーダルを表示
-            // ※ このJSPには .name-cell が存在しないため、会社名セルをフォールバックとして使用
-            const nameCell = currentTr ? currentTr.querySelector('.name-cell, .company-cell') : null;
-            const name = nameCell ? nameCell.textContent.trim() : '';
-            modalTargetName.textContent = '指導ID ' + currentRow + (name ? '（' + name + '）' : '');
+            const name = currentTr ? currentTr.querySelector('.name-cell').textContent : '';
+            modalTargetName.textContent = '指導ID ' + currentRow + '（' + name + '）';
             modalOverlay.classList.add('open');
         } else if (action === 'edit') {
             // 変更 → 隠しformに指導IDをセットしてPOST送信で編集画面へ

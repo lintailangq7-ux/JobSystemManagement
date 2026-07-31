@@ -1,10 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%
+    String emg = (String) request.getAttribute("emg");
+%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>企業変更</title>
+<title>企業登録</title>
 
 <style>
 
@@ -101,7 +104,7 @@ body{
 }
 
 /*======================
- 変更ボタン
+ 登録ボタン
 =======================*/
 
 .buttonArea{
@@ -131,11 +134,67 @@ body{
     background:#d10000;
 }
 
+/*======================
+ エラー表示ダイアログ
+=======================*/
+dialog {
+    border: none;
+    border-radius: 8px;
+    padding: 24px 30px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    min-width: 280px;
+    text-align: center;
+}
+dialog::backdrop {
+    background: rgba(0,0,0,0.5);
+}
+dialog p {
+    margin: 0 0 20px 0;
+    font-size: 15px;
+    color: #333;
+    white-space: pre-line;
+}
+dialog button {
+    padding: 6px 28px;
+    background: #2b6cb0;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+dialog button:hover {
+    background: #245a94;
+}
+
 </style>
 
 </head>
 
 <body>
+
+<dialog id="okDialog">
+    <p><%= emg %></p>
+    <button onclick="document.getElementById('okDialog').close()">OK</button>
+</dialog>
+
+<script>
+    window.onload = function() {
+        <% if (emg != null && !emg.isEmpty()) { %>
+            document.getElementById('okDialog').showModal();
+        <% } %>
+    };
+
+    // 「戻る」でキャッシュから復元された場合はダイアログを表示しない
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            const dialog = document.getElementById('okDialog');
+            if (dialog.open) {
+                dialog.close();
+            }
+        }
+    });
+</script>
 
 <div class="container">
 
@@ -146,90 +205,54 @@ body{
                 onclick="history.back()">
         </button>
 
-        <h2>企業変更</h2>
+        <h2>企業登録</h2>
 
     </div>
 
+<!-- form開始タグを1つに修正 -->
 <form action="<%= request.getContextPath() %>/CompanyUpdateServlet" method="post">
-    <!-- 更新対象のID -->
-    <input type="hidden"
-           name="companyId"
-           value="${company.id}">
-
 <div class="formArea">
 
     <div class="row">
-
         <label>企業名</label>
-
-        <input type="text"
-               name="companyName"
-               value="${company.name}">
-
+        <input type="text" name="companyName">
     </div>
 
     <div class="row">
-
         <label>住所</label>
-
-        <input type="text"
-               name="address"
-               value="${company.address}">
-
+        <input type="text" name="address">
     </div>
 
     <div class="row">
-
         <label>電話番号</label>
-
-        <input type="text"
-               name="tel"
-               value="${company.tel}">
-
+        <input type="text" name="tel">
     </div>
 
     <div class="row">
-
         <label>メールアドレス</label>
-
-        <input type="text"
-               name="mail"
-               value="${company.mail}">
-
+        <input type="text" name="mail">
     </div>
 
     <div class="row">
+        <label>勤務地</label>
+        <input type="text" name="kinmuchi">
+    </div>
 
+    <div class="row">
         <label>採用実績</label>
-
         <select name="result">
-
-            <option value="1"
-                ${company.jobtype=="1"?"selected":""}>
-                あり
-            </option>
-
-            <option value="0"
-                ${company.jobtype=="0"?"selected":""}>
-                なし
-            </option>
-
+            <option value="1">あり</option>
+            <option value="0">なし</option>
         </select>
-
     </div>
 
 </div>
 
 <div class="buttonArea">
-
-    <button class="submitButton"
-            type="submit">
-
-        変更
-
-    </button>
-
+    <button class="submitButton" type="submit">登録</button>
 </div>
+
+</form>
 
 </form>
 

@@ -296,7 +296,7 @@ td:last-child {
     <!-- ============ 左サイドバー ============ -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <button class="back-button" title="ひとつ前の画面に遷移" onclick="location.href='<%= request.getContextPath() %>/Servlet/Login.java'">◀</button>
+           <button class="back-button" title="ひとつ前の画面に遷移" onclick="location.href='<%= request.getContextPath() %>/Login'">◀</button>
             <div class="page-title-box">指導一覧</div>
         </div>
 
@@ -346,7 +346,11 @@ td:last-child {
                     <tr data-id="<%= g.getShidoId() %>">
                         <td><%= g.getShidoId() %></td>
                         <td>
+<<<<<<< HEAD
                             <a href="<%= request.getContextPath() %>/ListofExamStudents?companyId=<%= d.getStudents().getId() %>">
+=======
+                            <a href="<%= request.getContextPath() %>/ListofExamStudents?companyId=<%= g.getCompany().getKaishaId() %>">
+>>>>>>> branch 'main' of git@github.com:lintailangq7-ux/JobSystemManagement.git
                                 <%= g.getCompany().getKaishaName() %>
                             </a>
                         </td>

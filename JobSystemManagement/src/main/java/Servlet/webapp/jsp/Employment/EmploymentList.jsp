@@ -425,9 +425,9 @@ td:last-child {
 		        
 		    </tr>
 		</table>
-			<div class="remarks-box"><%= detail.getStudent().getBiko()%></div>
+			<div class="remarks-box">備考</div>
 			<table>
-
+			<td><%= detail.getStudent().getBiko()%></td>
 		</table>
 		</div>
 		

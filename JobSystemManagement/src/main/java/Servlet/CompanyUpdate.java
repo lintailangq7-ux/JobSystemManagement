@@ -10,40 +10,58 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import DAO.CompanyDAO;
 import model.Company;
-@WebServlet("/CompanyUpdate")
+
+@WebServlet("/CompanyUpdateServlet")
 public class CompanyUpdate extends HttpServlet {
 
-	 protected void doPost(
-	            HttpServletRequest request,
-	            HttpServletResponse response)
-	            throws ServletException, IOException {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-	        request.setCharacterEncoding("UTF-8");
+        String companyId = request.getParameter("companyId");
 
-	        String id = request.getParameter("companyId");
-	        String name = request.getParameter("companyName");
-	        String address = request.getParameter("address");
-	        String tel = request.getParameter("tel");
-	        String mail = request.getParameter("mail");
-	        String result = request.getParameter("result");
+        if (companyId != null && !companyId.isEmpty()) {
+            // 編集の場合：既存データを取得してフォームに渡す
+            CompanyDAO dao = new CompanyDAO();
+            Company company = dao.findById(companyId);
+            request.setAttribute("company", company);
+        }
+        // companyIdが無ければ新規登録なので何もセットしない(空フォームになる)
 
-	        Company company = new Company();
+        request.getRequestDispatcher("/jsp/Ktouroku.jsp").forward(request, response);
+    }
 
-	        company.setId(id);
-	        company.setName(name);
-	        company.setAddress(address);
-	        company.setTel(tel);
-	        company.setMail(mail);
-	        company.setJobtype(result);
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
 
-	        CompanyDAO dao = new CompanyDAO();
+        String id = request.getParameter("companyId");
+        String name = request.getParameter("companyName");
+        String address = request.getParameter("address");
+        String tel = request.getParameter("tel");
+        String mail = request.getParameter("mail");
+        String result = request.getParameter("result");
 
-	        dao.updateCompany(company);
+        Company company = new Company();
+        company.setId(id);
+        company.setName(name);
+        company.setAddress(address);
+        company.setTel(tel);
+        company.setMail(mail);
+        company.setJobtype(result);
 
-	        response.sendRedirect(
-	            request.getContextPath()
-	            + "/ListofCompanies"
-	        );
-	        
-	    }
+        CompanyDAO dao = new CompanyDAO();
+
+        if (id == null || id.isEmpty()) {
+            // 新規登録
+            dao.addCompany(company);
+        } else {
+            // 更新
+            dao.updateCompany(company);
+        }
+
+        // 更新/登録が終わったら一覧画面に戻す
+        response.sendRedirect(request.getContextPath() + "/ListofCompanies");
+    }
 }

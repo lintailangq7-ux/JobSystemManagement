@@ -1,0 +1,386 @@
+/* ==================== 全体レイアウト ==================== */
+.main-container {
+    display: flex;
+    gap: 20px;
+    max-width: 1450px;
+    margin: 0 auto;
+    padding: 10px 20px;
+}
+
+/* ==================== トップエリア（戻るボタン＋タイトル） ==================== */
+.top-area {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 10px;
+}
+
+.top-area h1 {
+    position: relative;
+    margin: 0;
+    font-size: 30px;
+    padding: 0;
+    font-weight: normal;
+}
+
+.back-button {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #4aa3df;
+    background: #4aa3df;
+    color: #fff35c;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+/* ==================== 検索エリア ==================== */
+.search-area {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+    box-sizing: border-box;
+    max-width: 100%;
+    margin-bottom: 10px;
+}
+
+.search-box {
+    position: relative;
+    width: 250px;
+}
+
+.search-box input {
+    width: 250px;
+    height: 30px;
+    border: 3px solid #5b9bd5;
+    border-radius: 20px;
+    font-size: 18px;
+    outline: none;
+    padding-left: 10px;
+}
+
+.search-btn {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+/* ==================== 左側：生徒情報 ==================== */
+.student-info {
+    background-color: white;
+    border: 2px solid #333;
+    padding: 15px;
+    width: 280px;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.15);
+}
+
+.title-box {
+    background-color: #ffff00;
+    padding: 8px 15px;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 12px;
+    border: 1px solid #333;
+}
+
+.student-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.student-table td {
+    padding: 6px 10px;
+    border: 1px solid #999;
+}
+
+.student-table .header {
+    background-color: #ffff00;
+    font-weight: bold;
+    width: 85px;
+    text-align: center;
+}
+
+.student-table .number {
+    background-color: #ffff99;
+    text-align: center;
+    font-weight: bold;
+}
+
+.remarks-box {
+    margin-top: 15px;
+    border: 2px solid #dc3545;
+    padding: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.top-area{
+	    display:flex;
+	    justify-content:flex-start;
+	    align-items:center;
+	    margin-bottom:10px;
+		gap:10px;
+		
+	}
+
+	
+	.top-area h1{
+		position: relative;
+	    margin:0;
+	    font-size:30px;
+	    padding:0;
+	    font-weight:normal;
+		
+		
+		
+	}
+	.back-button{
+		width: 40px;
+		height: 40px;
+		border: 1px solid #4aa3df;
+	    background: #4aa3df;
+		color: #fff35c;
+		font-size: 24px;
+		cursor: pointer;
+		padding: 0;
+	}
+	
+
+
+
+	.search-area{
+	    display: flex;
+	    justify-content: flex-end;  /* 右寄せ */
+	    /*margin-bottom: 20px;*/
+		padding: 10px;
+		box-sizing: border-box;
+		max-width: 100%;
+	}
+	.search-box{
+		position: relative;
+		width: 200px;
+		display: flex; 
+		justify-content: flex-end;
+	}
+	.search-box input{
+	    width:250px;
+	    height: 30px;
+	    border: 3px solid #5b9bd5;
+	    border-radius: 20px;
+	    font-size: 18px;
+	    outline: none;
+		padding-left: 10px;
+	}
+	.search-btn{
+	    position: absolute;
+	    top: 50%;
+	    right: 10px;
+	    transform: translateY(-50%);
+	    width: 30px;
+	    height: 30px;
+	    border: none;
+	    background: transparent;
+	    cursor: pointer;
+	    font-size: 18px;
+
+	    
+	}
+	
+	table {
+	     width: 100%;
+	     border-collapse: collapse;
+	   }
+	   th {
+	     background: #0d6fb8;
+	     color: #fff;
+	     padding: 10px;
+	     border: 1px solid #000;
+	   }
+	   td:last-child{
+		text-align: center;
+	   }
+	   .add-button {
+	     position: fixed;
+	     right: 30px;
+	     bottom: 30px;
+	     width: 100px;
+	     height: 60px;
+	     background: #ff0000;
+	     color: #fff;
+	     border: none;
+	     border-radius: 12px;
+	     font-size: 24px;
+	     cursor: pointer;
+	   }
+	   .detail-btn {
+	       width: 40px;
+	       height:32px;
+		   font-size: 12px;
+		   letter-spacing: -1px;
+		   line-height: 30px;
+		   text-align: center;
+	   }
+	   .menu-cell {
+	     position: relative;
+	   }
+
+	   .menu {
+		display: none;
+        position: absolute; 
+		top: 0; 
+		right: calc(100% + 10px); 
+		background: #fff; 
+		border: 1px solid #ccc; 
+		gap:0;
+	   }
+
+	   .menu button {
+	     display: block;
+	     width: 80px;
+		 white-space: nowrap;
+		 writing-mode: horizontal-tb;
+		 margin:0;
+	   }
+
+
+/* ==================== アクションメニュー ==================== */
+.action-col {
+    width: 50px;
+    text-align: center;
+    position: relative;
+}
+
+.menu-cell {
+    position: relative;
+}
+
+.menu {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: calc(100% + 10px);
+    background: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.25);
+    z-index: 50;
+    gap: 0;
+}
+
+.menu button {
+    display: block;
+    width: 80px;
+    white-space: nowrap;
+    margin: 0;
+    padding: 8px 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-change {
+    background-color: #00bfff;
+    color: white;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* ドロップダウン（既存のクラスも残して互換性確保） */
+.dropdown-menu-custom {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    width: 90px;
+    z-index: 50;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.25);
+}
+
+.dropdown-menu-custom.open {
+    display: flex;
+}
+
+.dropdown-menu-custom button {
+    border: none;
+    color: white;
+    font-weight: bold;
+    padding: 10px 0;
+    font-size: 15px;
+    cursor: pointer;
+    width: 100%;
+}
+
+/* ==================== ボタン ==================== */
+.add-button {
+     position: fixed;
+     right: 30px;
+     bottom: 30px;
+     width: 100px;
+     height: 60px;
+     background: #ff0000;
+     color: #fff;
+     border: none;
+     border-radius: 12px;
+     font-size: 24px;
+     cursor: pointer;
+   }
+
+.btn-add:hover {
+    background-color: #c82333;
+}
+
+/* 固定追加ボタン（新スタイル） */
+.add-button {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    width: 100px;
+    height: 60px;
+    background: #ff0000;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.3);
+}
+
+/* 詳細ボタン */
+.detail-btn {
+    width: 40px;
+    height: 32px;
+    font-size: 12px;
+    letter-spacing: -1px;
+    line-height: 30px;
+    text-align: center;
+}
+
+/* スクロールバー */
+.table-wrapper::-webkit-scrollbar {
+    width: 18px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+    background: #ddd;
+    border-left: 1px solid #999;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: #666;
+    border: 3px solid #ddd;
+}

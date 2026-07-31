@@ -10,8 +10,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import DAO.CompanyDAO;
 import model.Company;
-@WebServlet("/CompanyEdit")
+@WebServlet("/CompanyEditServlet")
 public class CompanyEdit extends HttpServlet {
+	
 	 protected void doGet(HttpServletRequest request,
 	            HttpServletResponse response)
 	            throws ServletException, IOException {
