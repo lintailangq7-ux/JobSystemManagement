@@ -263,25 +263,19 @@ if(list != null){
 				<td><%= c.getTel() %></td>
 				<td><%= c.getMail() %></td>
 				<td><%= c.getJobtype() %></td>
-<<<<<<< HEAD
 
-			    <td class="menu-cell">
-					
-				    <button type="button" class="detail-btn"onclick="toggleActions(this)">…</button>
+
+		
+
 				    <div class="menu" style="display:none;">
 				      <button type="button" onclick="location.href='<%= request.getContextPath() %>/CompanyEdit?companyId=<%= c.getId() %>'">変更</button><br>
 				      <button type="button"  onclick="if(confirm('「<%= c.getName() %>」削除しますか？')){location.href='<%=request.getContextPath()%>/CompanyDelete?companyId=<%= c.getId() %>';}">削除</button>
 				    </div>
 				  
 
-=======
->>>>>>> branch 'main' of git@github.com:lintailangq7-ux/JobSystemManagement.git
 			    <td class="action-col">
 					<button type="button" class="more-btn" data-row="<%= c.getId() %>">&hellip;</button>
-<<<<<<< HEAD
 
-=======
->>>>>>> branch 'main' of git@github.com:lintailangq7-ux/JobSystemManagement.git
 				 </td>
 				</tr>
 				<%
@@ -292,11 +286,9 @@ if(list != null){
 				</tbody>
 
 </table>
-<<<<<<< HEAD
-<button class="add-button" type="button" onclick="location.href='/CompanyUpdate'">登録</button>
-=======
+
 <button class="add-button" type="button" onclick="location.href='CompanyUpdateServlet'">登録</button>
->>>>>>> branch 'main' of git@github.com:lintailangq7-ux/JobSystemManagement.git
+
 <!-- 右クリック風メニュー -->
 <div class="ctx-menu" id="ctxMenu">
     <button data-action="edit">変更</button>
