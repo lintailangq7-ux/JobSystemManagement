@@ -46,7 +46,7 @@
 	TreeSet<Integer> yearsWithData = new TreeSet<Integer>();
 	Map<Integer, TreeSet<Integer>> monthsByYear = new HashMap<Integer, TreeSet<Integer>>();
 	for (ModelEmployment em : employmentList) {
-		if (em != null && em.getNaiteiKakutei() == 2 && em.getNaiteiKakuteiBi() != null) {
+		if (em != null && em.getNaiteiKakutei() == 1 && em.getNaiteiKakuteiBi() != null) {
 			int y = em.getNaiteiKakuteiBi().getYear();
 			int m = em.getNaiteiKakuteiBi().getMonthValue();
 			yearsWithData.add(y);
@@ -166,7 +166,7 @@
 		boolean naiteiKakutei = false;
 		if (emList != null) {
 			for (ModelEmployment em : emList) {
-				if (em != null && em.getNaiteiKakutei() == 2 && em.getNaiteiKakuteiBi() != null) {
+				if (em != null && em.getNaiteiKakutei() == 1 && em.getNaiteiKakuteiBi() != null) {
 					LocalDate kakuteiDate = em.getNaiteiKakuteiBi().toLocalDate();
 					if (!kakuteiDate.isAfter(cutoffDate)) {
 						naiteiKakutei = true;
