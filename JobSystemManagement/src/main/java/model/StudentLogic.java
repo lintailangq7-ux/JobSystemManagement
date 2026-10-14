@@ -9,5 +9,6 @@ public class StudentLogic {
 		StudentDAO DAO =  new StudentDAO();
 		List<ModelStudent> StuList = DAO.findAll();
 		return StuList;
+		
 	}
 }
