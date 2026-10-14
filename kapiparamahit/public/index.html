@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>三猿SNS</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <a class="logo" href="#/">🙈🙊🙉 三猿SNS</a>
+      <a href="#/" data-nav="home" data-auth hidden>ホーム</a>
+      <a href="#/explore" data-nav="explore" data-auth hidden>みんなの投稿</a>
+      <a href="#/users" data-nav="users" data-auth hidden>ユーザー</a>
+      <a href="#/me" data-nav="me" data-auth hidden>プロフィール</a>
+      <div class="sidebar-foot" id="session-box"></div>
+    </nav>
+    <main id="app"></main>
+  </div>
+  <div id="toast" class="toast" hidden></div>
+  <script src="/app.js"></script>
+</body>
+</html>
