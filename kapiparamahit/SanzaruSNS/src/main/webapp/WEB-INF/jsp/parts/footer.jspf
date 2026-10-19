@@ -1,0 +1,26 @@
+    </main>
+  </div>
+
+  <%-- 前の画面の操作結果 (数秒で消える) --%>
+  <c:if test="${not empty flash}">
+    <div class="toast" data-toast><c:out value="${flash}" /></div>
+  </c:if>
+  <c:if test="${not empty flashError}">
+    <div class="toast error" data-toast><c:out value="${flashError}" /></div>
+  </c:if>
+
+  <%-- 登録直後にどのタイプになったか発表する --%>
+  <c:if test="${reveal and not empty me}">
+    <dialog class="reveal" data-reveal>
+      <div class="reveal-emoji">${me.type.emoji}</div>
+      <p class="muted" style="margin:0">あなたのアカウントは…</p>
+      <h2>${me.type.label}アカウント</h2>
+      <p>${me.type.desc}</p>
+      <p class="muted">投稿はどのタイプでも自由にできます。</p>
+      <form method="dialog"><button>はじめる</button></form>
+    </dialog>
+  </c:if>
+
+  <script src="${ctx}/js/app.js"></script>
+</body>
+</html>
