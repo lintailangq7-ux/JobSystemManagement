@@ -1,0 +1,10 @@
+# このファイルを db.properties という名前でコピーして、自分の MySQL に合わせて書き換えてください。
+# db.properties はパスワードが入るので Git には登録されません (.gitignore 済み)。
+db.host=localhost
+db.port=3306
+db.user=root
+db.password=
+db.name=hitokoto_sns
+
+# 画像・音声の保存先 (省略するとユーザーフォルダの sanzaru-sns-uploads)
+#upload.dir=C:/sanzaru-sns-uploads
