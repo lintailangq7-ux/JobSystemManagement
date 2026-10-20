@@ -1,0 +1,62 @@
+<%-- 投稿1件分のカード。変数 p (Post) を使う。見えない内容はサーバーから送らない (自分の投稿は全部見える) --%>
+<c:set var="mine" value="${p.userId == me.id}" />
+<article class="card post" id="post-${p.id}" data-href="${ctx}/post?id=${p.id}">
+  <a href="${ctx}/user?name=${fn:escapeXml(p.authorUsername)}">
+    <div class="avatar" style="background:hsl(${p.authorAvatarHue} 55% 48%)"><c:out value="${p.authorInitial}" /></div>
+  </a>
+  <div class="post-body">
+    <div class="post-head">
+      <a href="${ctx}/user?name=${fn:escapeXml(p.authorUsername)}"><span class="name"><c:out value="${p.authorDisplayName}" /></span></a>
+      <span class="type-badge ${p.authorType.key}" title="${p.authorType.desc}">${p.authorType.emoji} ${p.authorType.label}</span>
+      <span class="muted">@<c:out value="${p.authorUsername}" /> · ${p.timeAgo}</span>
+    </div>
+    <c:if test="${not empty p.parentUsername}">
+      <div class="muted">コメント先: <a href="${ctx}/post?id=${p.replyTo}">@<c:out value="${p.parentUsername}" /></a></div>
+    </c:if>
+
+    <div class="post-content">
+      <c:if test="${not empty p.text}">
+        <c:choose>
+          <c:when test="${mine or me.type.canSee('text')}"><div class="post-text"><c:out value="${p.text}" /></div></c:when>
+          <c:otherwise><div class="hidden-media">🙊 ここには文字がありますが、あなたには読めません</div></c:otherwise>
+        </c:choose>
+      </c:if>
+      <c:if test="${not empty p.imageFile}">
+        <c:choose>
+          <c:when test="${mine or me.type.canSee('image')}">
+            <a href="${ctx}/media/${p.imageFile}" target="_blank" rel="noopener">
+              <img class="post-image" src="${ctx}/media/${p.imageFile}" alt="投稿画像" loading="lazy">
+            </a>
+          </c:when>
+          <c:otherwise><div class="hidden-media">🙈 ここには画像がありますが、あなたには見えません</div></c:otherwise>
+        </c:choose>
+      </c:if>
+      <c:if test="${not empty p.audioFile}">
+        <c:choose>
+          <c:when test="${mine or me.type.canSee('audio')}">
+            <audio class="post-audio" src="${ctx}/media/${p.audioFile}" controls preload="metadata"></audio>
+          </c:when>
+          <c:otherwise><div class="hidden-media">🙉 ここには音声がありますが、あなたには聞こえません</div></c:otherwise>
+        </c:choose>
+      </c:if>
+    </div>
+
+    <div class="post-actions">
+      <a class="action" href="${ctx}/post?id=${p.id}" title="コメント">💬 ${p.replyCount}</a>
+      <form method="post" action="${ctx}/post/like">
+        <input type="hidden" name="csrf" value="${csrf}">
+        <input type="hidden" name="id" value="${p.id}">
+        <input type="hidden" name="back" value="${fn:escapeXml(back)}">
+        <button type="submit" class="${p.liked ? 'liked' : ''}" title="いいね">${p.liked ? '♥' : '♡'} ${p.likeCount}</button>
+      </form>
+      <c:if test="${mine}">
+        <form method="post" action="${ctx}/post/delete" data-confirm="この投稿を削除しますか？（コメントも削除されます）">
+          <input type="hidden" name="csrf" value="${csrf}">
+          <input type="hidden" name="id" value="${p.id}">
+          <input type="hidden" name="back" value="${fn:escapeXml(back)}">
+          <button type="submit" class="del" title="削除">🗑 削除</button>
+        </form>
+      </c:if>
+    </div>
+  </div>
+</article>
