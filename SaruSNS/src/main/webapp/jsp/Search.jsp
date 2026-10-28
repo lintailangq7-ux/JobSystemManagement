@@ -169,6 +169,11 @@
         width: 86px; height: 100px;
         background: linear-gradient(#2f2f66, #8a5a7a 55%, #3a4a6a);
     }
+    .mode-image-icon{
+	        background-image: url('<%= request.getContextPath() %>/images/マイク.png');
+	        width: 86px; height: 100px;
+    
+    }
 
     /* ---------- 検索画像候補(ここがスクロールで流れる部分) ---------- */
     .candidate-title { font-weight: bold; margin: 24px 0 8px 12px; }
@@ -245,7 +250,7 @@
     <!-- 画像検索 / 音声検索(見かけだけ：クリックしても何も起きない) -->
     <div class="mode-row">
         <button type="button" class="mode-btn">
-            <div class="icon"><div class="mode-thumb"></div></div>
+            <div class="icon"><div class="mode-image-icon"></div></div>
             <%= imageSearchLabel1 %><br><%= imageSearchLabel2 %>
         </button>
         <button type="button" class="mode-btn">
