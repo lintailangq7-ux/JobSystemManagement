@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>投稿作成</title>
+<style>
+    /* ヘッダー全体 */
+    .post-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-bottom: 1px solid #e5e7eb;
+        background-color: #ffffff;
+    }
+
+    /* 戻るボタン */
+    .back-button {
+        width: 40px;
+        height: 40px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background-color: #ffffff;
+        color: #2563eb;
+        font-size: 22px;
+        cursor: pointer;
+    }
+
+    /* タイトル */
+    .post-header h1 {
+        margin: 0;
+        font-size: 24px;
+        color: #222222;
+        white-space: nowrap;
+    }
+
+    /* 投稿ボタンを右側に配置 */
+    .submit-button {
+        margin-left: auto;
+        padding: 10px 22px;
+        border: none;
+        border-radius: 8px;
+        background-color: #2563eb;
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .submit-button:hover {
+        background-color: #1d4ed8;
+    }
+	.text-input-section {
+	    margin: 20px 0;
+	}
+
+	.text-input-section > label {
+	    display: block;
+	    margin-bottom: 8px;
+	    font-weight: bold;
+	}
+
+	.text-area-container {
+	    border: 1px solid #cbd5e1;
+	    border-radius: 10px;
+	    padding: 12px;
+	    background-color: #ffffff;
+	}
+
+	.text-area-container textarea {
+	    display: block;
+	    width: 100%;
+	    min-height: 140px;
+	    padding: 8px;
+	    border: none;
+	    outline: none;
+	    box-sizing: border-box;
+	    resize: vertical;
+	    font-size: 16px;
+	    font-family: inherit;
+	}
+
+	.hashtag-area {
+	    display: flex;
+	    justify-content: flex-end;
+	    margin-top: 8px;
+	}
+
+	.hashtag-button {
+	    padding: 8px 12px;
+	    border: 1px solid #93b8f5;
+	    border-radius: 6px;
+	    background-color: #eff6ff;
+	    color: #2563eb;
+	    cursor: pointer;
+	    font-size: 14px;
+	}
+
+	.hashtag-button:hover {
+	    background-color: #dbeafe;
+	}
+
+	.hashtag-input-area {
+	    margin-top: 12px;
+	    padding-top: 12px;
+	    border-top: 1px solid #e5e7eb;
+	}
+
+	.hashtag-input-area label {
+	    display: block;
+	    margin-bottom: 8px;
+	    font-size: 14px;
+	    font-weight: bold;
+	}
+
+	.hashtag-input-row {
+	    display: flex;
+	    flex-wrap: wrap;
+	    gap: 8px;
+	}
+
+	.hashtag-input-row input {
+	    flex: 1;
+	    min-width: 120px;
+	    padding: 9px;
+	    border: 1px solid #cbd5e1;
+	    border-radius: 6px;
+	    font-size: 14px;
+	}
+
+	.hashtag-input-row button {
+	    padding: 8px 12px;
+	    border: 1px solid #93b8f5;
+	    border-radius: 6px;
+	    background-color: #eff6ff;
+	    color: #2563eb;
+	    cursor: pointer;
+	}
+
+	.hashtag-input-row button:hover {
+	    background-color: #dbeafe;
+	}
+
+	.hashtag-input-area[hidden] {
+	    display: none;
+	}
+
+	/* 画面中央の背景 */
+	.hashtag-modal {
+	    position: fixed;
+	    inset: 0;
+	    z-index: 1000;
+	    display: flex;
+	    align-items: center;
+	    justify-content: center;
+	    padding: 20px;
+	    background: rgba(15, 23, 42, 0.45);
+	    box-sizing: border-box;
+	}
+
+	.hashtag-modal[hidden] {
+	    display: none;
+	}
+
+	/* 入力枠 */
+	.hashtag-dialog {
+	    position: relative;
+	    width: 100%;
+	    max-width: 360px;
+	    padding: 24px;
+	    border-radius: 14px;
+	    background: #ffffff;
+	    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+	    box-sizing: border-box;
+	}
+
+	.hashtag-dialog h2 {
+	    margin: 0 30px 20px 0;
+	    font-size: 20px;
+	    color: #222222;
+	}
+
+	.hashtag-dialog label {
+	    display: block;
+	    margin-bottom: 8px;
+	    font-size: 14px;
+	    font-weight: bold;
+	}
+
+	.hashtag-close {
+	    position: absolute;
+	    top: 12px;
+	    right: 12px;
+	    width: 32px;
+	    height: 32px;
+	    border: none;
+	    border-radius: 6px;
+	    background: #f1f5f9;
+	    color: #475569;
+	    font-size: 24px;
+	    cursor: pointer;
+	}
+
+	.hashtag-input-row input {
+	    width: 100%;
+	    padding: 12px;
+	    border: 1px solid #cbd5e1;
+	    border-radius: 8px;
+	    box-sizing: border-box;
+	    font-size: 16px;
+	}
+
+	.hashtag-confirm {
+	    width: 100%;
+	    margin-top: 16px;
+	    padding: 12px;
+	    border: none;
+	    border-radius: 8px;
+	    background: #2563eb;
+	    color: #ffffff;
+	    font-size: 16px;
+	    cursor: pointer;
+	}
+
+
+	/* 下部メニュー */
+	.bottom-menu {
+	    position: fixed;
+	    bottom: 0;
+	    left: 0;
+	    width: 100%;
+	    display: flex;
+	    justify-content: space-around;
+	    align-items: center;
+	    padding: 10px 0;
+	    background-color: #ffffff;
+	    border-top: 1px solid #e5e7eb;
+	    box-sizing: border-box;
+	    z-index: 100;
+	}
+
+	.bottom-menu a {
+	    display: flex;
+	    justify-content: center;
+	    align-items: center;
+	    width: 48px;
+	    height: 44px;
+	    color: #2563eb;
+	    text-decoration: none;
+	    font-size: 30px;
+	    border-radius: 8px;
+	}
+
+	.bottom-menu a:hover {
+	    background-color: #eff6ff;
+	}
+
+</style>
+</head>
+<body>
+	<!-- ヘッダー -->
+	   <header class="post-header">
+	       <button type="button" class="back-button" onclick="history.back()" aria-label="戻る">←</button>
+	       <h1>投稿作成</h1>
+	       <button type="submit" form="postForm" class="submit-button">投稿</button>
+	   </header>
+
+	   <main>
+	       <form id="postForm">
+
+	           <!-- アカウント情報 -->
+	           <section>
+	               <div>
+	                   <span aria-label="プロフィール画像">◯</span>
+	                   <span>アカウント名</span>
+	               </div>
+
+	               <label for="visibility">公開範囲</label>
+	               <select id="visibility" name="visibility">
+	                   <option value="public">全体に公開</option>
+	                   <option value="followers">フォロー中のみ</option>
+	                   <option value="private">自分のみ</option>
+	               </select>
+	           </section>
+
+	           <!-- テキスト入力 -->
+	           <section>
+				<div class="text-input-section">
+	               <label for="postText">テキスト入力</label>
+				   
+				   <div class="text-area-container">
+	               <textarea
+	                   id="postText"
+	                   name="postText"
+	                   rows="5"
+	                   placeholder="投稿内容を入力してください">
+				   </textarea>
+                   <div class="hashtag-area">
+	               <button type="button" class="hashtag-button" id="showHashtagInput">
+	                   ⊕ ハッシュタグ追加
+	               </button>
+				   <!-- 最初は非表示 -->
+
+				   <!-- ハッシュタグ入力ポップアップ -->
+				   <div class="hashtag-modal" id="hashtagModal" hidden>
+				       <div class="hashtag-dialog">
+				           <button
+				               type="button"
+				               class="hashtag-close"
+				               id="closeHashtag"
+				               aria-label="閉じる">×</button>
+
+				           <h2>ハッシュタグを追加</h2>
+				           <label for="hashtagInput">
+				               ハッシュタグを入力
+				           </label>
+
+				           <div class="hashtag-input-row">
+				               <input
+				                   type="text"
+				                   id="hashtagInput"
+				                   placeholder="例：旅行"
+				                   maxlength="50">
+				           </div>
+
+				           <button type="button" id="addHashtag"
+				                   class="hashtag-confirm">
+				               追加
+				           </button>
+				       </div>
+				   </div>
+
+	               </div>
+				   </div>
+				   </div>
+	           </section>
+
+	           <!-- 画像追加 -->
+	           <section>
+	               <h2>画像を追加</h2>
+
+	               <label for="imageInput">画像を選択</label>
+	               <input
+	                   type="file"
+	                   id="imageInput"
+	                   name="images"
+	                   accept="image/*"
+	                   multiple
+	               >
+
+	               <div id="imagePreview">
+	                   <!-- 選択した画像を表示 -->
+	               </div>
+
+	               <button type="button" id="removeImages">
+	                   画像を削除
+	               </button>
+	           </section>
+
+	           <!-- 音声録音・再生 -->
+	           <section>
+	               <h2>音声録音</h2>
+
+	               <button type="button" id="recordButton">
+	                   録音開始
+	               </button>
+
+	               <button type="button" id="stopButton" disabled>
+	                   録音停止
+	               </button>
+
+	               <p id="recordingStatus">停止中</p>
+
+	               <label for="audioInput">音声ファイルを選択</label>
+	               <input
+	                   type="file"
+	                   id="audioInput"
+	                   name="audioFiles"
+	                   accept="audio/*"
+	                   multiple
+	               >
+
+	               <div id="audioPreview">
+	                   <!-- 選択・録音した音声を表示 -->
+	               </div>
+
+	               <button type="button" id="removeAudio">
+	                   音声を削除
+	               </button>
+	           </section>
+
+	       </form>
+	   </main>
+
+	   <!-- 下部メニュー -->
+	   <nav class="bottom-menu" aria-label="メインメニュー">
+	       <a href="search.html" aria-label="検索" title="検索">⌕ </a>
+	       <a href="home.html" aria-label="ホーム" title="ホーム">⌂ </a>
+	       <a href="mypage.html" aria-label="マイページ" title="マイページ" >👤</a>
+	   </nav>
+<script>
+
+	   const hashtagModal = document.getElementById("hashtagModal");
+	   const hashtagInput = document.getElementById("hashtagInput");
+	   const addHashtag = document.getElementById("addHashtag");
+	   const closeHashtag = document.getElementById("closeHashtag");
+	   const postText = document.getElementById("postText");
+
+	   // 入力枠を表示する関数
+	   function openHashtagModal() {
+	       hashtagModal.hidden = false;
+	       hashtagInput.focus();
+		   }
+		   // ハッシュタグ追加ボタンを押すと入力枠を開く
+		   const showHashtagInput = document.getElementById("showHashtagInput");
+
+		   showHashtagInput.addEventListener("click", function () {
+		       openHashtagModal();
+		   });
+	   
+
+	   // ×で閉じる
+	   closeHashtag.addEventListener("click", function () {
+	       hashtagModal.hidden = true;
+	       hashtagInput.value = "";
+	   });
+
+	   // 追加してテキストエリアに反映
+	   addHashtag.addEventListener("click", function () {
+	       let tag = hashtagInput.value.trim();
+
+	       if (tag === "") {
+	           alert("ハッシュタグを入力してください。");
+	           hashtagInput.focus();
+	           return;
+	       }
+
+	       tag = "#" + tag.replace(/^#+/, "");
+
+	       if (tag === "#") {
+	           alert("ハッシュタグを入力してください。");
+	           return;
+	       }
+
+	       const separator =
+	           postText.value !== "" &&
+	           !postText.value.endsWith("\n")
+	               ? "\n"
+	               : "";
+
+	       postText.value += separator + tag + " ";
+
+	       hashtagModal.hidden = true;
+	       hashtagInput.value = "";
+	       postText.focus();
+	   });
+ </script>
+	  
+</body>
+</html>
