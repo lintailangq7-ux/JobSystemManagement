@@ -256,6 +256,137 @@
 	    background-color: #eff6ff;
 	}
 
+	.section {
+	  margin: 16px;
+	  padding: 16px;
+	  border: 1px solid #e2eaf5;
+	  border-radius: 12px;
+	  background: #fff;
+	}
+
+	.section h2 {
+	  margin-top: 0;
+	  font-size: 17px;
+	}
+
+	.upload-button,
+	.audio-Input,
+	.audio-controls button {
+	  display: inline-block;
+	  padding: 10px 14px;
+	  border: 1px solid #bfdbfe;
+	  border-radius: 8px;
+	  background: #eff6ff;
+	  color: #1d4ed8;
+	  cursor: pointer;
+	}
+
+	.image-list {
+	  display: grid;
+	  grid-template-columns: repeat(2, minmax(0, 1fr));
+	  gap: 12px;
+	  margin-top: 14px;
+	}
+
+	.image-item img {
+	  width: 100%;
+	  aspect-ratio: 1;
+	  object-fit: cover;
+	  border-radius: 8px;
+	}
+
+	.audio-item {
+	  margin-top: 12px;
+	  padding: 12px;
+	  background: #f8fafc;
+	  border: 1px solid #e2e8f0;
+	  border-radius: 8px;
+	}
+
+	.audio-item audio {
+	  display: block;
+	  width: 100%;
+	  margin: 10px 0;
+	}
+
+	.remove-button {
+	  padding: 6px 10px;
+	  border: none;
+	  border-radius: 6px;
+	  background: #fee2e2;
+	  color: #b91c1c;
+	  cursor: pointer;
+	}
+
+	.audio-controls {
+	  display: flex;
+	  flex-wrap: wrap;
+	  gap: 8px;
+	}
+
+
+	/* 画像・音声の共通デザイン */
+	.image-list {
+	    display: grid;
+	    grid-template-columns: repeat(2, minmax(0, 1fr));
+	    gap: 12px;
+	    margin-top: 14px;
+	}
+
+	.image-item img {
+	    width: 100%;
+	    aspect-ratio: 1;
+	    object-fit: cover;
+	    border-radius: 8px;
+	}
+
+	.image-item .remove-button {
+	    margin-top: 6px;
+	}
+
+	.audio-item {
+	    margin-top: 12px;
+	    padding: 12px;
+	    background: #f8fafc;
+	    border: 1px solid #e2e8f0;
+	    border-radius: 8px;
+	}
+
+	.audio-item audio {
+	    display: block;
+	    width: 100%;
+	    margin: 10px 0;
+	}
+
+	.audio-controls {
+	    display: flex;
+	    flex-wrap: wrap;
+	    gap: 8px;
+	}
+
+	.audio-controls button {
+	    padding: 10px 14px;
+	    border: 1px solid #bfdbfe;
+	    border-radius: 8px;
+	    background: #eff6ff;
+	    color: #1d4ed8;
+	    cursor: pointer;
+	}
+
+	.audio-controls button:disabled {
+	    opacity: 0.5;
+	    cursor: not-allowed;
+	}
+
+	.remove-button {
+	    padding: 6px 10px;
+	    border: none;
+	    border-radius: 6px;
+	    background: #fee2e2;
+	    color: #b91c1c;
+	    cursor: pointer;
+	}
+
 </style>
 </head>
 <body>
@@ -271,15 +402,18 @@
 
 	           <!-- アカウント情報 -->
 	           <section>
-	               <div>
-	                   <span aria-label="プロフィール画像">◯</span>
-	                   <span>アカウント名</span>
+	               <div class="account-info">
+					<img id="accountIcon"
+					     src="images/default-icon.png"
+	                     alt ="プロフィール画像"
+						 class="account-icon">
+	                   <span id="accountName">アカウント名</span>
 	               </div>
 
 	               <label for="visibility">公開範囲</label>
 	               <select id="visibility" name="visibility">
 	                   <option value="public">全体に公開</option>
-	                   <option value="followers">フォロー中のみ</option>
+	                   <option value="followers">フォロワーのみ</option>
 	                   <option value="private">自分のみ</option>
 	               </select>
 	           </section>
@@ -337,57 +471,57 @@
 	           </section>
 
 	           <!-- 画像追加 -->
-	           <section>
+	           <section class="section">
 	               <h2>画像を追加</h2>
 
-	               <label for="imageInput">画像を選択</label>
+	               <label for="imageInput" class="upload-button">+画像を選択</label>
 	               <input
 	                   type="file"
 	                   id="imageInput"
 	                   name="images"
 	                   accept="image/*"
 	                   multiple
+					   hidden
 	               >
 
-	               <div id="imagePreview">
+	               <div id="imagePreview" class="image-list">
 	                   <!-- 選択した画像を表示 -->
 	               </div>
 
-	               <button type="button" id="removeImages">
-	                   画像を削除
-	               </button>
+	              
 	           </section>
 
 	           <!-- 音声録音・再生 -->
-	           <section>
-	               <h2>音声録音</h2>
-
+	           <section class="section">
+	               <h2>音声を追加</h2>
+               <div class="audio-controls">
 	               <button type="button" id="recordButton">
-	                   録音開始
+	                   ●録音開始
 	               </button>
 
 	               <button type="button" id="stopButton" disabled>
-	                   録音停止
+	                   ●録音停止
 	               </button>
 
-	               <p id="recordingStatus">停止中</p>
+	             
 
-	               <label for="audioInput">音声ファイルを選択</label>
+	               <label for="audioInput" class="audio-Input">+音声を選択</label>
 	               <input
 	                   type="file"
 	                   id="audioInput"
 	                   name="audioFiles"
 	                   accept="audio/*"
 	                   multiple
+					   hidden
 	               >
+				   </div>
+				   <p id="recordingStatus">停止中</p>
 
 	               <div id="audioPreview">
 	                   <!-- 選択・録音した音声を表示 -->
 	               </div>
 
-	               <button type="button" id="removeAudio">
-	                   音声を削除
-	               </button>
+	              
 	           </section>
 
 	       </form>
@@ -455,6 +589,187 @@
 	       hashtagInput.value = "";
 	       postText.focus();
 	   });
+
+
+	   /* ===== 画像処理 ===== */
+
+	   const imageInput = document.getElementById("imageInput");
+	   const imagePreview = document.getElementById("imagePreview");
+
+	   let images = [];
+
+	   imageInput.addEventListener("change", function () {
+	       for (const file of imageInput.files) {
+	           if (!file.type.startsWith("image/")) continue;
+
+	           images.push({
+	               file: file,
+	               url: URL.createObjectURL(file)
+	           });
+	       }
+
+	       imageInput.value = "";
+	       showImages();
+	   });
+
+	   function showImages() {
+	       imagePreview.replaceChildren();
+
+	       images.forEach(function (image, index) {
+	           const item = document.createElement("div");
+	           item.className = "image-item";
+
+	           const img = document.createElement("img");
+	           img.src = image.url;
+	           img.alt = image.file.name;
+
+	           const remove = document.createElement("button");
+	           remove.type = "button";
+	           remove.className = "remove-button";
+	           remove.textContent = "画像を削除";
+
+	           remove.addEventListener("click", function () {
+	               URL.revokeObjectURL(image.url);
+	               images.splice(index, 1);
+	               showImages();
+	           });
+
+	           item.append(img, remove);
+	           imagePreview.append(item);
+	       });
+	   }
+
+
+	   /* ===== 音声ファイル・録音処理 ===== */
+
+	   const audioInput = document.getElementById("audioInput");
+	   const audioPreview = document.getElementById("audioPreview");
+	   const recordingStatus = document.getElementById("recordingStatus");
+	   const recordButton = document.getElementById("recordButton");
+	   const stopButton = document.getElementById("stopButton");
+
+	   let audios = [];
+	   let recorder = null;
+	   let stream = null;
+	   let chunks = [];
+
+	   function addAudio(file) {
+	       audios.push({
+	           file: file,
+	           url: URL.createObjectURL(file)
+	       });
+
+	       showAudios();
+	   }
+
+	   // 音声ファイルを選択
+	   audioInput.addEventListener("change", function () {
+	       for (const file of audioInput.files) {
+	           if (file.type.startsWith("audio/")) {
+	               addAudio(file);
+	           }
+	       }
+
+	       audioInput.value = "";
+	   });
+
+	   // 音声一覧・再生コントロールを表示
+	   function showAudios() {
+	       audioPreview.replaceChildren();
+
+	       audios.forEach(function (audio, index) {
+	           const item = document.createElement("div");
+	           item.className = "audio-item";
+
+	           const name = document.createElement("p");
+	           name.textContent = audio.file.name;
+
+	           const player = document.createElement("audio");
+	           player.src = audio.url;
+	           player.controls = true;
+
+	           const remove = document.createElement("button");
+	           remove.type = "button";
+	           remove.className = "remove-button";
+	           remove.textContent = "音声を削除";
+
+	           remove.addEventListener("click", function () {
+	               URL.revokeObjectURL(audio.url);
+	               audios.splice(index, 1);
+	               showAudios();
+	           });
+
+	           item.append(name, player, remove);
+	           audioPreview.append(item);
+	       });
+	   }
+
+	   // 録音開始
+	   recordButton.addEventListener("click", async function () {
+	       if (!navigator.mediaDevices ||
+	           !navigator.mediaDevices.getUserMedia ||
+	           !window.MediaRecorder) {
+	           recordingStatus.textContent =
+	               "このブラウザでは録音を利用できません。";
+	           return;
+	       }
+
+	       try {
+	           stream = await navigator.mediaDevices.getUserMedia({
+	               audio: true
+	           });
+
+	           chunks = [];
+	           recorder = new MediaRecorder(stream);
+
+	           recorder.addEventListener("dataavailable", function (event) {
+	               if (event.data.size > 0) {
+	                   chunks.push(event.data);
+	               }
+	           });
+
+	           recorder.addEventListener("stop", function () {
+	               const blob = new Blob(chunks, {
+	                   type: recorder.mimeType || "audio/webm"
+	               });
+
+	               const file = new File(
+	                   [blob],
+	                   "録音_" + Date.now() + ".webm",
+	                   { type: blob.type }
+	               );
+
+	               addAudio(file);
+
+	               stream.getTracks().forEach(function (track) {
+	                   track.stop();
+	               });
+
+	               stream = null;
+	               recordingStatus.textContent = "録音が完了しました。";
+	               recordButton.disabled = false;
+	               stopButton.disabled = true;
+	           });
+
+	           recorder.start();
+
+	           recordButton.disabled = true;
+	           stopButton.disabled = false;
+	           recordingStatus.textContent = "録音中です...";
+	       } catch (error) {
+	           recordingStatus.textContent =
+	               "マイクの使用を許可してください。";
+	       }
+	   });
+
+	   // 録音停止
+	   stopButton.addEventListener("click", function () {
+	       if (recorder && recorder.state === "recording") {
+	           recorder.stop();
+	       }
+	   });
+
+
  </script>
 	  
 </body>
