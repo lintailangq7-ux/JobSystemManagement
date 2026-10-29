@@ -67,7 +67,7 @@
         top: 0;
         z-index: 10;
         display: flex;
-        width: 420px;
+        width: 100%;          /* 420px → 100% */
         border-bottom: 1px solid #ccc;
         background: var(--bg);
     }
@@ -99,7 +99,7 @@
     .post {
         display: flex;
         gap: 12px;
-        width: 420px;
+        width: 100%;          /* 420px → 100% */
         padding: 12px;
         border-bottom: 1px solid var(--line);
     }
@@ -116,7 +116,8 @@
     .post-head .id { color: var(--accent); }
 
     .post-image {
-        height: 200px;
+        width: 100%;
+        aspect-ratio: 21 / 10;   /* 幅が広がっても元(420px時)の縦横比を保つ */
         border: 2px solid #123;
         border-radius: 28px;
         display: flex;
