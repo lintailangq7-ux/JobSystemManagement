@@ -191,7 +191,7 @@
             <% if (accountRule[i] == 1) { %>
                 <!-- 画像(画像がある場合は <img src="..."> に差し替え) -->
                 <div class="post-audio"><%=ruleNotString %></div>
-                <div class="post-image">画像</div>
+                <div class="post-image">画像ｓ</div>
                 <!-- 音声 -->
                 <div class="post-audio">
                     <audio controls>
