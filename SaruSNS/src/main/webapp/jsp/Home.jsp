@@ -40,7 +40,8 @@
 
     .toolbar {
         position: fixed;
-        top: 8px; left: 8px; bottom: 8px;
+        top: 8px; bottom: 8px;
+        left: calc((100% - var(--total-width)) / 2);   /* ツールバー+投稿の列をまとめて中央へ */
         width: var(--toolbar-width);
         border: 1px solid var(--line);
         border-radius: 24px;
@@ -56,9 +57,26 @@
         letter-spacing: 0.4em;
     }
 
+    /* ツールバー+投稿の列を、ひとまとまりで画面の中央に配置 */
+    :root {
+        --column-width: 600px;      /* 投稿の列の幅 */
+        --column-gap: 16px;         /* ツールバーと列のすき間 */
+        --total-width: calc(var(--toolbar-width) + var(--column-gap) + var(--column-width));
+    }
     .main {
-        margin-left: calc(var(--toolbar-width) + 24px);
-        padding-right: var(--gap);
+        width: var(--column-width);
+        margin-left: calc((100% - var(--total-width)) / 2 + var(--toolbar-width) + var(--column-gap));
+        border-left: 1px solid #ddd;
+        border-right: 1px solid #ddd;
+        min-height: 100%;
+    }
+    /* 画面が狭いときは左に寄せる */
+    @media (max-width: 820px) {
+        .toolbar { left: 8px; }
+        .main {
+            width: auto;
+            margin: 0 var(--gap) 0 calc(var(--toolbar-width) + 24px);
+        }
     }
 
     /* ---------- タブ(おすすめ / フォロー中) ---------- */
