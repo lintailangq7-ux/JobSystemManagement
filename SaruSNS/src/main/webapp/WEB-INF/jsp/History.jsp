@@ -37,7 +37,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>検索結果</title>
+<title>履歴</title>
 <style>
     :root {
         --toolbar-width: 180px;
