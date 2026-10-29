@@ -194,6 +194,9 @@
     .post-actions button {
         background: none; border: none; padding: 0; cursor: pointer;
     }
+    /* 削除ボタン(赤) */
+    .post-actions .delete-btn svg { stroke: #d00; }
+    .post-actions .delete-btn:hover svg { stroke: #a00; }
 </style>
 </head>
 <body>
@@ -300,6 +303,15 @@
                         <path d="M6 3h12v18l-6-4.500L6 21z"/>
                     </svg>
                 </button>
+                <% if (p == 2) { %>
+                <!-- 削除ボタン(赤いゴミ箱):ブックマークのパネルだけに表示 -->
+                <button type="button" class="delete-btn" aria-label="削除">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#d00" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/>
+                    </svg>
+                </button>
+                <% } %>
             </div>
         </div>
     </article>
