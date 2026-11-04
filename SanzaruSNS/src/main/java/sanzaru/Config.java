@@ -26,9 +26,9 @@ public final class Config {
 		dbPort = Integer.parseInt(pick("DB_PORT", p, "db.port", "3306"));
 		dbUser = pick("DB_USER", p, "db.user", "root");
 		dbPassword = pick("DB_PASSWORD", p, "db.password", "");
-		dbName = pick("DB_NAME", p, "db.name", "hitokoto_sns");
+		dbName = pick("DB_NAME", p, "db.name", "saru_sns");
 		uploadDir = Path.of(pick("UPLOAD_DIR", p, "upload.dir",
-				Path.of(System.getProperty("user.home"), "sanzaru-sns-uploads").toString()));
+		        Path.of(System.getProperty("user.home"), "saru-sns-uploads").toString()));
 		if (!dbName.matches("[A-Za-z0-9_]+")) {
 			throw new IllegalArgumentException("db.name に使えない文字があります: " + dbName);
 		}

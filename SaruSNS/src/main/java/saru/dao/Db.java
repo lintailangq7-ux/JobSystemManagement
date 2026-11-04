@@ -11,55 +11,123 @@ import saru.Config;
 public final class Db {
 	private static Config config;
 
-	// Node.js 版 (server.js) と同じテーブル。どちらのアプリからも同じデータを使える
+	// 外部キーの参照先が先に作られるよう、この順番で実行する
+	// (CREATE TABLE IF NOT EXISTS なので、すでにあるテーブルは変更されない)
 	private static final String[] SCHEMA = {
 		"""
 		CREATE TABLE IF NOT EXISTS users (
 		  id INT AUTO_INCREMENT PRIMARY KEY,
-		  username VARCHAR(20) NOT NULL UNIQUE,
-		  display_name VARCHAR(50) NOT NULL,
-		  bio VARCHAR(160) NOT NULL DEFAULT '',
-		  type VARCHAR(16) NOT NULL,
-		  salt CHAR(32) NOT NULL,
-		  password_hash CHAR(128) NOT NULL,
-		  created_at BIGINT NOT NULL
-		)""",
-		"""
-		CREATE TABLE IF NOT EXISTS follows (
-		  follower_id INT NOT NULL,
-		  followee_id INT NOT NULL,
-		  PRIMARY KEY (follower_id, followee_id),
-		  KEY (followee_id),
-		  FOREIGN KEY (follower_id) REFERENCES users(id) ON DELETE CASCADE,
-		  FOREIGN KEY (followee_id) REFERENCES users(id) ON DELETE CASCADE
-		)""",
-		// reply_to には外部キーを付けない(返信の連鎖削除はアプリ側で行う)
+		  user_mail VARCHAR(50) NOT NULL UNIQUE,
+		  password VARCHAR(255) NOT NULL,
+		  user_name VARCHAR(50) NOT NULL,
+		  bio VARCHAR(300) NULL,
+		  birthday DATE NULL,
+		  icon_path VARCHAR(255) NULL,
+		  account_type ENUM('mizaru','iwazaru','kikazaru') NOT NULL,
+		  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
 		"""
 		CREATE TABLE IF NOT EXISTS posts (
 		  id INT AUTO_INCREMENT PRIMARY KEY,
 		  user_id INT NOT NULL,
-		  text TEXT NOT NULL,
-		  image_file VARCHAR(64) NULL,
-		  image_mime VARCHAR(32) NULL,
-		  audio_file VARCHAR(64) NULL,
-		  audio_mime VARCHAR(32) NULL,
-		  reply_to INT NULL,
-		  created_at BIGINT NOT NULL,
-		  KEY (user_id, created_at),
-		  KEY (reply_to),
-		  KEY (created_at),
-		  KEY (image_file),
-		  KEY (audio_file),
-		  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-		)""",
+		  body TEXT NULL,
+		  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		  FOREIGN KEY (user_id) REFERENCES users(id),
+		  INDEX idx_posts_created (created_at)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
+		"""
+		CREATE TABLE IF NOT EXISTS media (
+		  id INT AUTO_INCREMENT PRIMARY KEY,
+		  post_id INT NOT NULL,
+		  type ENUM('image','audio') NOT NULL,
+		  file_path VARCHAR(255) NOT NULL,
+		  title VARCHAR(100) NULL,
+		  dhash BIGINT NULL,
+		  UNIQUE KEY uq_post_type (post_id, type),
+		  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
+		"""
+		CREATE TABLE IF NOT EXISTS tags (
+		  id INT AUTO_INCREMENT PRIMARY KEY,
+		  name VARCHAR(50) NOT NULL UNIQUE
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
+		"""
+		CREATE TABLE IF NOT EXISTS media_tags (
+		  media_id INT NOT NULL,
+		  tag_id INT NOT NULL,
+		  source ENUM('user','auto') NOT NULL DEFAULT 'user',
+		  PRIMARY KEY (media_id, tag_id),
+		  FOREIGN KEY (media_id) REFERENCES media(id) ON DELETE CASCADE,
+		  FOREIGN KEY (tag_id) REFERENCES tags(id)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
+		"""
+		CREATE TABLE IF NOT EXISTS post_tags (
+		  post_id INT NOT NULL,
+		  tag_id INT NOT NULL,
+		  source ENUM('user','auto') NOT NULL DEFAULT 'user',
+		  PRIMARY KEY (post_id, tag_id),
+		  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+		  FOREIGN KEY (tag_id) REFERENCES tags(id)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
+		"""
+		CREATE TABLE IF NOT EXISTS media_features (
+		  media_id INT NOT NULL,
+		  kind VARCHAR(20) NOT NULL,
+		  vec TEXT NOT NULL,
+		  PRIMARY KEY (media_id, kind),
+		  FOREIGN KEY (media_id) REFERENCES media(id) ON DELETE CASCADE
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
 		"""
 		CREATE TABLE IF NOT EXISTS likes (
+		  user_id INT NOT NULL,
+		  post_id INT NOT NULL,
+		  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		  PRIMARY KEY (user_id, post_id),
+		  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+		  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+		  INDEX idx_likes_post (post_id)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
+		"""
+		CREATE TABLE IF NOT EXISTS bookmarks (
+		  user_id INT NOT NULL,
+		  post_id INT NOT NULL,
+		  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		  PRIMARY KEY (user_id, post_id),
+		  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+		  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
+		"""
+		CREATE TABLE IF NOT EXISTS comments (
+		  id INT AUTO_INCREMENT PRIMARY KEY,
 		  post_id INT NOT NULL,
 		  user_id INT NOT NULL,
-		  PRIMARY KEY (post_id, user_id),
+		  body VARCHAR(500) NOT NULL,
+		  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
-		  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-		)""",
+		  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+		  INDEX idx_comments_post (post_id, created_at)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
+		"""
+		CREATE TABLE IF NOT EXISTS follows (
+		  follower_id INT NOT NULL,
+		  followee_id INT NOT NULL,
+		  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		  PRIMARY KEY (follower_id, followee_id),
+		  CONSTRAINT fk_follows_follower FOREIGN KEY (follower_id) REFERENCES users(id),
+		  CONSTRAINT fk_follows_followee FOREIGN KEY (followee_id) REFERENCES users(id),
+		  CONSTRAINT chk_no_self_follow CHECK (follower_id <> followee_id),
+		  INDEX idx_follows_followee (followee_id)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
+		"""
+		CREATE TABLE IF NOT EXISTS view_history (
+		  user_id INT NOT NULL,
+		  post_id INT NOT NULL,
+		  viewed_at DATETIME NOT NULL,
+		  PRIMARY KEY (user_id, post_id),
+		  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+		  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+		  INDEX idx_view_recent (user_id, viewed_at)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
 	};
 
 	private Db() {}
