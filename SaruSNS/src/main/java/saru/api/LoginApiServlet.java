@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import saru.Passwords;
 import saru.dao.UserDao;
 import saru.model.User;
 
@@ -20,12 +19,13 @@ public class LoginApiServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		String username = req.getParameter("username") == null ? "" : req.getParameter("username").trim();
+		String userMail = req.getParameter("username") == null ? "" : req.getParameter("username").trim();
 		String password = req.getParameter("password") == null ? "" : req.getParameter("password");
+
 		try {
-			UserDao.Credentials c = UserDao.findCredentials(username);
-			if (c == null || !Passwords.verify(password, c.salt(), c.passwordHash())) {
-				ApiJson.error(res, 401, "ユーザー名またはパスワードが違います");
+			UserDao.Credentials c = UserDao.findCredentials(userMail);
+			if (c == null || !password.equals(c.password())) {
+				ApiJson.error(res, 401, "メールアドレスまたはパスワードが違います");
 				return;
 			}
 			User me = UserDao.findById(c.id(), c.id());

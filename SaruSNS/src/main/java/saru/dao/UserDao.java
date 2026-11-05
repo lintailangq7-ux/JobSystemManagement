@@ -26,8 +26,8 @@ public final class UserDao {
 			FROM users u
 			""";
 
-	/** ログイン確認用 (ソルトとハッシュ) */
-	public record Credentials(int id, String salt, String passwordHash) {}
+	/** ログイン確認用 */
+	public record Credentials(int id, String password) {}
 
 	/** ユーザー名の重複 */
 	public static class DuplicateUsernameException extends Exception {
@@ -49,39 +49,41 @@ public final class UserDao {
 		return query(SELECT + " ORDER BY u.created_at DESC, u.id DESC", viewerId);
 	}
 
-	public static Credentials findCredentials(String username) throws SQLException {
+	public static Credentials findCredentials(String userMail) throws SQLException {
 		try (Connection conn = Db.get();
-				PreparedStatement ps = conn.prepareStatement("SELECT id, salt, password_hash FROM users WHERE username = ?")) {
-			ps.setString(1, username);
+				PreparedStatement ps = conn.prepareStatement(
+						"SELECT id, password FROM users WHERE user_mail = ?")) {
+			ps.setString(1, userMail);
 			try (ResultSet rs = ps.executeQuery()) {
-				return rs.next() ? new Credentials(rs.getInt("id"), rs.getString("salt"), rs.getString("password_hash")) : null;
+				return rs.next()
+						? new Credentials(rs.getInt("id"), rs.getString("password"))
+						: null;
 			}
 		}
 	}
 
 	/** 新しいユーザーを登録して id を返す */
-	public static int create(String username, String displayName, AccountType type, String salt, String passwordHash)
+	public static int create(String userMail, String userName, AccountType type, String password)
 			throws SQLException, DuplicateUsernameException {
-		String sql = "INSERT INTO users (username, display_name, bio, type, salt, password_hash, created_at) VALUES (?, ?, '', ?, ?, ?, ?)";
+		String sql = """
+				INSERT INTO users (user_mail, password, user_name, bio, account_type, created_at)
+				VALUES (?, ?, ?, '', ?, NOW())
+				""";
 		try (Connection conn = Db.get();
 				PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-			ps.setString(1, username);
-			ps.setString(2, displayName);
-			ps.setString(3, type.getKey());
-			ps.setString(4, salt);
-			ps.setString(5, passwordHash);
-			ps.setLong(6, System.currentTimeMillis());
+			ps.setString(1, userMail);
+			ps.setString(2, password);
+			ps.setString(3, userName);
+			ps.setString(4, type.getKey());
 			ps.executeUpdate();
 			try (ResultSet keys = ps.getGeneratedKeys()) {
 				keys.next();
 				return keys.getInt(1);
 			}
 		} catch (SQLIntegrityConstraintViolationException e) {
-			// username 列は大文字小文字を区別しない照合順序なので、UNIQUE で重複を防げる
 			throw new DuplicateUsernameException();
 		}
 	}
-
 	public static void updateProfile(int id, String displayName, String bio) throws SQLException {
 		try (Connection conn = Db.get();
 				PreparedStatement ps = conn.prepareStatement("UPDATE users SET display_name = ?, bio = ? WHERE id = ?")) {

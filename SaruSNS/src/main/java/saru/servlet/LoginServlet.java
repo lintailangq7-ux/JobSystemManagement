@@ -44,10 +44,11 @@ public class LoginServlet extends BaseServlet {
 					showError(req, res, "register", "パスワードは8文字以上にしてください");
 					return;
 				}
-				String salt = Passwords.newSalt();
+				
 				String name = displayName.isEmpty() ? username : cut(displayName, 50);
 				try {
-					userId = UserDao.create(username, name, AccountType.random(), salt, Passwords.hash(password, salt));
+					String hash = Passwords.hash(password);   // ソルトなし版
+					userId = UserDao.create(username, name, AccountType.random(), password);
 				} catch (UserDao.DuplicateUsernameException e) {
 					showError(req, res, "register", "そのユーザー名は既に使われています");
 					return;
@@ -56,8 +57,8 @@ public class LoginServlet extends BaseServlet {
 				req.getSession().setAttribute("reveal", true);
 			} else {
 				UserDao.Credentials c = UserDao.findCredentials(username);
-				if (c == null || !Passwords.verify(password, c.salt(), c.passwordHash())) {
-					showError(req, res, "login", "ユーザー名またはパスワードが違います");
+				if (c == null || !password.equals(c.password())) {
+					showError(req, res, "login", "メールアドレスまたはパスワードが違います");
 					return;
 				}
 				userId = c.id();
