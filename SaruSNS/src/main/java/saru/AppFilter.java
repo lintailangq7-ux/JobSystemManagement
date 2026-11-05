@@ -34,11 +34,11 @@ public class AppFilter extends HttpFilter {
 	protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
 			throws IOException, ServletException {
 		String path = req.getRequestURI().substring(req.getContextPath().length());
-		if (path.startsWith("/css/") || path.startsWith("/js/") || path.equals("/favicon.ico")) {
+		if (path.startsWith("/css/") || path.startsWith("/js/") || path.equals("/favicon.ico")
+				|| path.startsWith("/api/")) {        
 			chain.doFilter(req, res);
 			return;
 		}
-
 		String startupError = (String) getServletContext().getAttribute("startupError");
 		if (startupError != null) {
 			res.setStatus(500);
