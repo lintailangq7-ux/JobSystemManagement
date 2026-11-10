@@ -43,8 +43,8 @@ public final class ApiJson {
 
 	public static String user(User u) {
 		return "{\"id\":" + u.getId()
-				+ ",\"username\":" + str(u.getUsername())
-				+ ",\"displayName\":" + str(u.getDisplayName())
+				+ ",\"username\":" + str(u.getUser_Mail())
+				+ ",\"displayName\":" + str(u.getUser_Name())
 				+ ",\"bio\":" + str(u.getBio())
 				+ ",\"type\":" + str(u.getType().getKey())
 				+ ",\"followingCount\":" + u.getFollowingCount()

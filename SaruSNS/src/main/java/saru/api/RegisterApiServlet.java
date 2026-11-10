@@ -25,7 +25,7 @@ public class RegisterApiServlet extends HttpServlet {
 		String displayName = req.getParameter("displayName") == null ? "" : req.getParameter("displayName").trim();
 
 		// 簡易バリデーション
-		if (userMail.isEmpty() || !userMail.contains("@")) {
+		if (userMail.isEmpty() ) {
 			ApiJson.error(res, 400, "正しいメールアドレスを入力してください");
 			return;
 		}
@@ -42,7 +42,7 @@ public class RegisterApiServlet extends HttpServlet {
 			User me = UserDao.findById(userId, userId);
 			String token = ApiTokens.issue(userId);
 
-			ApiJson.write(res, 200,
+			ApiJson.write(res, 201,
 					"{\"token\":" + ApiJson.str(token) + ",\"user\":" + ApiJson.user(me) + "}");
 		} catch (UserDao.DuplicateUsernameException e) {
 			ApiJson.error(res, 409, "そのメールアドレスは既に登録されています");

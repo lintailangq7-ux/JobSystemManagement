@@ -15,8 +15,8 @@ public class Post {
 	private String audioFile;
 	private Integer replyTo;
 	private long createdAt;
-	private String authorUsername;
-	private String authorDisplayName;
+	private String authorUser_mail;
+	private String authorUser_name;
 	private AccountType authorType;
 	private int likeCount;
 	private boolean liked;
@@ -44,11 +44,11 @@ public class Post {
 	public long getCreatedAt() { return createdAt; }
 	public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }
 
-	public String getAuthorUsername() { return authorUsername; }
-	public void setAuthorUsername(String authorUsername) { this.authorUsername = authorUsername; }
+	public String getAuthorUser_mail() { return authorUser_mail; }
+	public void setAuthorUser_mail(String authorUsername) { this.authorUser_mail = authorUsername; }
 
-	public String getAuthorDisplayName() { return authorDisplayName; }
-	public void setAuthorDisplayName(String authorDisplayName) { this.authorDisplayName = authorDisplayName; }
+	public String getAuthorUser_name() { return authorUser_name; }
+	public void setAuthorUser_name(String authorDisplayName) { this.authorUser_name = authorDisplayName; }
 
 	public AccountType getAuthorType() { return authorType; }
 	public void setAuthorType(AccountType authorType) { this.authorType = authorType; }
@@ -67,8 +67,8 @@ public class Post {
 	public String getParentUsername() { return parentUsername; }
 	public void setParentUsername(String parentUsername) { this.parentUsername = parentUsername; }
 
-	public long getAuthorAvatarHue() { return Avatar.hue(authorUsername); }
-	public String getAuthorInitial() { return Avatar.initial(authorDisplayName, authorUsername); }
+	public long getAuthorAvatarHue() { return Avatar.hue(authorUser_mail); }
+	public String getAuthorInitial() { return Avatar.initial(authorUser_name, authorUser_mail); }
 
 	/** 「3分前」のような表示 */
 	public String getTimeAgo() {
