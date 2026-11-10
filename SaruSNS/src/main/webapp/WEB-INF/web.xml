@@ -5,10 +5,6 @@
 	version="6.0">
 	<display-name>SaruSNS</display-name>
 
-	<!-- フォームの文字化けを防ぐ -->
-	<request-character-encoding>UTF-8</request-character-encoding>
-	<response-character-encoding>UTF-8</response-character-encoding>
-
 	<jsp-config>
 		<jsp-property-group>
 			<url-pattern>*.jsp</url-pattern>
