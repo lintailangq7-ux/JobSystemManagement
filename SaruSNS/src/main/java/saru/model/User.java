@@ -9,8 +9,8 @@ import saru.AccountType;
 /** ユーザー (JSP からは ${user.displayName} のように使う) */
 public class User {
 	private int id;
-	private String username;
-	private String displayName;
+	private String user_mail;
+	private String user_name;
 	private String bio;
 	private AccountType type;
 	private long createdAt;
@@ -22,11 +22,11 @@ public class User {
 	public int getId() { return id; }
 	public void setId(int id) { this.id = id; }
 
-	public String getUsername() { return username; }
-	public void setUsername(String username) { this.username = username; }
+	public String getUser_Mail() { return user_mail; }
+	public void setUser_Mail(String username) { this.user_mail = username; }
 
-	public String getDisplayName() { return displayName; }
-	public void setDisplayName(String displayName) { this.displayName = displayName; }
+	public String getUser_Name() { return user_name; }
+	public void setUser_Name(String displayName) { this.user_name = displayName; }
 
 	public String getBio() { return bio; }
 	public void setBio(String bio) { this.bio = bio; }
@@ -54,6 +54,6 @@ public class User {
 		return DateTimeFormatter.ofPattern("yyyy/M/d").format(Instant.ofEpochMilli(createdAt).atZone(ZoneId.systemDefault()));
 	}
 
-	public long getAvatarHue() { return Avatar.hue(username); }
-	public String getInitial() { return Avatar.initial(displayName, username); }
+	public long getAvatarHue() { return Avatar.hue(user_name); }
+	public String getInitial() { return Avatar.initial(user_mail, user_name); }
 }

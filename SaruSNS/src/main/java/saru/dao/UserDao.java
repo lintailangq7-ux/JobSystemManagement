@@ -41,7 +41,7 @@ public final class UserDao {
 
 	/** ユーザー名で探す (大文字小文字は区別しない) */
 	public static User findByUsername(int viewerId, String username) throws SQLException {
-		List<User> list = query(SELECT + " WHERE u.username = ?", viewerId, username);
+		List<User> list = query(SELECT + " WHERE u.user_name = ?", viewerId, username);
 		return list.isEmpty() ? null : list.get(0);
 	}
 
@@ -127,11 +127,11 @@ public final class UserDao {
 	private static User map(ResultSet rs) throws SQLException {
 		User u = new User();
 		u.setId(rs.getInt("id"));
-		u.setUsername(rs.getString("username"));
-		u.setDisplayName(rs.getString("display_name"));
+		u.setUser_Mail(rs.getString("user_mail"));
+		u.setUser_Name(rs.getString("user_name")); // display_nameカラムが無い場合は暫定でuser_nameを使う
 		u.setBio(rs.getString("bio"));
-		u.setType(AccountType.of(rs.getString("type")));
-		u.setCreatedAt(rs.getLong("created_at"));
+		u.setType(AccountType.of(rs.getString("account_type"))); // "type" → "account_type" に変更
+		u.setCreatedAt(rs.getTimestamp("created_at").getTime()); // Longで直接取れない場合はこうする
 		u.setFollowingCount(rs.getInt("following_count"));
 		u.setFollowerCount(rs.getInt("follower_count"));
 		u.setPostCount(rs.getInt("post_count"));

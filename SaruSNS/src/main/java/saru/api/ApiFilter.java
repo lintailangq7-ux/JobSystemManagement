@@ -31,7 +31,7 @@ public class ApiFilter extends HttpFilter {
 		}
 
 		String path = req.getRequestURI().substring(req.getContextPath().length());
-		if (path.equals("/api/ping") || path.equals("/api/login")) { // ログイン前に呼べるもの
+		if (path.equals("/api/ping") || path.equals("/api/login") || path.equals("/api/register")) {
 			chain.doFilter(req, res);
 			return;
 		}

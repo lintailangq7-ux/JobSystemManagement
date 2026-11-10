@@ -23,8 +23,8 @@ public class LoginServlet extends BaseServlet {
 			redirect(req, res, "/");
 			return;
 		}
-		req.setAttribute("mode", "register".equals(req.getParameter("mode")) ? "register" : "login");
-		render(req, res, "login.jsp");
+		req.setAttribute("mode", "register".equals(req.getParameter("mode")) ? "register" : "Login");
+		render(req, res, "Login.jsp");
 	}
 
 	@Override
