@@ -20,4 +20,30 @@ public class Coment {
 		this.type = type;
 		this.createdAt = createdAt;
 		}
+	public int getId() { return id; }
+	public void setId(int id) { this.id = id; }
+
+	public String getUser_mail() { return user_mail; }
+	public void setUser_mail(String user_mail) { this.user_mail = user_mail; }
+
+	public String getUser_name() { return user_name; }
+	public void setUser_name(String user_name) { this.user_name = user_name; }
+
+	public String getComent() { return coment; }
+	public void setComent(String coment) { this.coment = coment; }
+
+	public String getBio() { return bio; }
+	public void setBio(String bio) { this.bio = bio; }
+
+	public AccountType getType() { return type; }
+	public void setType(AccountType type) { this.type = type; }
+
+	public long getCreatedAt() { return createdAt; }
+	public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }
+	
+	
+	
+	
+	
+	
 	}
