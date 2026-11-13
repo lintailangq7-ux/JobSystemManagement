@@ -1,7 +1,7 @@
 package saru.servlet;
 
 import java.io.IOException;
-import java.util.List;
+import java.io.PrintWriter;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -9,51 +9,103 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import saru.dao.SearchDAO;
-import saru.model.Search;
-
 @WebServlet("/SearchServlet")
 public class SearchServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// 直接アクセスされた場合は検索画面へ戻す(JSPのパスは実際のものに変更してください)
-		response.sendRedirect(request.getContextPath() + "/WEB-INF/jsp/search.jsp");
+	// 検索方法
+	private static final int MODE_TEXT = 1;
+	private static final int MODE_IMAGE = 2;
+	private static final int MODE_VOICE = 3;
+
+	// Flutter(GET)でも、フォーム(POST)でも同じ処理にする
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		handle(request, response);
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.setCharacterEncoding("UTF-8");
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		handle(request, response);
+	}
 
-		// 検索方法 1=テキスト 2=画像 3=音声
+	private void handle(HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+		request.setCharacterEncoding("UTF-8");
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+
+		// 検索方法 1=テキスト 2=画像 3=音声(指定が無い・不正な値ならテキスト扱い)
 		String keyword = request.getParameter("SearchText"); // 仮
 		int searchMode;
 		try {
 			searchMode = Integer.parseInt(request.getParameter("SearchMode")); // 仮
 		} catch (NumberFormatException e) {
-			searchMode = 1; // 不正な値ならテキスト検索扱い
+			searchMode = MODE_TEXT;
 		}
 
-		if (searchMode == 1) { // テキスト
-			if (keyword != null && !keyword.isEmpty()) {
-				// DAOに検索文字列を渡し、検索結果を取得
-				SearchDAO dao = new SearchDAO();
-				List<Search> resultList = dao.findByKeyword(keyword);
+		PrintWriter out = response.getWriter();
 
-				// 検索結果を結果画面へ渡す
-				request.setAttribute("resultList", resultList);
-				request.setAttribute("keyword", keyword);
-				request.getRequestDispatcher("/WEB-INF/jsp/searchResult.jsp")
-						.forward(request, response);
+		if (searchMode == MODE_TEXT) { // テキスト
+			System.out.println("[SearchServlet] テキスト検索モードです (SearchMode=" + searchMode
+					+ ", SearchText=" + keyword + ")");
+
+			if (keyword == null || keyword.trim().isEmpty()) {
+				System.out.println("[SearchServlet] 検索キーワードが空です");
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				out.print("{\"error\":\"検索キーワードを入力してください\"}");
 				return;
 			}
-			// キーワードが空なら何もせず検索画面へ戻す
-//
-//			dispatcher.forward(request, response);
-//
-		} else if (searchMode == 2) { // 画像
+			keyword = keyword.trim();
 
-		} else if (searchMode == 3) { // 音声
+			// ★ 仮の検索結果(あとでDAOの検索に置き換える)
+			out.print("[");
+			for (int i = 1; i <= 3; i++) {
+				if (i > 1) out.print(",");
+				out.print("{\"id\":" + i
+						+ ",\"userId\":" + i
+						+ ",\"userName\":" + quote("sample" + i)
+						+ ",\"body\":" + quote("「" + keyword + "」の仮の検索結果 " + i)
+						+ ",\"createdAt\":" + System.currentTimeMillis()
+						+ ",\"timeAgo\":" + quote("たった今") + "}");
+			}
+			out.print("]");
 
+		} else if (searchMode == MODE_IMAGE) { // 画像(これから実装)
+			System.out.println("[SearchServlet] 画像検索モードです(未実装)");
+			response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+			out.print("{\"error\":\"画像検索はまだ使えません\"}");
+
+		} else if (searchMode == MODE_VOICE) { // 音声(これから実装)
+			System.out.println("[SearchServlet] 音声検索モードです(未実装)");
+			response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+			out.print("{\"error\":\"音声検索はまだ使えません\"}");
+
+		} else {
+			System.out.println("[SearchServlet] 不明な検索モードです (SearchMode=" + searchMode + ")");
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			out.print("{\"error\":\"検索方法が正しくありません\"}");
 		}
+	}
+
+	/** JSONの文字列にする(" や改行をエスケープ) */
+	private static String quote(String v) {
+		if (v == null) return "null";
+		StringBuilder sb = new StringBuilder("\"");
+		for (char c : v.toCharArray()) {
+			switch (c) {
+			case '"': sb.append("\\\""); break;
+			case '\\': sb.append("\\\\"); break;
+			case '\n': sb.append("\\n"); break;
+			case '\r': sb.append("\\r"); break;
+			case '\t': sb.append("\\t"); break;
+			default:
+				if (c < 0x20) sb.append(String.format("\\u%04x", (int) c));
+				else sb.append(c);
+			}
+		}
+		return sb.append("\"").toString();
 	}
 }
