@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import saru.dao.SearchDAO;
 import saru.model.Search;
-
+//s
 /** Flutter用のテキスト検索API  GET /api/search?q=キーワード */
 @WebServlet("/api/search")
 public class SearchAPI extends HttpServlet {

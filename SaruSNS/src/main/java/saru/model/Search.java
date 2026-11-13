@@ -39,7 +39,7 @@ public class Search {
 			this.replyCount = replyCount;
 			this.parentUsername = parentUsername;
 			
-			
+			//s
 		}
 		
 		public int getId() { return id; }

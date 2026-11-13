@@ -22,7 +22,7 @@ public class SearchDAO {
 //		return null;
 //	}
 	
-	// ★ 動作確認用の直接接続。通ったら PostDao と同じ接続方法に置き換えｓる
+	// ★ 動作確認用の直接接続。通ったら PostDao と同じ接続方法に置き換える
 	private static final String URL =
 			"jdbc:mysql://localhost:3306/saru_sns?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Tokyo";
 	private static final String USER = "root";
