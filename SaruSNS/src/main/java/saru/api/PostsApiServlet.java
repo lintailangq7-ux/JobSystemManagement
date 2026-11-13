@@ -36,22 +36,22 @@ public class PostsApiServlet extends HttpServlet {
 	private static final Set<String> VISIBILITIES = Set.of("public", "followers", "private");
 	private static final Set<String> AUDIO_EXT = Set.of("wav", "mp3", "m4a", "aac", "ogg");
 	private static final long MAX_IMAGE = 5L * 1024 * 1024;
-	private static final int MAX_BODY = 1000;
+	private static final int MAX_BODY = 400;
 	private Config config;
 
 	/** 画像・音声の保存先。 */
+	private Path uploadRoot;
+
 	@Override
-	public void init() throws ServletException{
+	public void init() throws ServletException {
 		try {
-			config = Config.load(getServletContext());
-		} catch (Exception e) {
-			throw new ServletException("Config の読み込みに失敗", e);
+			uploadRoot = Config.load(getServletContext()).uploadDir; // 保存先は uploadDir フィールド
+		} catch (IOException e) {
+			throw new ServletException(e);
 		}
 	}
+
 	
-	private Path uploadRoot() {
-		return config.uploadDir;
-	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -75,38 +75,40 @@ public class PostsApiServlet extends HttpServlet {
 			return;
 		}
 
-		Part imagePart;
-		Part audioPart;
+		List<Part> imageParts;
+	    List<Part> audioParts;
 		try {
-			imagePart = req.getPart("image");
-			audioPart = req.getPart("audio");
+			imageParts = req.getParts().stream()
+	                .filter(p -> "images".equals(p.getName()) && p.getSize() > 0)
+	                .toList();
+	        audioParts = req.getParts().stream()
+	                .filter(p -> "audios".equals(p.getName()) && p.getSize() > 0)
+	                .toList();
 		} catch (IllegalStateException e) { // @MultipartConfig の上限を超えた
 			ApiJson.error(res, 413, "ファイルが大きすぎます(画像は5MB、音声は10MBまで)");
 			return;
 		}
-		boolean hasImage = imagePart != null && imagePart.getSize() > 0;
-		boolean hasAudio = audioPart != null && audioPart.getSize() > 0;
-		if (body.isEmpty() && !hasImage && !hasAudio) {
-			ApiJson.error(res, 400, "本文・画像・音声のどれかを入れてください");
-			return;
-		}
+		if (body.isEmpty() && imageParts.isEmpty() && audioParts.isEmpty()) {
+	        ApiJson.error(res, 400, "本文・画像・音声のどれかを入れてください");
+	        return;
+	    }
 
 		// ここで、アカウントの種類(見ざる・言わざる・聞かざる)による投稿の制限をかける(未確定)
 
 		List<Path> saved = new ArrayList<>();
 		List<PostDao.NewMedia> media = new ArrayList<>();
 		try {
-			if (hasImage) {
-				byte[] data = imagePart.getInputStream().readAllBytes();
-				if (data.length > MAX_IMAGE) throw new IllegalArgumentException("画像は5MBまでです");
-				String ext = imageExtension(data);
-				if (ext == null) throw new IllegalArgumentException("画像は jpg / png / gif のみ使えます");
-				Path file = newFile("images", ext);
-				Files.write(file, data);
-				saved.add(file);
-				media.add(new PostDao.NewMedia("image", file.getFileName().toString()));
-			}
-			if (hasAudio) {
+			for (Part imagePart : imageParts) {
+	            byte[] data = imagePart.getInputStream().readAllBytes();
+	            if (data.length > MAX_IMAGE) throw new IllegalArgumentException("画像は1枚5MBまでです");
+	            String ext = imageExtension(data);
+	            if (ext == null) throw new IllegalArgumentException("画像は jpg / png / gif のみ使えます");
+	            Path file = newFile("images", ext);
+	            Files.write(file, data);
+	            saved.add(file);
+	            media.add(new PostDao.NewMedia("image", file.getFileName().toString()));
+	        }
+			for (Part audioPart : audioParts) {
 				String ext = extensionOf(audioPart.getSubmittedFileName());
 				if (!AUDIO_EXT.contains(ext)) throw new IllegalArgumentException("音声は wav / mp3 / m4a / aac / ogg のみ使えます");
 				Path file = newFile("audio", ext);
@@ -127,10 +129,10 @@ public class PostsApiServlet extends HttpServlet {
 		}
 	}
 
-	private  Path newFile(String folder, String ext) throws IOException {
-		Path dir = uploadRoot().resolve(folder);
+	private Path newFile(String folder, String ext) throws IOException { // static を外す
+		Path dir = uploadRoot.resolve(folder);
 		Files.createDirectories(dir);
-		return dir.resolve(UUID.randomUUID() + "." + ext); // 名前はサーバーが決める(ユーザーの名前は使わない)
+		return dir.resolve(UUID.randomUUID() + "." + ext);
 	}
 
 	/** 画像の中身を見て、拡張子を決める(jpg / png / gif 以外は null) */
