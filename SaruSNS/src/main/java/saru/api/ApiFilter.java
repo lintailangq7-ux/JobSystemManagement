@@ -50,6 +50,7 @@ public class ApiFilter extends HttpFilter {
 				return;
 			}
 			req.setAttribute("apiMe", me);
+			req.setAttribute("apiUserId", userId);
 		} catch (SQLException e) {
 			throw new ServletException(e);
 		}
