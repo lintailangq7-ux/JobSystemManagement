@@ -16,7 +16,7 @@ import saru.model.User;
 @WebServlet("/api/login")
 public class LoginApiServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+//s
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		String userMail = req.getParameter("username") == null ? "" : req.getParameter("username").trim();

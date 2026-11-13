@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class SearchServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	// 検索方法
+	// 検索方法ｓ
 	private static final int MODE_TEXT = 1;
 	private static final int MODE_IMAGE = 2;
 	private static final int MODE_VOICE = 3;
