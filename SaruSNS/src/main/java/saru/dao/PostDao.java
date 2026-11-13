@@ -47,28 +47,57 @@ public final class PostDao {
 		List<Post> list = query(SELECT + " WHERE p.id = ?", viewerId, id);
 		return list.isEmpty() ? null : list.get(0);
 	}
-
+	
+	public record NewMedia(String type, String fileName) {}
+	
 	/** 投稿作成 */
-	public static int create(int userId, String body) throws SQLException {
-		String sql = "INSERT INTO posts (user_id, body) VALUES (?, ?)";
-		try (Connection conn = Db.get();
-			 PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-			ps.setInt(1, userId);
-			ps.setString(2, body);
-			ps.executeUpdate();
-			try (ResultSet keys = ps.getGeneratedKeys()) {
-				keys.next();
-				return keys.getInt(1);
+	public static int create(int userId, String body, String visibility, List<NewMedia> media) throws SQLException {
+		try (Connection conn = Db.get()) {
+			conn.setAutoCommit(false);
+			try {
+				int postId;
+				try (PreparedStatement ps = conn.prepareStatement(
+						"INSERT INTO posts (user_id, body, visibility) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+					ps.setInt(1, userId);
+					ps.setString(2, body.isEmpty() ? null : body);
+					ps.setString(3, visibility);
+					ps.executeUpdate();
+					try (ResultSet keys = ps.getGeneratedKeys()) {
+						keys.next();
+						postId = keys.getInt(1);
+					}
+				}
+				if (!media.isEmpty()) {
+					try (PreparedStatement ps = conn.prepareStatement(
+							"INSERT INTO media (post_id, type, file_path) VALUES (?, ?, ?)")) {
+						for (NewMedia m : media) {
+							ps.setInt(1, postId);
+							ps.setString(2, m.type());
+							ps.setString(3, m.fileName());
+							ps.addBatch();
+						}
+						ps.executeBatch();
+					}
+				}
+				conn.commit();
+				return postId;
+			} catch (SQLException | RuntimeException e) {
+				conn.rollback();
+				throw e;
+			} finally {
+				conn.setAutoCommit(true); // 接続を使い回す場合に備えて戻す
 			}
 		}
 	}
 
+
 	/** 投稿削除 */
-	public static void delete(int postId) throws SQLException {
+	public static boolean delete(int postId, int userId) throws SQLException {
 		try (Connection conn = Db.get();
-			 PreparedStatement ps = conn.prepareStatement("DELETE FROM posts WHERE id = ?")) {
+				PreparedStatement ps = conn.prepareStatement("DELETE FROM posts WHERE id = ? AND user_id = ?")) {
 			ps.setInt(1, postId);
-			ps.executeUpdate();
+			ps.setInt(2, userId);
+			return ps.executeUpdate() > 0;
 		}
 	}
 
