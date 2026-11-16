@@ -6,7 +6,7 @@ public class History {
     private int user_id;
     private int post_id;
     private LocalDateTime viewed_at;
-    private int postTyp;
+
 
     public History() {}
     
@@ -14,7 +14,6 @@ public class History {
     		this.user_id = user_id;
     		this.post_id = post_id;
     		this.viewed_at = viewed_at;
-    		this.postTyp = postTyp;
     }
     
     public int getUser_id() { return user_id; }
