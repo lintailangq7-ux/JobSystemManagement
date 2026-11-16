@@ -10,7 +10,7 @@ public class History {
 
     public History() {}
     
-    public History(int user_id,int post_id,LocalDateTime viewed_at,int postTyp) {
+    public History(int user_id,int post_id,LocalDateTime viewed_at) {
     		this.user_id = user_id;
     		this.post_id = post_id;
     		this.viewed_at = viewed_at;
@@ -25,8 +25,5 @@ public class History {
     
     public LocalDateTime getViewed_at() { return viewed_at; }
     public void setViewed_at(LocalDateTime viewed_at) { this.viewed_at = viewed_at; }
-    
-    public int getPostTyp () { return postTyp ; }
-    public void set(int postTyp ) { this.postTyp  =postTyp  ; }
 
 }
