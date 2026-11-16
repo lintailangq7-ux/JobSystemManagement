@@ -27,6 +27,7 @@ import jakarta.servlet.http.Part;
 
 import saru.Config;
 import saru.dao.PostDao;
+import saru.model.Post;
 
 @MultipartConfig(maxFileSize = 10 * 1024 * 1024, maxRequestSize = 16 * 1024 * 1024)
 @WebServlet("/api/posts")
@@ -50,8 +51,45 @@ public class PostsApiServlet extends HttpServlet {
 			throw new ServletException(e);
 		}
 	}
-
 	
+	
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	    req.setCharacterEncoding("UTF-8");
+	    Integer viewerId = (Integer) req.getAttribute("apiUserId");
+
+	    String path = req.getPathInfo() == null ? "" : req.getPathInfo().substring(1);
+
+	    try {
+	        if (path.isEmpty()) {
+	            //  一覧取得
+	            boolean homeOnly = "true".equals(req.getParameter("homeOnly"));
+	            List<Post> posts = PostDao.timeline(viewerId, homeOnly);
+	            ApiJson.write(res, 200, ApiJson.posts(posts)); // ← ここを修正！
+	            
+	        } else {
+	            //  個別の投稿詳細取得
+	            int postId;
+	            try {
+	                postId = Integer.parseInt(path);
+	            } catch (NumberFormatException e) {
+	                ApiJson.error(res, 400, "無効な投稿IDです");
+	                return;
+	            }
+	            
+	            Post post = PostDao.findById(viewerId, postId);
+	            if (post == null) {
+	                ApiJson.error(res, 404, "投稿が見つかりません");
+	                return;
+	            }
+	            ApiJson.write(res, 200, ApiJson.post(post)); // ← ここを修正！
+	        }
+	    } catch (SQLException e) {
+	        throw new ServletException(e);
+	    }
+	}
+
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -207,6 +245,8 @@ public class PostsApiServlet extends HttpServlet {
 	        throw new ServletException(e);
 	    }
 	}
+	
+	
 
 
 

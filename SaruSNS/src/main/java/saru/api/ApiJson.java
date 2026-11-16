@@ -51,4 +51,26 @@ public final class ApiJson {
 				+ ",\"followerCount\":" + u.getFollowerCount()
 				+ ",\"postCount\":" + u.getPostCount() + "}";
 	}
+	
+	public static String post(saru.model.Post p) {
+		return "{\"id\":" + p.getId()
+				+ ",\"userId\":" + p.getUserId()
+				+ ",\"text\":" + str(p.getText())
+				+ ",\"createdAt\":" + p.getCreatedAt()
+				+ ",\"authorName\":" + str(p.getAuthorUser_name())
+				+ ",\"authorMail\":" + str(p.getAuthorUser_mail())
+				+ ",\"authorType\":" + str(p.getAuthorType() == null ? null : p.getAuthorType().getKey())
+				+ ",\"likeCount\":" + p.getLikeCount()
+				+ ",\"liked\":" + p.isLiked()
+				+ ",\"replyCount\":" + p.getReplyCount() + "}";
+	}
+
+	public static String posts(java.util.List<saru.model.Post> list) {
+		StringBuilder sb = new StringBuilder("[");
+		for (int i = 0; i < list.size(); i++) {
+			if (i > 0) sb.append(',');
+			sb.append(post(list.get(i)));
+		}
+		return sb.append(']').toString();
+	}
 }

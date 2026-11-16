@@ -20,7 +20,7 @@ public class RegisterApiServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		String userMail = req.getParameter("username") == null ? "" : req.getParameter("username").trim();
+		String userMail = req.getParameter("username") == null ? "" : req.getParameter("email").trim();
 		String password = req.getParameter("password") == null ? "" : req.getParameter("password");
 		String displayName = req.getParameter("displayName") == null ? "" : req.getParameter("displayName").trim();
 

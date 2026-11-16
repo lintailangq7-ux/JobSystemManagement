@@ -19,7 +19,7 @@ public class LoginApiServlet extends HttpServlet {
 //s
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		String userMail = req.getParameter("username") == null ? "" : req.getParameter("username").trim();
+		String userMail = req.getParameter("email") == null ? "" : req.getParameter("email").trim();
 		String password = req.getParameter("password") == null ? "" : req.getParameter("password");
 
 		try {

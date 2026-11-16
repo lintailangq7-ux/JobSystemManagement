@@ -84,14 +84,25 @@ public final class UserDao {
 			throw new DuplicateUsernameException();
 		}
 	}
-	public static void updateProfile(int id, String displayName, String bio) throws SQLException {
+	public static boolean updateProfile(int id, String displayName, String bio) throws SQLException {
 		try (Connection conn = Db.get();
 				PreparedStatement ps = conn.prepareStatement("UPDATE users SET display_name = ?, bio = ? WHERE id = ?")) {
 			ps.setString(1, displayName);
 			ps.setString(2, bio);
 			ps.setInt(3, id);
 			ps.executeUpdate();
+			
+			return ps.executeUpdate() > 0;
 		}
+	}
+	
+	public static boolean delete(int userId) throws SQLException {
+	    try (Connection conn = Db.get();
+	         PreparedStatement ps = conn.prepareStatement("DELETE FROM users WHERE id = ?")) {
+	        ps.setInt(1, userId);
+	        int rows = ps.executeUpdate();
+	        return rows > 0;
+	    }
 	}
 
 	/** フォローしていれば外し、していなければフォローする */
