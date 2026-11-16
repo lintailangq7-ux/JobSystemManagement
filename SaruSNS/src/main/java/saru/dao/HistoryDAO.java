@@ -9,13 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
 import saru.model.History;
-
-
 
 public class HistoryDAO {
 	private static final String URL =
@@ -30,53 +24,44 @@ public class HistoryDAO {
 			throw new SQLException("MySQLドライバが見つかりません(WEB-INF/libを確認)", e);
 		}
 		return DriverManager.getConnection(URL, USER, PASS);
-	}	
-	public List<History>  findHistory(int user_id,int postTyp) {//後でかきなおして
-			History history =null;
-			List<History> list = new ArrayList<>();
+	}
 
-			DataSource ds;
-			try {
-				InitialContext ctx = new InitialContext();
-				ds = (DataSource) ctx.lookup("java:comp/env/jdbc/saru_sns");
-			} catch (NamingException e) {
-				e.printStackTrace();
-				return null;
-			}
-			//閲覧=1
-			//いいね=2
-			//ブックマーク=3
-			String SQL = "後で書く";
-			if(postTyp ==1) {		//閲覧履歴
-				 SQL = "SELECT * FROM view_history"
-					   +"WHERE user_id=?";
-			}else if(postTyp ==2) { //いいね
-				 SQL = "SELECT * FROM likes"
-						   +"WHERE user_id=?";
-			}else if(postTyp ==3){ //ブックマーク
-				 SQL = "SELECT * FROM bookmarks"
-						   +"WHERE user_id=?";
-			}
-			try(Connection conn = ds.getConnection();
-				PreparedStatement pStmt = conn.prepareStatement(SQL)){
-				pStmt.setInt(1,user_id);
-				
-				ResultSet rs = pStmt.executeQuery();
-				
-				while(rs.next()) {
+	// 閲覧=1  いいね=2  ブックマーク=3
+	// 日時の列は、閲覧は viewed_at、いいね・ブックマークは created_at なので、
+	// どれも viewed_at という名前に揃えて取り出す
+	public List<History> findHistory(int user_id, int postTyp) {
+		List<History> list = new ArrayList<>();
+
+		String SQL;
+		if (postTyp == 1) { // 閲覧履歴
+			SQL = "SELECT post_id, viewed_at FROM view_history "
+					+ "WHERE user_id = ? ORDER BY viewed_at DESC";
+		} else if (postTyp == 2) { // いいね
+			SQL = "SELECT post_id, created_at AS viewed_at FROM likes "
+					+ "WHERE user_id = ? ORDER BY created_at DESC";
+		} else if (postTyp == 3) { // ブックマーク
+			SQL = "SELECT post_id, created_at AS viewed_at FROM bookmarks "
+					+ "WHERE user_id = ? ORDER BY created_at DESC";
+		} else {
+			return null; // 種類が不正
+		}
+
+		try (Connection conn = getConnection();
+				PreparedStatement pStmt = conn.prepareStatement(SQL)) {
+			pStmt.setInt(1, user_id);
+
+			try (ResultSet rs = pStmt.executeQuery()) {
+				while (rs.next()) {
 					int post_id = rs.getInt("post_id");
 					LocalDateTime viewed_at = rs.getObject("viewed_at", LocalDateTime.class);
-					history = new History(user_id,post_id,viewed_at);
+					History history = new History(user_id, post_id, viewed_at);
+					list.add(history);
 				}
-				
-				
-			}catch (SQLException e) {
-				e.printStackTrace();
-				return null;
-			}			
-			return list;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return list;
 	}
-	
 }
-
-			
