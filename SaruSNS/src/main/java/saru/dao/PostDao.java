@@ -52,43 +52,46 @@ public final class PostDao {
 	
 	/** 投稿作成 */
 	public static int create(int userId, String body, String visibility, List<NewMedia> media) throws SQLException {
-		try (Connection conn = Db.get()) {
-			conn.setAutoCommit(false);
-			try {
-				int postId;
-				try (PreparedStatement ps = conn.prepareStatement(
-						"INSERT INTO posts (user_id, body, visibility) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
-					ps.setInt(1, userId);
-					ps.setString(2, body.isEmpty() ? null : body);
-					ps.setString(3, visibility);
-					ps.executeUpdate();
-					try (ResultSet keys = ps.getGeneratedKeys()) {
-						keys.next();
-						postId = keys.getInt(1);
-					}
-				}
-				if (!media.isEmpty()) {
-					try (PreparedStatement ps = conn.prepareStatement(
-							"INSERT INTO media (post_id, type, file_path) VALUES (?, ?, ?)")) {
-						for (NewMedia m : media) {
-							ps.setInt(1, postId);
-							ps.setString(2, m.type());
-							ps.setString(3, m.fileName());
-							ps.addBatch();
-						}
-						ps.executeBatch();
-					}
-				}
-				conn.commit();
-				return postId;
-			} catch (SQLException | RuntimeException e) {
-				conn.rollback();
-				throw e;
-			} finally {
-				conn.setAutoCommit(true); // 接続を使い回す場合に備えて戻す
-			}
-		}
+	    try (Connection conn = Db.get()) {
+	        conn.setAutoCommit(false);
+	        try {
+	            int postId;
+	            // ✅ visibility をINSERT文から削除！引数はそのまま受け取るだけ
+	            try (PreparedStatement ps = conn.prepareStatement(
+	                    "INSERT INTO posts (user_id, body) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+	                ps.setInt(1, userId);
+	                ps.setString(2, body.isEmpty() ? null : body);
+	                // ps.setString(3, visibility); ← 削除！
+	                
+	                ps.executeUpdate();
+	                try (ResultSet keys = ps.getGeneratedKeys()) {
+	                    keys.next();
+	                    postId = keys.getInt(1);
+	                }
+	            }
+	            if (!media.isEmpty()) {
+	                try (PreparedStatement ps = conn.prepareStatement(
+	                        "INSERT INTO media (post_id, type, file_path) VALUES (?, ?, ?)")) {
+	                    for (NewMedia m : media) {
+	                        ps.setInt(1, postId);
+	                        ps.setString(2, m.type());
+	                        ps.setString(3, m.fileName());
+	                        ps.addBatch();
+	                    }
+	                    ps.executeBatch();
+	                }
+	            }
+	            conn.commit();
+	            return postId;
+	        } catch (SQLException | RuntimeException e) {
+	            conn.rollback();
+	            throw e;
+	        } finally {
+	            conn.setAutoCommit(true);
+	        }
+	    }
 	}
+
 
 
 	/** 投稿削除 */
@@ -99,6 +102,18 @@ public final class PostDao {
 			ps.setInt(2, userId);
 			return ps.executeUpdate() > 0;
 		}
+	}
+	
+	/** 投稿編集 */
+	public static boolean update(int postId, int userId, String newBody) throws SQLException {
+	    try (Connection conn = Db.get();
+	         PreparedStatement ps = conn.prepareStatement(
+	             "UPDATE posts SET body = ? WHERE id = ? AND user_id = ?")) {
+	        ps.setString(1, newBody.isEmpty() ? null : newBody);
+	        ps.setInt(2, postId);
+	        ps.setInt(3, userId);
+	        return ps.executeUpdate() > 0;
+	    }
 	}
 
 	private static List<Post> query(String sql, Object... params) throws SQLException {

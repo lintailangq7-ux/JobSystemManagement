@@ -92,6 +92,9 @@ public class PostsApiServlet extends HttpServlet {
 	        ApiJson.error(res, 400, "本文・画像・音声のどれかを入れてください");
 	        return;
 	    }
+		
+		
+		
 
 		// ここで、アカウントの種類(見ざる・言わざる・聞かざる)による投稿の制限をかける(未確定)
 
@@ -128,6 +131,84 @@ public class PostsApiServlet extends HttpServlet {
 			throw new ServletException(e);
 		}
 	}
+	
+	@Override
+	protected void doPut(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	    req.setCharacterEncoding("UTF-8");
+	    Integer userId = (Integer) req.getAttribute("apiUserId");
+	    if (userId == null) {
+	        ApiJson.error(res, 401, "ログインが必要です");
+	        return;
+	    }
+
+	    String idStr = req.getPathInfo() == null ? null : req.getPathInfo().substring(1);
+	    if (idStr == null || idStr.isBlank()) {
+	        ApiJson.error(res, 400, "投稿IDを指定してください");
+	        return;
+	    }
+
+	    int postId;
+	    try {
+	        postId = Integer.parseInt(idStr);
+	    } catch (NumberFormatException e) {
+	        ApiJson.error(res, 400, "無効な投稿IDです");
+	        return;
+	    }
+
+	    String newBody = trim(req.getParameter("body"));
+	    if (newBody.codePointCount(0, newBody.length()) > 400) {
+	        ApiJson.error(res, 400, "本文は400文字までです");
+	        return;
+	    }
+
+	    try {
+	        boolean ok = PostDao.update(postId, userId, newBody);
+	        if (!ok) {
+	            ApiJson.error(res, 403, "編集できません（権限がないか存在しません）");
+	            return;
+	        }
+	        ApiJson.write(res, 200, "{\"ok\":true}");
+	    } catch (SQLException e) {
+	        throw new ServletException(e);
+	    }
+	}
+	
+	@Override
+	protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	    req.setCharacterEncoding("UTF-8");
+	    Integer userId = (Integer) req.getAttribute("apiUserId");
+	    if (userId == null) {
+	        ApiJson.error(res, 401, "ログインが必要です");
+	        return;
+	    }
+
+	    String idStr = req.getPathInfo() == null ? null : req.getPathInfo().substring(1);
+	    if (idStr == null || idStr.isBlank()) {
+	        ApiJson.error(res, 400, "投稿IDを指定してください");
+	        return;
+	    }
+
+	    int postId;
+	    try {
+	        postId = Integer.parseInt(idStr);
+	    } catch (NumberFormatException e) {
+	        ApiJson.error(res, 400, "無効な投稿IDです");
+	        return;
+	    }
+
+	    try {
+	        boolean ok = PostDao.delete(postId, userId);
+	        if (!ok) {
+	            ApiJson.error(res, 403, "削除できません（権限がないか存在しません）");
+	            return;
+	        }
+	        ApiJson.write(res, 200, "{\"ok\":true}");
+	    } catch (SQLException e) {
+	        throw new ServletException(e);
+	    }
+	}
+
+
 
 	private Path newFile(String folder, String ext) throws IOException { // static を外す
 		Path dir = uploadRoot.resolve(folder);
