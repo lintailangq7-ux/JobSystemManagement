@@ -128,6 +128,17 @@ public final class Db {
 		  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
 		  INDEX idx_view_recent (user_id, viewed_at)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
+		"""
+		CREATE TABLE comment_likes (
+	      comment_id INT NOT NULL,
+		  user_id    INT NOT NULL,
+		  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		  PRIMARY KEY (comment_id, user_id),
+		  FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE,
+		  FOREIGN KEY (user_id)    REFERENCES users(id)    ON DELETE CASCADE
+		  INDEX comment_likes (user_id, viewed_at)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
+		
 	};
 
 	private Db() {}
