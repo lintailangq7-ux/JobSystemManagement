@@ -1,0 +1,33 @@
+<%-- 投稿・コメント入力欄。replyPost があればコメントで、自分のタイプで禁止されたものは使えない --%>
+<c:set var="blocked" value="${empty replyPost ? '' : me.type.blocked}" />
+<form class="card composer" method="post" action="${ctx}/post/new" enctype="multipart/form-data">
+  <input type="hidden" name="csrf" value="${csrf}">
+  <input type="hidden" name="back" value="${fn:escapeXml(back)}">
+  <c:if test="${not empty replyPost}">
+    <input type="hidden" name="replyTo" value="${replyPost.id}">
+  </c:if>
+
+  <c:if test="${not empty blocked}">
+    <div class="blocked-note">${me.type.emoji} ${me.type.label}アカウントなので、コメントに${me.type.blockedLabel}は使えません</div>
+  </c:if>
+  <c:if test="${blocked != 'text'}">
+    <c:choose>
+      <c:when test="${empty replyPost}"><textarea name="text" placeholder="いまどうしてる？" maxlength="560"></textarea></c:when>
+      <c:otherwise><textarea name="text" placeholder="@${fn:escapeXml(replyPost.authorUsername)} にコメント" maxlength="560"></textarea></c:otherwise>
+    </c:choose>
+  </c:if>
+  <div class="previews"></div>
+
+  <div class="row wrap" style="margin-top:8px">
+    <c:if test="${blocked != 'image'}">
+      <label class="button secondary small">🖼 画像<input type="file" name="image" accept="image/png,image/jpeg,image/gif,image/webp" hidden></label>
+    </c:if>
+    <c:if test="${blocked != 'audio'}">
+      <button type="button" class="secondary small" data-record>🎤 録音</button>
+      <label class="button secondary small">🎵 音声ファイル<input type="file" name="audio" accept="audio/*" hidden></label>
+    </c:if>
+    <div class="spacer"></div>
+    <c:if test="${blocked != 'text'}"><span class="counter">0 / 280</span></c:if>
+    <button type="submit">${empty replyPost ? '投稿する' : 'コメントする'}</button>
+  </div>
+</form>

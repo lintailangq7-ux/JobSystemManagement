@@ -135,8 +135,8 @@ public final class Db {
 		  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		  PRIMARY KEY (comment_id, user_id),
 		  FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE,
-		  FOREIGN KEY (user_id)    REFERENCES users(id)    ON DELETE CASCADE
-		  INDEX comment_likes (user_id, viewed_at)
+		  FOREIGN KEY (user_id)    REFERENCES users(id)    ON DELETE CASCADE,
+		  INDEX idx_comment_likes_user (user_id)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
 		
 	};
