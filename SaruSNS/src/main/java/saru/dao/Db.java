@@ -140,7 +140,6 @@ public final class Db {
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
 		
 	};
-
 	private Db() {}
 
 	/** 起動時に呼ぶ。データベースとテーブルがなければ作る */
