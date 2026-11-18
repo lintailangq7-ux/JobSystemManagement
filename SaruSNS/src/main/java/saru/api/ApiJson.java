@@ -62,8 +62,8 @@ public final class ApiJson {
 			for (int i = 0; i < media.size(); i++) {
 				if (i > 0) sb.append(',');
 				var m = media.get(i);
-				sb.append("{\"type\":").append(str(m.type()))
-				  .append(",\"fileName\":").append(str(m.fileName()))
+				sb.append("{\"type\":\"").append(m.type()).append("\"")
+				  .append(",\"fileName\":\"").append(m.fileName()).append("\"")
 				  .append("}");
 			}
 			return sb.append(']').toString();
