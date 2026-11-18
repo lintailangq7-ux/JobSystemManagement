@@ -38,6 +38,26 @@ public final class PostDao {
 		}
 		return query(SELECT + " ORDER BY p.created_at DESC, p.id DESC LIMIT 100", viewerId);
 	}
+	
+	/** 投稿に紐づくメディアを取得 */
+	public static List<NewMedia> getMediaByPostId(int postId) throws SQLException {
+	    String sql = "SELECT type, file_path FROM media WHERE post_id = ? ORDER BY id";
+	    try (Connection conn = Db.get();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
+	        ps.setInt(1, postId);
+	        try (ResultSet rs = ps.executeQuery()) {
+	            List<NewMedia> list = new ArrayList<>();
+	            while (rs.next()) {
+	                list.add(new NewMedia(
+	                    rs.getString("type"),
+	                    rs.getString("file_path")
+	                ));
+	            }
+	            return list;
+	        }
+	    }
+	}
+
 
 	public static List<Post> byUser(int viewerId, int userId) throws SQLException {
 		return query(SELECT + " WHERE p.user_id = ? ORDER BY p.created_at DESC, p.id DESC", viewerId, userId);

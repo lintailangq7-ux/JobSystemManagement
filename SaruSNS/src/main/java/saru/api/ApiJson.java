@@ -1,9 +1,11 @@
 package saru.api;
 
 import java.io.IOException;
+import java.util.List;
 
 import jakarta.servlet.http.HttpServletResponse;
 
+import saru.dao.PostDao;
 import saru.model.User;
 
 /** API の返事 (JSON) を作る小さな道具 */
@@ -51,18 +53,39 @@ public final class ApiJson {
 				+ ",\"followerCount\":" + u.getFollowerCount()
 				+ ",\"postCount\":" + u.getPostCount() + "}";
 	}
+
+	// ✅ メディア情報をJSONに変換する小さなヘルパー
+	private static String mediaList(int postId) {
+		try {
+			List<PostDao.NewMedia> media = PostDao.getMediaByPostId(postId);
+			StringBuilder sb = new StringBuilder("[");
+			for (int i = 0; i < media.size(); i++) {
+				if (i > 0) sb.append(',');
+				var m = media.get(i);
+				sb.append("{\"type\":").append(str(m.type()))
+				  .append(",\"fileName\":").append(str(m.fileName()))
+				  .append("}");
+			}
+			return sb.append(']').toString();
+		} catch (Exception e) {
+			return "[]"; // エラー時は空配列
+		}
+	}
 	
 	public static String post(saru.model.Post p) {
 		return "{\"id\":" + p.getId()
 				+ ",\"userId\":" + p.getUserId()
-				+ ",\"text\":" + str(p.getText())
+				+ ",\"content\":" + str(p.getText()) // ← content で統一
+				+ ",\"text\":" + str(p.getText())    // ← 互換性のため両方入れておく
 				+ ",\"createdAt\":" + p.getCreatedAt()
 				+ ",\"authorName\":" + str(p.getAuthorUser_name())
 				+ ",\"authorMail\":" + str(p.getAuthorUser_mail())
 				+ ",\"authorType\":" + str(p.getAuthorType() == null ? null : p.getAuthorType().getKey())
 				+ ",\"likeCount\":" + p.getLikeCount()
 				+ ",\"liked\":" + p.isLiked()
-				+ ",\"replyCount\":" + p.getReplyCount() + "}";
+				+ ",\"replyCount\":" + p.getReplyCount()
+				+ ",\"media\":" + mediaList(p.getId()) 
+				+ "}";
 	}
 
 	public static String posts(java.util.List<saru.model.Post> list) {
