@@ -172,4 +172,5 @@ public final class Db {
 		return "jdbc:mysql://" + config.dbHost + ":" + config.dbPort + "/" + database
 				+ "?characterEncoding=UTF-8&allowPublicKeyRetrieval=true";
 	}
+	
 }
