@@ -44,22 +44,30 @@ public class MediaServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
+        System.out.println("=== リクエストされたパス: " + pathInfo); // ✅ 追加
+        
         if (pathInfo == null || pathInfo.isEmpty() || pathInfo.equals("/")) {
             res.sendError(404);
             return;
         }
 
-        // セキュリティ：パストラバーサル防止
-        if (pathInfo.contains("..") || pathInfo.contains("%2e")) {
+        if (pathInfo.contains("..")) {
             res.sendError(403);
             return;
         }
 
-        Path filePath = uploadRoot.resolve(pathInfo.substring(1)); // /images/xxx.jpg → images/xxx.jpg
+        String relativePath = pathInfo.substring(1); // 最初の / を削除
+        Path filePath = uploadRoot.resolve(relativePath);
+        
+        System.out.println("=== 探しているファイル: " + filePath); // ✅ 追加
+        System.out.println("=== ファイル存在: " + Files.exists(filePath)); // ✅ 追加
+        
         if (!Files.exists(filePath) || Files.isDirectory(filePath)) {
             res.sendError(404);
             return;
         }
+
+    
 
         // 拡張子からMIMEタイプを判定
         String ext = getExtension(filePath.getFileName().toString()).toLowerCase();
