@@ -12,17 +12,8 @@ import saru.AccountType;
 import saru.model.Search;
 
 public class SearchDAO {
-	
-//	DataSource ds;
-//	try {
-//		InitialContext ctx = new InitialContext();
-//		ds = (DataSource) ctx.lookup("java:comp/env/jdbc/saru_sns");
-//	} catch (NamingException e) {
-//		e.printStackTrace();
-//		return null;
-//	}
-	
-	// ★ 動作確認用の直接接続。通ったら PostDao と同じ接続方法に置き換える
+
+	// ★ 接続の設定は、動いている他のDAO(PostDao など)と同じ内容に揃える
 	private static final String URL =
 			"jdbc:mysql://localhost:3306/saru_sns?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Tokyo";
 	private static final String USER = "root";
@@ -35,24 +26,25 @@ public class SearchDAO {
 			throw new SQLException("MySQLドライバが見つかりません(WEB-INF/libを確認)", e);
 		}
 		return DriverManager.getConnection(URL, USER, PASS);
-	}	
-	
+	}
+
+	/** 本文にキーワードを含む投稿を、新しい順に返す。失敗したら null */
 	public List<Search> findByKeyword(String keyword) {
 		List<Search> list = new ArrayList<>();
 
-		// ※ 列名・テーブル名は実際のDBに合わせて調整してください
-		String sql = "SELECT p.id, p.userId, p.text, p.imageFile, p.audioFile, "
-				+ "p.replyTo, p.createdAt, "
-				+ "u.username AS authorUsername, u.displayName AS authorDisplayName, "
-				+ "u.accountType AS authorType "
-				+ "FROM posts p JOIN users u ON p.userId = u.id "
-				+ "WHERE p.text LIKE ? "
-				+ "ORDER BY p.createdAt DESC";
+		String sql = "SELECT p.id, p.user_id, p.body, p.created_at, "
+				+ "u.user_name, u.account_type "
+				+ "FROM posts p JOIN users u ON p.user_id = u.id "
+				+ "WHERE p.body LIKE ? "
+				+ "ORDER BY p.created_at DESC";
+
+		// 入力された % と _ を、ただの文字として探す
+		String escaped = keyword.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
 
 		try (Connection conn = getConnection();
 				PreparedStatement pStmt = conn.prepareStatement(sql)) {
 
-			pStmt.setString(1, "%" + keyword + "%");
+			pStmt.setString(1, "%" + escaped + "%");
 
 			try (ResultSet rs = pStmt.executeQuery()) {
 				while (rs.next()) {
@@ -69,6 +61,7 @@ public class SearchDAO {
 						// enumの名前が合わなくても今回は使わないので null のまま
 					}
 
+					// 画像・音声・返信先・いいね数などは、この検索では使わないので仮の値
 					list.add(new Search(id, userId, body, null, null,
 							null, createdAt, userName, userName,
 							type, 0, false, 0, null));
