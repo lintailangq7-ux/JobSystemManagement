@@ -66,7 +66,7 @@ public class PostsApiServlet extends HttpServlet {
 	            //  一覧取得
 	            boolean homeOnly = "true".equals(req.getParameter("homeOnly"));
 	            List<Post> posts = PostDao.timeline(viewerId, homeOnly);
-	            ApiJson.write(res, 200, ApiJson.posts(posts)); // ← ここを修正！
+	            ApiJson.write(res, 200, "{\"posts\":" + ApiJson.posts(posts, viewerAccountType) + "}");
 	            
 	        } else {
 	            //  個別の投稿詳細取得
@@ -83,7 +83,7 @@ public class PostsApiServlet extends HttpServlet {
 	                ApiJson.error(res, 404, "投稿が見つかりません");
 	                return;
 	            }
-	            ApiJson.write(res, 200, ApiJson.post(post)); // ← ここを修正！
+	            ApiJson.write(res, 200, ApiJson.post(post, viewerAccountType));
 	        }
 	    } catch (SQLException e) {
 	        throw new ServletException(e);
@@ -91,10 +91,23 @@ public class PostsApiServlet extends HttpServlet {
 	}
 
 
-	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		req.setCharacterEncoding("UTF-8"); // multipart の文字を、文字化けさせない。最初に呼ぶ
-		Integer userId = (Integer) req.getAttribute("apiUserId"); // ApiFilter が入れる
+	    req.setCharacterEncoding("UTF-8");
+	    Integer userId = (Integer) req.getAttribute("apiUserId");
+
+	    // ✅ 言わざる(CREATOR)：テキスト本文のみの投稿を拒否
+	    saru.model.User user = saru.dao.UserDao.findById(userId);
+	    String body = trim(req.getParameter("body"));
+	    
+	    if (user != null && "CREATOR".equals(user.accountType().name())) {
+	        boolean hasMedia = req.getParts().stream()
+	            .anyMatch(p -> ("images".equals(p.getName()) || "audios".equals(p.getName())) && p.getSize() > 0);
+	        
+	        if (!body.isBlank() && !hasMedia) {
+	            ApiJson.error(res, 403, "言わざるさんは文字だけの投稿ができません。画像または音声を添付してください。");
+	            return;
+	        }
+	    }
 
 		String ct = req.getContentType();
 		if (ct == null || !ct.startsWith("multipart/")) {

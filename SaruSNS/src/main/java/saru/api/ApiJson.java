@@ -54,29 +54,51 @@ public final class ApiJson {
 				+ ",\"postCount\":" + u.getPostCount() + "}";
 	}
 
-	// ✅ メディア情報をJSONに変換する小さなヘルパー
-	private static String mediaList(int postId) {
-		try {
-			List<PostDao.NewMedia> media = PostDao.getMediaByPostId(postId);
-			StringBuilder sb = new StringBuilder("[");
-			for (int i = 0; i < media.size(); i++) {
-				if (i > 0) sb.append(',');
-				var m = media.get(i);
-				sb.append("{\"type\":\"").append(m.type()).append("\"")
-				  .append(",\"fileName\":\"").append(m.fileName()).append("\"")
-				  .append("}");
+	// ✅ 修正：viewerAccountType を受け取ってフィルタする
+		private static String mediaList(int postId, String viewerAccountType) {
+			try {
+				List<PostDao.NewMedia> media = PostDao.getMediaByPostId(postId);
+				StringBuilder sb = new StringBuilder("[");
+				boolean hasItem = false;
+				for (int i = 0; i < media.size(); i++) {
+					var m = media.get(i);
+					String type = m.type(); // "image" または "audio"
+					
+					// ========== アカウント種別ごとの表示制御 ==========
+					boolean visible = switch (viewerAccountType) {
+						case "NORMAL" -> !"image".equals(type);    // 見ざる：画像を隠す
+						case "CREATOR" -> true;                     // 言わざる：画像・音声とも表示
+						case "MODERATOR" -> !"audio".equals(type);  // 聞かざる：音声を隠す
+						default -> true; // ゲスト：すべて表示
+					};
+					
+					if (visible) {
+						if (hasItem) sb.append(',');
+						hasItem = true;
+						sb.append("{\"type\":\"").append(type).append("\"")
+						  .append(",\"fileName\":\"").append(m.fileName()).append("\"")
+						  .append("}");
+					}
+				}
+				return sb.append(']').toString();
+			} catch (Exception e) {
+				return "[]"; // エラー時は空配列
 			}
-			return sb.append(']').toString();
-		} catch (Exception e) {
-			return "[]"; // エラー時は空配列
 		}
-	}
 	
-	public static String post(saru.model.Post p) {
+	
+	
+	public static String post(saru.model.Post p, String viewerAccountType) {
 		return "{\"id\":" + p.getId()
 				+ ",\"userId\":" + p.getUserId()
-				+ ",\"content\":" + str(p.getText()) // ← content で統一
-				+ ",\"text\":" + str(p.getText())    // ← 互換性のため両方入れておく
+				+ ",\"content\":" + str(
+					    // ========== 表示制御：本文/文字 ==========
+					    "CREATOR".equals(viewerAccountType) ? "" : p.getText()
+					  )
+				+ ",\"text\":" + str(
+					    // ========== 表示制御：本文/文字（互換用も同じ制御） ==========
+					    "CREATOR".equals(viewerAccountType) ? "" : p.getText()
+					  )
 				+ ",\"createdAt\":" + p.getCreatedAt()
 				+ ",\"authorName\":" + str(p.getAuthorUser_name())
 				+ ",\"authorMail\":" + str(p.getAuthorUser_mail())
@@ -84,15 +106,15 @@ public final class ApiJson {
 				+ ",\"likeCount\":" + p.getLikeCount()
 				+ ",\"liked\":" + p.isLiked()
 				+ ",\"replyCount\":" + p.getReplyCount()
-				+ ",\"media\":" + mediaList(p.getId()) 
+				+ ",\"media\":" + mediaList(p.getId(), viewerAccountType) 
 				+ "}";
 	}
 
-	public static String posts(java.util.List<saru.model.Post> list) {
+	public static String posts(java.util.List<saru.model.Post> list, String viewerAccountType) {
 		StringBuilder sb = new StringBuilder("[");
 		for (int i = 0; i < list.size(); i++) {
 			if (i > 0) sb.append(',');
-			sb.append(post(list.get(i)));
+			sb.append(post(list.get(i), viewerAccountType));
 		}
 		return sb.append(']').toString();
 	}
