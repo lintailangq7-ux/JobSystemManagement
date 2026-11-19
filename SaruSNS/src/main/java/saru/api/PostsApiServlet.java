@@ -58,7 +58,20 @@ public class PostsApiServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 	    req.setCharacterEncoding("UTF-8");
 	    Integer viewerId = (Integer) req.getAttribute("apiUserId");
-
+	    
+	    String viewerAccountType = "GUEST";
+	    if (viewerId != null) {
+	        try {
+	            saru.model.User viewerUser = saru.dao.UserDao.findById(viewerId, viewerId);
+	            if (viewerUser != null && viewerUser.getType() != null) {
+	                viewerAccountType = viewerUser.getType().getKey(); // ✅ getKey() を使う！
+	            }
+	        } catch (SQLException e) {
+	            viewerAccountType = "GUEST";
+	        }
+	    }
+	    System.out.println("=== viewerAccountType: " + viewerAccountType);
+	    
 	    String path = req.getPathInfo() == null ? "" : req.getPathInfo().substring(1);
 
 	    try {
@@ -96,18 +109,17 @@ public class PostsApiServlet extends HttpServlet {
 	    Integer userId = (Integer) req.getAttribute("apiUserId");
 
 	    // ✅ 言わざる(CREATOR)：テキスト本文のみの投稿を拒否
-	    saru.model.User user = saru.dao.UserDao.findById(userId);
-	    String body = trim(req.getParameter("body"));
-	    
-	    if (user != null && "CREATOR".equals(user.accountType().name())) {
-	        boolean hasMedia = req.getParts().stream()
-	            .anyMatch(p -> ("images".equals(p.getName()) || "audios".equals(p.getName())) && p.getSize() > 0);
-	        
-	        if (!body.isBlank() && !hasMedia) {
-	            ApiJson.error(res, 403, "言わざるさんは文字だけの投稿ができません。画像または音声を添付してください。");
-	            return;
+	    saru.model.User user = null;
+	    try {
+	        Integer viewerId = (Integer) req.getAttribute("apiUserId");
+	        if (viewerId != null) {
+	            user = saru.dao.UserDao.findById(viewerId, viewerId);
 	        }
+	    } catch (SQLException e) {
+	        user = null;
 	    }
+	    
+	    
 
 		String ct = req.getContentType();
 		if (ct == null || !ct.startsWith("multipart/")) {

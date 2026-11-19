@@ -66,9 +66,9 @@ public final class ApiJson {
 					
 					// ========== アカウント種別ごとの表示制御 ==========
 					boolean visible = switch (viewerAccountType) {
-						case "NORMAL" -> !"image".equals(type);    // 見ざる：画像を隠す
-						case "CREATOR" -> true;                     // 言わざる：画像・音声とも表示
-						case "MODERATOR" -> !"audio".equals(type);  // 聞かざる：音声を隠す
+					case "mizaru" -> !"image".equals(type);     // 見ざる：画像を隠す
+				    case "iwazaru" -> true;                       // 言わざる：全部見える
+				    case "kikazaru" -> !"audio".equals(type);    // 聞かざる：音声を隠す
 						default -> true; // ゲスト：すべて表示
 					};
 					
@@ -88,27 +88,27 @@ public final class ApiJson {
 	
 	
 	
-	public static String post(saru.model.Post p, String viewerAccountType) {
-		return "{\"id\":" + p.getId()
-				+ ",\"userId\":" + p.getUserId()
-				+ ",\"content\":" + str(
-					    // ========== 表示制御：本文/文字 ==========
-					    "CREATOR".equals(viewerAccountType) ? "" : p.getText()
-					  )
-				+ ",\"text\":" + str(
-					    // ========== 表示制御：本文/文字（互換用も同じ制御） ==========
-					    "CREATOR".equals(viewerAccountType) ? "" : p.getText()
-					  )
-				+ ",\"createdAt\":" + p.getCreatedAt()
-				+ ",\"authorName\":" + str(p.getAuthorUser_name())
-				+ ",\"authorMail\":" + str(p.getAuthorUser_mail())
-				+ ",\"authorType\":" + str(p.getAuthorType() == null ? null : p.getAuthorType().getKey())
-				+ ",\"likeCount\":" + p.getLikeCount()
-				+ ",\"liked\":" + p.isLiked()
-				+ ",\"replyCount\":" + p.getReplyCount()
-				+ ",\"media\":" + mediaList(p.getId(), viewerAccountType) 
-				+ "}";
-	}
+		public static String post(saru.model.Post p, String viewerAccountType) {
+		    return "{\"id\":" + p.getId()
+		            + ",\"userId\":" + p.getUserId()
+		            + ",\"content\":" + str(
+		            		 // ========== 表示制御：本文/文字 ==========
+		                    "iwazaru".equals(viewerAccountType) ? "" : p.getText()
+		              )
+		            + ",\"text\":" + str(
+		            		// ========== 表示制御：本文/文字（互換用も同じ制御） ==========
+		                    "iwazaru".equals(viewerAccountType) ? "" : p.getText()
+		              )
+		            + ",\"createdAt\":" + p.getCreatedAt()
+		            + ",\"authorName\":" + str(p.getAuthorUser_name())
+		            + ",\"authorMail\":" + str(p.getAuthorUser_mail())
+		            + ",\"authorType\":" + str(p.getAuthorType() == null ? null : p.getAuthorType().getKey())
+		            + ",\"likeCount\":" + p.getLikeCount()
+		            + ",\"liked\":" + p.isLiked()
+		            + ",\"replyCount\":" + p.getReplyCount()
+		            + ",\"media\":" + mediaList(p.getId(), viewerAccountType) 
+		            + "}";
+		}
 
 	public static String posts(java.util.List<saru.model.Post> list, String viewerAccountType) {
 		StringBuilder sb = new StringBuilder("[");
