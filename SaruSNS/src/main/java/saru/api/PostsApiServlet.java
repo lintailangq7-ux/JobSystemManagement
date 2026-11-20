@@ -29,8 +29,8 @@ import saru.Config;
 import saru.dao.PostDao;
 import saru.model.Post;
 
-@MultipartConfig(maxFileSize = 10 * 1024 * 1024, maxRequestSize = 16 * 1024 * 1024)
-@WebServlet("/api/posts")
+@MultipartConfig(maxFileSize = 10 * 1024 * 1024, maxRequestSize = 50 * 1024 * 1024)
+@WebServlet("/api/posts/*")
 public class PostsApiServlet extends HttpServlet {
 	// ...(今ある doGet などは、そのまま)...
 
@@ -56,51 +56,38 @@ public class PostsApiServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-	    req.setCharacterEncoding("UTF-8");
-	    Integer viewerId = (Integer) req.getAttribute("apiUserId");
-	    
-	    String viewerAccountType = "GUEST";
-	    if (viewerId != null) {
-	        try {
-	            saru.model.User viewerUser = saru.dao.UserDao.findById(viewerId, viewerId);
-	            if (viewerUser != null && viewerUser.getType() != null) {
-	                viewerAccountType = viewerUser.getType().getKey(); // ✅ getKey() を使う！
-	            }
-	        } catch (SQLException e) {
-	            viewerAccountType = "GUEST";
-	        }
-	    }
-	    System.out.println("=== viewerAccountType: " + viewerAccountType);
-	    
-	    String path = req.getPathInfo() == null ? "" : req.getPathInfo().substring(1);
-
-	    try {
-	        if (path.isEmpty()) {
-	            //  一覧取得
-	            boolean homeOnly = "true".equals(req.getParameter("homeOnly"));
-	            List<Post> posts = PostDao.timeline(viewerId, homeOnly);
-	            ApiJson.write(res, 200, "{\"posts\":" + ApiJson.posts(posts, viewerAccountType) + "}");
-	            
-	        } else {
-	            //  個別の投稿詳細取得
-	            int postId;
-	            try {
-	                postId = Integer.parseInt(path);
-	            } catch (NumberFormatException e) {
-	                ApiJson.error(res, 400, "無効な投稿IDです");
-	                return;
-	            }
-	            
-	            Post post = PostDao.findById(viewerId, postId);
-	            if (post == null) {
-	                ApiJson.error(res, 404, "投稿が見つかりません");
-	                return;
-	            }
-	            ApiJson.write(res, 200, ApiJson.post(post, viewerAccountType));
-	        }
-	    } catch (SQLException e) {
-	        throw new ServletException(e);
-	    }
+		Integer viewerId = (Integer) req.getAttribute("apiUserId");
+		String path = req.getPathInfo() == null ? "" : req.getPathInfo().substring(1);
+		try {
+			String viewerType = PostDao.accountType(viewerId);
+			if (path.isEmpty()) {
+				boolean homeOnly = "true".equals(req.getParameter("homeOnly"));
+				ApiJson.write(res, 200, ApiJson.posts(PostDao.timeline(viewerId, homeOnly), viewerType)); // 配列で返す
+			} else {
+				int postId;
+				try {
+					postId = Integer.parseInt(path);
+				} catch (NumberFormatException e) {
+					ApiJson.error(res, 400, "無効な投稿IDです");
+					return;
+				}
+				Post post = PostDao.findById(viewerId, postId);
+				if (post == null) {
+					ApiJson.error(res, 404, "投稿が見つかりません");
+					return;
+				}
+				if (path.isEmpty()) {
+				    boolean homeOnly = "true".equals(req.getParameter("homeOnly"));
+				    List<Post> posts = PostDao.timeline(viewerId, homeOnly);
+				    ApiJson.write(res, 200,
+				        "{\"homeOnly\":" + homeOnly +
+				        ",\"posts\":" + ApiJson.posts(posts, viewerType) + "}"
+				    );
+				}
+			}
+		} catch (SQLException e) {
+			throw new ServletException(e);
+		}
 	}
 
 
@@ -108,16 +95,12 @@ public class PostsApiServlet extends HttpServlet {
 	    req.setCharacterEncoding("UTF-8");
 	    Integer userId = (Integer) req.getAttribute("apiUserId");
 
-	    // ✅ 言わざる(CREATOR)：テキスト本文のみの投稿を拒否
-	    saru.model.User user = null;
-	    try {
-	        Integer viewerId = (Integer) req.getAttribute("apiUserId");
-	        if (viewerId != null) {
-	            user = saru.dao.UserDao.findById(viewerId, viewerId);
-	        }
-	    } catch (SQLException e) {
-	        user = null;
+	    String pathInfo = req.getPathInfo();
+	    if (pathInfo != null && pathInfo.length() > 1) { // POST /api/posts/12 は編集
+	    	updatePost(req, res, userId, pathInfo.substring(1));
+	    	return;
 	    }
+	    
 	    
 	    
 
@@ -151,6 +134,12 @@ public class PostsApiServlet extends HttpServlet {
 			ApiJson.error(res, 413, "ファイルが大きすぎます(画像は5MB、音声は10MBまで)");
 			return;
 		}
+		
+		if (imageParts.size() > 4 || audioParts.size() > 2) {
+			ApiJson.error(res, 400, "画像は4枚まで、音声は2つまでです");
+			return;
+		}
+		
 		if (body.isEmpty() && imageParts.isEmpty() && audioParts.isEmpty()) {
 	        ApiJson.error(res, 400, "本文・画像・音声のどれかを入れてください");
 	        return;
@@ -193,47 +182,38 @@ public class PostsApiServlet extends HttpServlet {
 			deleteAll(saved);
 			throw new ServletException(e);
 		}
+		
+		
 	}
 	
-	@Override
-	protected void doPut(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-	    req.setCharacterEncoding("UTF-8");
-	    Integer userId = (Integer) req.getAttribute("apiUserId");
-	    if (userId == null) {
-	        ApiJson.error(res, 401, "ログインが必要です");
-	        return;
-	    }
-
-	    String idStr = req.getPathInfo() == null ? null : req.getPathInfo().substring(1);
-	    if (idStr == null || idStr.isBlank()) {
-	        ApiJson.error(res, 400, "投稿IDを指定してください");
-	        return;
-	    }
-
-	    int postId;
-	    try {
-	        postId = Integer.parseInt(idStr);
-	    } catch (NumberFormatException e) {
-	        ApiJson.error(res, 400, "無効な投稿IDです");
-	        return;
-	    }
-
-	    String newBody = trim(req.getParameter("body"));
-	    if (newBody.codePointCount(0, newBody.length()) > 400) {
-	        ApiJson.error(res, 400, "本文は400文字までです");
-	        return;
-	    }
-
-	    try {
-	        boolean ok = PostDao.update(postId, userId, newBody);
-	        if (!ok) {
-	            ApiJson.error(res, 403, "編集できません（権限がないか存在しません）");
-	            return;
-	        }
-	        ApiJson.write(res, 200, "{\"ok\":true}");
-	    } catch (SQLException e) {
-	        throw new ServletException(e);
-	    }
+	private void updatePost(HttpServletRequest req, HttpServletResponse res, Integer userId, String idStr)
+			throws ServletException, IOException {
+		int postId;
+		try {
+			postId = Integer.parseInt(idStr);
+		} catch (NumberFormatException e) {
+			ApiJson.error(res, 400, "無効な投稿IDです");
+			return;
+		}
+		String raw = req.getParameter("body");
+		if (raw == null) { // 送られていないときに、空で上書きしない
+			ApiJson.error(res, 400, "本文が送られていません");
+			return;
+		}
+		String newBody = raw.trim();
+		if (newBody.codePointCount(0, newBody.length()) > MAX_BODY) {
+			ApiJson.error(res, 400, "本文は" + MAX_BODY + "文字までです");
+			return;
+		}
+		try {
+			if (!PostDao.update(postId, userId, newBody)) {
+				ApiJson.error(res, 403, "編集できません(権限がないか存在しません)");
+				return;
+			}
+			ApiJson.write(res, 200, "{\"ok\":true}");
+		} catch (SQLException e) {
+			throw new ServletException(e);
+		}
 	}
 	
 	@Override
@@ -260,14 +240,22 @@ public class PostsApiServlet extends HttpServlet {
 	    }
 
 	    try {
-	        boolean ok = PostDao.delete(postId, userId);
-	        if (!ok) {
-	            ApiJson.error(res, 403, "削除できません（権限がないか存在しません）");
-	            return;
-	        }
-	        ApiJson.write(res, 200, "{\"ok\":true}");
+	    	List<PostDao.MediaRow> files = PostDao.mediaOf(postId); // ① 先に控える
+	    	if (!PostDao.delete(postId, userId)) {                  // ② 持ち主でなければ false
+	    		ApiJson.error(res, 403, "削除できません(権限がないか存在しません)");
+	    		return;
+	    	}
+	    	for (PostDao.MediaRow f : files) {                      // ③ 消せたら、ファイルを消す
+	    		Path file = uploadRoot.resolve("image".equals(f.type()) ? "images" : "audio").resolve(f.fileName());
+	    		try {
+	    			Files.deleteIfExists(file);
+	    		} catch (IOException e) {
+	    			getServletContext().log("ファイルを消せませんでした: " + file, e);
+	    		}
+	    	}
+	    	ApiJson.write(res, 200, "{\"ok\":true}");
 	    } catch (SQLException e) {
-	        throw new ServletException(e);
+	    	throw new ServletException(e);
 	    }
 	}
 	

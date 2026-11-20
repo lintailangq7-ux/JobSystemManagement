@@ -79,7 +79,7 @@ public class MyPageApiServlet extends HttpServlet {
 			response.setContentType("application/json; charset=UTF-8");
 			response.getWriter().write("{"
 					+ "\"user\":" + ApiJson.user(user) + ","
-					+ "\"posts\":" + ApiJson.posts(posts, viewerAccountType) +
+					+ "\"posts\":" + ApiJson.post(null, viewerAccountType) +
 					"}");
 			
 			
