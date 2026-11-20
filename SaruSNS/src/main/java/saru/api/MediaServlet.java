@@ -44,7 +44,6 @@ public class MediaServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
-        System.out.println("=== リクエストされたパス: " + pathInfo); // ✅ 追加
         
         if (pathInfo == null || pathInfo.isEmpty() || pathInfo.equals("/")) {
             res.sendError(404);
@@ -59,9 +58,7 @@ public class MediaServlet extends HttpServlet {
         String relativePath = pathInfo.substring(1); // 最初の / を削除
         Path filePath = uploadRoot.resolve(relativePath);
         
-        System.out.println("=== 探しているファイル: " + filePath); // ✅ 追加
-        System.out.println("=== ファイル存在: " + Files.exists(filePath)); // ✅ 追加
-        
+
         if (!Files.exists(filePath) || Files.isDirectory(filePath)) {
             res.sendError(404);
             return;

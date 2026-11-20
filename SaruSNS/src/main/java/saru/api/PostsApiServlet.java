@@ -58,7 +58,20 @@ public class PostsApiServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 	    req.setCharacterEncoding("UTF-8");
 	    Integer viewerId = (Integer) req.getAttribute("apiUserId");
-
+	    
+	    String viewerAccountType = "GUEST";
+	    if (viewerId != null) {
+	        try {
+	            saru.model.User viewerUser = saru.dao.UserDao.findById(viewerId, viewerId);
+	            if (viewerUser != null && viewerUser.getType() != null) {
+	                viewerAccountType = viewerUser.getType().getKey(); // ✅ getKey() を使う！
+	            }
+	        } catch (SQLException e) {
+	            viewerAccountType = "GUEST";
+	        }
+	    }
+	    System.out.println("=== viewerAccountType: " + viewerAccountType);
+	    
 	    String path = req.getPathInfo() == null ? "" : req.getPathInfo().substring(1);
 
 	    try {
@@ -66,7 +79,7 @@ public class PostsApiServlet extends HttpServlet {
 	            //  一覧取得
 	            boolean homeOnly = "true".equals(req.getParameter("homeOnly"));
 	            List<Post> posts = PostDao.timeline(viewerId, homeOnly);
-	            ApiJson.write(res, 200, ApiJson.posts(posts)); // ← ここを修正！
+	            ApiJson.write(res, 200, "{\"posts\":" + ApiJson.posts(posts, viewerAccountType) + "}");
 	            
 	        } else {
 	            //  個別の投稿詳細取得
@@ -83,7 +96,7 @@ public class PostsApiServlet extends HttpServlet {
 	                ApiJson.error(res, 404, "投稿が見つかりません");
 	                return;
 	            }
-	            ApiJson.write(res, 200, ApiJson.post(post)); // ← ここを修正！
+	            ApiJson.write(res, 200, ApiJson.post(post, viewerAccountType));
 	        }
 	    } catch (SQLException e) {
 	        throw new ServletException(e);
@@ -91,10 +104,22 @@ public class PostsApiServlet extends HttpServlet {
 	}
 
 
-	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		req.setCharacterEncoding("UTF-8"); // multipart の文字を、文字化けさせない。最初に呼ぶ
-		Integer userId = (Integer) req.getAttribute("apiUserId"); // ApiFilter が入れる
+	    req.setCharacterEncoding("UTF-8");
+	    Integer userId = (Integer) req.getAttribute("apiUserId");
+
+	    // ✅ 言わざる(CREATOR)：テキスト本文のみの投稿を拒否
+	    saru.model.User user = null;
+	    try {
+	        Integer viewerId = (Integer) req.getAttribute("apiUserId");
+	        if (viewerId != null) {
+	            user = saru.dao.UserDao.findById(viewerId, viewerId);
+	        }
+	    } catch (SQLException e) {
+	        user = null;
+	    }
+	    
+	    
 
 		String ct = req.getContentType();
 		if (ct == null || !ct.startsWith("multipart/")) {

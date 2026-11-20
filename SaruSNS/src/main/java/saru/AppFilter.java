@@ -90,11 +90,11 @@ public class AppFilter extends HttpFilter {
 		}
 
 		// 投稿を見るにはログインが必要
-		if (me == null && !path.equals("/login")) {
-			if (path.startsWith("/media/")) res.sendError(404);
-			else res.sendRedirect(req.getContextPath() + "/login");
-			return;
+		if (me == null && !path.equals("/login") && !path.startsWith("/media/")) {
+		    res.sendRedirect(req.getContextPath() + "/login");
+		    return;
 		}
+
 
 		if ("GET".equals(req.getMethod()) && !path.startsWith("/media/")) {
 			for (String key : new String[] { "flash", "flashError", "reveal" }) {

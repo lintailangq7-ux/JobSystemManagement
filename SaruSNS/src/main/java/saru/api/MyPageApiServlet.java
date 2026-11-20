@@ -32,8 +32,20 @@ public class MyPageApiServlet extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		Integer viewerId = (Integer)request.getAttribute("apiUserId");
 		
-		String path = request.getPathInfo() == null ? "" : request.getPathInfo().substring(1);
-		int targetUserId;
+		String viewerAccountType = "GUEST";
+	    if (viewerId != null) {
+	        try {
+	            User viewerUser = UserDao.findById(viewerId, viewerId);
+	            if (viewerUser != null && viewerUser.getType() != null) {
+	                viewerAccountType = viewerUser.getType().name();
+	            }
+	        } catch (Exception e) {
+	            viewerAccountType = "GUEST";
+	        }
+	    }
+
+	    String path = request.getPathInfo() == null ? "" : request.getPathInfo().substring(1);
+	    int targetUserId;
 		
 		try {
 			if(path.isBlank()) {
@@ -67,7 +79,7 @@ public class MyPageApiServlet extends HttpServlet {
 			response.setContentType("application/json; charset=UTF-8");
 			response.getWriter().write("{"
 					+ "\"user\":" + ApiJson.user(user) + ","
-					+ "\"posts\":" + ApiJson.posts(posts) +
+					+ "\"posts\":" + ApiJson.posts(posts, viewerAccountType) +
 					"}");
 			
 			
