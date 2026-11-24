@@ -6,6 +6,7 @@ import java.util.List;
 import jakarta.servlet.http.HttpServletResponse;
 
 import saru.dao.PostDao;
+import saru.model.Post;
 import saru.model.User;
 
 /** API の返事 (JSON) を作る小さな道具 */
@@ -54,68 +55,79 @@ public final class ApiJson {
 				+ ",\"postCount\":" + u.getPostCount() + "}";
 	}
 
-	// ✅ 修正：viewerAccountType を受け取ってフィルタする
-		private static String mediaList(int postId, String viewerAccountType) {
-			try {
-				List<PostDao.NewMedia> media = PostDao.getMediaByPostId(postId);
-				StringBuilder sb = new StringBuilder("[");
-				boolean hasItem = false;
-				for (int i = 0; i < media.size(); i++) {
-					var m = media.get(i);
-					String type = m.type(); // "image" または "audio"
-					
-					// ========== アカウント種別ごとの表示制御 ==========
-					boolean visible = switch (viewerAccountType) {
-					case "mizaru" -> !"image".equals(type);     // 見ざる：画像を隠す
-				    case "iwazaru" -> true;                       // 言わざる：全部見える
-				    case "kikazaru" -> !"audio".equals(type);    // 聞かざる：音声を隠す
-						default -> true; // ゲスト：すべて表示
-					};
-					
-					if (visible) {
-						if (hasItem) sb.append(',');
-						hasItem = true;
-						sb.append("{\"type\":\"").append(type).append("\"")
-						  .append(",\"fileName\":\"").append(m.fileName()).append("\"")
-						  .append("}");
-					}
-				}
-				return sb.append(']').toString();
-			} catch (Exception e) {
-				return "[]"; // エラー時は空配列
-			}
-		}
-	
-	
-	
-		public static String post(saru.model.Post p, String viewerAccountType) {
-		    return "{\"id\":" + p.getId()
-		            + ",\"userId\":" + p.getUserId()
-		            + ",\"content\":" + str(
-		            		 // ========== 表示制御：本文/文字 ==========
-		                    "iwazaru".equals(viewerAccountType) ? "" : p.getText()
-		              )
-		            + ",\"text\":" + str(
-		            		// ========== 表示制御：本文/文字（互換用も同じ制御） ==========
-		                    "iwazaru".equals(viewerAccountType) ? "" : p.getText()
-		              )
-		            + ",\"createdAt\":" + p.getCreatedAt()
-		            + ",\"authorName\":" + str(p.getAuthorUser_name())
-		            + ",\"authorMail\":" + str(p.getAuthorUser_mail())
-		            + ",\"authorType\":" + str(p.getAuthorType() == null ? null : p.getAuthorType().getKey())
-		            + ",\"likeCount\":" + p.getLikeCount()
-		            + ",\"liked\":" + p.isLiked()
-		            + ",\"replyCount\":" + p.getReplyCount()
-		            + ",\"media\":" + mediaList(p.getId(), viewerAccountType) 
-		            + "}";
-		}
-
-	public static String posts(java.util.List<saru.model.Post> list, String viewerAccountType) {
+	/** 一覧。見ている人のアカウントの種類で、制限されたメディアを伏せる */
+	public static String posts(List<Post> posts, String viewerType) {
 		StringBuilder sb = new StringBuilder("[");
-		for (int i = 0; i < list.size(); i++) {
+		for (int i = 0; i < posts.size(); i++) {
 			if (i > 0) sb.append(',');
-			sb.append(post(list.get(i), viewerAccountType));
+			sb.append(post(posts.get(i), viewerType));
 		}
 		return sb.append(']').toString();
 	}
+	
+	
+	public static String posts(List<Post> posts, int viewerId, String viewerType) {
+		StringBuilder sb = new StringBuilder("[");
+		for (int i = 0; i < posts.size(); i++) {
+			if (i > 0) sb.append(',');
+			sb.append(post(posts.get(i), viewerId, viewerType)); // ✅ 新しいpostメソッドを呼ぶ
+		}
+		return sb.append(']').toString();
+	}
+
+
+	public static String post(Post p, String viewerType) {
+		return "{\"id\":" + p.getId()
+				+ ",\"userId\":" + p.getUserId()
+				+ ",\"content\":" + str(p.getText())
+				+ ",\"text\":" + str(p.getText())
+				+ ",\"createdAt\":" + p.getCreatedAt()
+				+ ",\"authorName\":" + str(p.getAuthorUser_name())
+				+ ",\"authorType\":" + str(p.getAuthorType() == null ? null : p.getAuthorType().getKey())
+				+ ",\"likeCount\":" + p.getLikeCount()
+				+ ",\"liked\":" + p.isLiked()
+				+ ",\"replyCount\":" + p.getReplyCount()
+				+ ",\"media\":" + mediaList(p.getId(), viewerType) + "}";
+	}
+
+	private static String mediaList(int postId, String viewerType) {
+		try {
+			List<PostDao.MediaRow> media = PostDao.mediaOf(postId);
+			StringBuilder sb = new StringBuilder("[");
+			for (int i = 0; i < media.size(); i++) {
+				PostDao.MediaRow m = media.get(i);
+				boolean blocked = ("mizaru".equals(viewerType) && "image".equals(m.type()))
+						|| ("kikazaru".equals(viewerType) && "audio".equals(m.type()));
+				if (i > 0) sb.append(',');
+				sb.append("{\"id\":").append(m.id())
+						.append(",\"type\":\"").append(m.type()).append("\"")
+						.append(",\"blocked\":").append(blocked).append('}');
+			}
+			return sb.append(']').toString();
+		} catch (Exception e) {
+			System.err.println("メディアの取得に失敗: " + e.getMessage());
+			return "[]";
+		}
+	}
+	
+	public static String post(Post p, int viewerId, String viewerType) {
+	    boolean canSeeText = PostDao.canSeePostText(viewerId, p.getUserId(), viewerType);
+	    String contentJson = canSeeText ? str(p.getText()) : "null";
+	    String textHiddenJson = canSeeText ? "false" : "true";
+	    
+	    return "{\"id\":" + p.getId()
+	            + ",\"userId\":" + p.getUserId()
+	            + ",\"content\":" + contentJson
+	            + ",\"text\":" + contentJson
+	            + ",\"textHidden\":" + textHiddenJson
+	            + ",\"createdAt\":" + p.getCreatedAt()
+	            + ",\"authorName\":" + str(p.getAuthorUser_name())
+	            + ",\"authorType\":" + str(p.getAuthorType() == null ? null : p.getAuthorType().getKey())
+	            + ",\"likeCount\":" + p.getLikeCount()
+	            + ",\"liked\":" + p.isLiked()
+	            + ",\"replyCount\":" + p.getReplyCount()
+	            + ",\"media\":" + mediaList(p.getId(), viewerType) + "}";
+	}
+
 }
+
