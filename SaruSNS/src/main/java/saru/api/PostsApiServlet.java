@@ -56,38 +56,42 @@ public class PostsApiServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		Integer viewerId = (Integer) req.getAttribute("apiUserId");
-		String path = req.getPathInfo() == null ? "" : req.getPathInfo().substring(1);
-		try {
-			String viewerType = PostDao.accountType(viewerId);
-			if (path.isEmpty()) {
-				boolean homeOnly = "true".equals(req.getParameter("homeOnly"));
-				ApiJson.write(res, 200, ApiJson.posts(PostDao.timeline(viewerId, homeOnly), viewerType)); // 配列で返す
-			} else {
-				int postId;
-				try {
-					postId = Integer.parseInt(path);
-				} catch (NumberFormatException e) {
-					ApiJson.error(res, 400, "無効な投稿IDです");
-					return;
-				}
-				Post post = PostDao.findById(viewerId, postId);
-				if (post == null) {
-					ApiJson.error(res, 404, "投稿が見つかりません");
-					return;
-				}
-				if (path.isEmpty()) {
-				    boolean homeOnly = "true".equals(req.getParameter("homeOnly"));
-				    List<Post> posts = PostDao.timeline(viewerId, homeOnly);
-				    ApiJson.write(res, 200,
-				        "{\"homeOnly\":" + homeOnly +
-				        ",\"posts\":" + ApiJson.posts(posts, viewerType) + "}"
-				    );
-				}
-			}
-		} catch (SQLException e) {
-			throw new ServletException(e);
-		}
+	    Integer viewerId = (Integer) req.getAttribute("apiUserId");
+	    String path = req.getPathInfo() == null ? "" : req.getPathInfo().substring(1);
+	    
+	    try {
+	        String viewerType = PostDao.accountType(viewerId);
+	        
+	        if (path.isEmpty()) {
+	            boolean homeOnly = "true".equals(req.getParameter("homeOnly"));
+	            List<Post> posts = PostDao.timeline(viewerId, homeOnly);
+	           
+	            ApiJson.write(res, 200,
+	                "{\"homeOnly\":" + homeOnly +
+	                ",\"posts\":" + ApiJson.posts(posts, viewerId, viewerType) + "}" // ✅ viewerId を追加
+	            );
+	        
+
+	        } else {
+	            // ✅ 詳細取得: /api/posts/{postId}
+	            int postId;
+	            try {
+	                postId = Integer.parseInt(path);
+	            } catch (NumberFormatException e) {
+	                ApiJson.error(res, 400, "無効な投稿IDです");
+	                return;
+	            }
+	            Post post = PostDao.findById(viewerId, postId);
+	            if (post == null) {
+	                ApiJson.error(res, 404, "投稿が見つかりません");
+	                return;
+	            }
+	            List<PostDao.MediaRow> mediaList = PostDao.mediaOf(postId);
+	            ApiJson.write(res, 200, ApiJson.post(post, viewerId, viewerType));
+	        }
+	    } catch (SQLException e) {
+	        throw new ServletException(e);
+	    }
 	}
 
 

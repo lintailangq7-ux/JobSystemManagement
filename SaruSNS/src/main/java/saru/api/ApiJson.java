@@ -64,6 +64,17 @@ public final class ApiJson {
 		}
 		return sb.append(']').toString();
 	}
+	
+	
+	public static String posts(List<Post> posts, int viewerId, String viewerType) {
+		StringBuilder sb = new StringBuilder("[");
+		for (int i = 0; i < posts.size(); i++) {
+			if (i > 0) sb.append(',');
+			sb.append(post(posts.get(i), viewerId, viewerType)); // ✅ 新しいpostメソッドを呼ぶ
+		}
+		return sb.append(']').toString();
+	}
+
 
 	public static String post(Post p, String viewerType) {
 		return "{\"id\":" + p.getId()
@@ -98,4 +109,25 @@ public final class ApiJson {
 			return "[]";
 		}
 	}
+	
+	public static String post(Post p, int viewerId, String viewerType) {
+	    boolean canSeeText = PostDao.canSeePostText(viewerId, p.getUserId(), viewerType);
+	    String contentJson = canSeeText ? str(p.getText()) : "null";
+	    String textHiddenJson = canSeeText ? "false" : "true";
+	    
+	    return "{\"id\":" + p.getId()
+	            + ",\"userId\":" + p.getUserId()
+	            + ",\"content\":" + contentJson
+	            + ",\"text\":" + contentJson
+	            + ",\"textHidden\":" + textHiddenJson
+	            + ",\"createdAt\":" + p.getCreatedAt()
+	            + ",\"authorName\":" + str(p.getAuthorUser_name())
+	            + ",\"authorType\":" + str(p.getAuthorType() == null ? null : p.getAuthorType().getKey())
+	            + ",\"likeCount\":" + p.getLikeCount()
+	            + ",\"liked\":" + p.isLiked()
+	            + ",\"replyCount\":" + p.getReplyCount()
+	            + ",\"media\":" + mediaList(p.getId(), viewerType) + "}";
+	}
+
 }
+

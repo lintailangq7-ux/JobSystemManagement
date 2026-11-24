@@ -38,6 +38,10 @@ public class ApiFilter extends HttpFilter {
 
 		String header = req.getHeader("Authorization");
 		String token = (header != null && header.startsWith("Bearer ")) ? header.substring(7).trim() : null;
+		if (token == null && "GET".equals(req.getMethod()) && path.startsWith("/api/media/")) {
+			token = req.getParameter("token"); // 画像・音声のURL用。他のAPIでは、URLのトークンは受け付けない
+		}
+		
 		Integer userId = ApiTokens.verify(token);
 		if (userId == null) {
 			ApiJson.error(res, 401, "ログインが必要です");

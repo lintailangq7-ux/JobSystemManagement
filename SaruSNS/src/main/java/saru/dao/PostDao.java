@@ -249,19 +249,40 @@ public final class PostDao {
 			}
 		}
 	}
+	
+	/** 見てよい投稿のメディアを1件(存在しない、または見てはいけない投稿なら null) */
+	public static MediaRow findVisibleMedia(int viewerId, int mediaId) throws SQLException {
+		String sql = "SELECT m.id, m.type, m.file_path FROM media m JOIN posts p ON p.id = m.post_id"
+				+ " WHERE m.id = ? AND " + VISIBLE;
+		try (Connection conn = Db.get(); PreparedStatement ps = conn.prepareStatement(sql)) {
+			ps.setInt(1, mediaId);
+			ps.setInt(2, viewerId);
+			ps.setInt(3, viewerId);
+			try (ResultSet rs = ps.executeQuery()) {
+				return rs.next() ? new MediaRow(rs.getInt("id"), rs.getString("type"), rs.getString("file_path")) : null;
+			}
+		}
+	}
+	
+	/** 投稿の本文を見てよいか判定 */
+	public static boolean canSeePostText(int viewerId, int postAuthorId, String viewerType) {
+	    if (viewerId == postAuthorId) return true;
+	    return !"iwazaru".equals(viewerType);
+	}
+
 
 	private static Post map(ResultSet rs) throws SQLException {
-		Post p = new Post();
-		p.setId(rs.getInt("id"));
-		p.setUserId(rs.getInt("user_id"));
-		p.setText(rs.getString("body"));
-		p.setCreatedAt(rs.getTimestamp("created_at").getTime());
-		p.setAuthorUser_name(rs.getString("author_user_name"));
-		p.setAuthorUser_mail(rs.getString("author_user_mail"));
-		p.setAuthorType(AccountType.of(rs.getString("author_type")));
-		p.setLikeCount(rs.getInt("like_count"));
-		p.setLiked(rs.getBoolean("liked"));
-		p.setReplyCount(rs.getInt("reply_count"));
-		return p;
+	    Post p = new Post();
+	    p.setId(rs.getInt("id"));
+	    p.setUserId(rs.getInt("user_id"));
+	    p.setText(rs.getString("body") == null ? "" : rs.getString("body")); // ✅ null→空文字
+	    p.setCreatedAt(rs.getTimestamp("created_at").getTime());
+	    p.setAuthorUser_name(rs.getString("author_user_name") == null ? "" : rs.getString("author_user_name"));
+	    p.setAuthorUser_mail(rs.getString("author_user_mail") == null ? "" : rs.getString("author_user_mail"));
+	    p.setAuthorType(AccountType.of(rs.getString("author_type")));
+	    p.setLikeCount(rs.getInt("like_count"));
+	    p.setLiked(rs.getBoolean("liked"));
+	    p.setReplyCount(rs.getInt("reply_count"));
+	    return p;
 	}
 }
