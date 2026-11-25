@@ -55,7 +55,7 @@ public class AudioSearchApiServlet extends HttpServlet {
 					rows.stream().map(r -> AudioFeature.parse(r.vec())).toList(), 30);
 			String viewerType = PostDao.accountType(userId);
 			List<Post> resultPosts = PostDao.findInOrder(userId, ids);
-			ApiJson.write(res, 200, ApiJson.posts(resultPosts, viewerType));
+			ApiJson.write(res, 200, ApiJson.posts(resultPosts, userId, viewerType));
 		} catch (SQLException e) {
 			throw new ServletException(e);
 		}

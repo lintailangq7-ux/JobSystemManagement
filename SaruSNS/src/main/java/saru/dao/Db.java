@@ -31,6 +31,7 @@ public final class Db {
 		  id INT AUTO_INCREMENT PRIMARY KEY,
 		  user_id INT NOT NULL,
 		  body TEXT NULL,
+		  visibility ENUM('public','followers','private') NOT NULL DEFAULT 'public',
 		  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		  FOREIGN KEY (user_id) REFERENCES users(id),
 		  INDEX idx_posts_created (created_at)
@@ -43,9 +44,9 @@ public final class Db {
 		  file_path VARCHAR(255) NOT NULL,
 		  title VARCHAR(100) NULL,
 		  dhash BIGINT NULL,
-		  UNIQUE KEY uq_post_type (post_id, type),
+		  INDEX idx_media_post (post_id),
 		  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
-		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
+		  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
 		"""
 		CREATE TABLE IF NOT EXISTS tags (
 		  id INT AUTO_INCREMENT PRIMARY KEY,

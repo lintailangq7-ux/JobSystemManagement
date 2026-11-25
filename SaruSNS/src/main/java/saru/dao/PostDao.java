@@ -90,11 +90,10 @@ public final class PostDao {
 	            int postId;
 	            // ✅ visibility をINSERT文から削除！引数はそのまま受け取るだけ
 	            try (PreparedStatement ps = conn.prepareStatement(
-	                    "INSERT INTO posts (user_id, body) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+	                    "INSERT INTO posts (user_id, body, visibility) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
 	                ps.setInt(1, userId);
 	                ps.setString(2, body.isEmpty() ? null : body);
-	                // ps.setString(3, visibility); ← 削除！
-	                
+	                ps.setString(3, visibility);
 	                ps.executeUpdate();
 	                try (ResultSet keys = ps.getGeneratedKeys()) {
 	                    keys.next();
@@ -223,6 +222,46 @@ public final class PostDao {
 			}
 		}
 		return list;
+	}
+	
+	/** テキスト検索:本文・メディアのタイトル・タグ。見てよい投稿だけ */
+	public static List<Post> searchByText(int viewerId, String viewerType, String keyword, int limit)
+			throws SQLException {
+		// LIKE の % と _ は、文字として探す(! で打ち消す)
+		String like = "%" + keyword.replace("!", "!!").replace("%", "!%").replace("_", "!_") + "%";
+
+		List<Object> params = new ArrayList<>();
+		params.add(viewerId); // SELECT の liked
+		params.add(viewerId); // VISIBLE の1つ目
+		params.add(viewerId); // VISIBLE の2つ目
+
+		List<String> conds = new ArrayList<>();
+
+		// 本文と文字のタグ:言わざるは、他人の本文が見えないので、自分の投稿だけが対象
+		boolean textOk = !"iwazaru".equals(viewerType);
+		String own = textOk ? "" : "p.user_id = ? AND ";
+		conds.add("(" + own + "p.body LIKE ? ESCAPE '!')");
+		if (!textOk) params.add(viewerId);
+		params.add(like);
+
+		conds.add("(" + own + "EXISTS (SELECT 1 FROM post_tags pt JOIN tags t ON t.id = pt.tag_id"
+				+ " WHERE pt.post_id = p.id AND t.name LIKE ? ESCAPE '!'))");
+		if (!textOk) params.add(viewerId);
+		params.add(like);
+
+		// メディアのタイトルとタグ:見ざるは画像、聞かざるは音声を、検索の対象から外す
+		String types = "mizaru".equals(viewerType) ? "m.type = 'audio'"
+				: "kikazaru".equals(viewerType) ? "m.type = 'image'" : "1 = 1";
+		conds.add("EXISTS (SELECT 1 FROM media m WHERE m.post_id = p.id AND " + types
+				+ " AND (m.title LIKE ? ESCAPE '!' OR EXISTS (SELECT 1 FROM media_tags mt"
+				+ " JOIN tags t ON t.id = mt.tag_id WHERE mt.media_id = m.id AND t.name LIKE ? ESCAPE '!')))");
+		params.add(like);
+		params.add(like);
+
+		String sql = SELECT + " WHERE " + VISIBLE + " AND (" + String.join(" OR ", conds) + ")"
+				+ " ORDER BY p.created_at DESC, p.id DESC LIMIT ?";
+		params.add(limit);
+		return query(sql, params.toArray());
 	}
 	
 	/** 投稿編集 */

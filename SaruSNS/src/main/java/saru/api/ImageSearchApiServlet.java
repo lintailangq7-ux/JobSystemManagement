@@ -50,7 +50,7 @@ public class ImageSearchApiServlet extends HttpServlet {
 			}
 			List<Post> posts = PostDao.searchByDHash(userId, ImageHash.dHash(img), 30);
 			String viewerType = PostDao.accountType(userId);
-			ApiJson.write(res, 200, ApiJson.posts(posts, viewerType));
+			ApiJson.write(res, 200, ApiJson.posts(posts, userId, viewerType));
 		} catch (SQLException e) {
 			throw new ServletException(e);
 		}

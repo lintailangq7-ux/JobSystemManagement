@@ -1,8 +1,8 @@
 package saru.api;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
@@ -158,24 +158,30 @@ public class PostsApiServlet extends HttpServlet {
 		List<PostDao.NewMedia> media = new ArrayList<>();
 		try {
 			for (Part imagePart : imageParts) {
-	            byte[] data = imagePart.getInputStream().readAllBytes();
-	            if (data.length > MAX_IMAGE) throw new IllegalArgumentException("画像は1枚5MBまでです");
-	            String ext = imageExtension(data);
-	            if (ext == null) throw new IllegalArgumentException("画像は jpg / png / gif のみ使えます");
-	            Path file = newFile("images", ext);
-	            Files.write(file, data);
-	            saved.add(file);
-	            media.add(new PostDao.NewMedia("image", file.getFileName().toString()));
-	        }
+				byte[] data = imagePart.getInputStream().readAllBytes();
+				if (data.length > MAX_IMAGE) throw new IllegalArgumentException("画像は1枚5MBまでです");
+				String ext = imageExtension(data);
+				if (ext == null) throw new IllegalArgumentException("画像は jpg / png / gif のみ使えます");
+				Path file = newFile("images", ext);
+				Files.write(file, data);
+				saved.add(file);
+				BufferedImage img = ImageIO.read(new ByteArrayInputStream(data));
+				Long hash = img == null ? null : ImageHash.dHash(img);
+				media.add(new PostDao.NewMedia("image", file.getFileName().toString(), hash, null));
+			}
 			for (Part audioPart : audioParts) {
 				String ext = extensionOf(audioPart.getSubmittedFileName());
 				if (!AUDIO_EXT.contains(ext)) throw new IllegalArgumentException("音声は wav / mp3 / m4a / aac / ogg のみ使えます");
+				byte[] data = audioPart.getInputStream().readAllBytes();
 				Path file = newFile("audio", ext);
-				try (InputStream in = audioPart.getInputStream()) {
-					Files.copy(in, file);
-				}
+				Files.write(file, data);
 				saved.add(file);
-				media.add(new PostDao.NewMedia("audio", file.getFileName().toString()));
+				String mfcc = null;
+				if (ext.equals("wav")) { // 特徴が作れるのは WAV だけ
+					float[] v = AudioFeature.mfcc(data);
+					if (v != null) mfcc = AudioFeature.toText(v);
+				}
+				media.add(new PostDao.NewMedia("audio", file.getFileName().toString(), null, mfcc));
 			}
 			int postId = PostDao.create(userId, body, visibility, media);
 			ApiJson.write(res, 201, "{\"id\":" + postId + "}");
