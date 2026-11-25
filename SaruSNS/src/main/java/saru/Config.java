@@ -20,7 +20,7 @@ public final class Config {
 	public final String dbPassword;
 	public final String dbName;
 	public final Path uploadDir;
-
+//a
 	private Config(Properties p) {
 		dbHost = pick("DB_HOST", p, "db.host", "localhost");
 		dbPort = Integer.parseInt(pick("DB_PORT", p, "db.port", "3306"));
