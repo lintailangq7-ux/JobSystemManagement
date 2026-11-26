@@ -40,9 +40,10 @@ public class AudioSearchApiServlet extends HttpServlet {
 				ApiJson.error(res, 400, "音声を送ってください");
 				return;
 			}
-			float[] query = AudioFeature.mfcc(part.getInputStream().readAllBytes()); // 検索用の音は、保存しない
+			String ext = AudioConverter.extensionOf(part.getSubmittedFileName());
+			float[] query = AudioConverter.mfcc(part.getInputStream().readAllBytes(), ext); // 検索用の音は、保存しない
 			if (query == null) {
-				ApiJson.error(res, 400, "16bitのWAVで、1秒以上の音を送ってください");
+				ApiJson.error(res, 400, "wav / mp3 / m4a / aac / ogg の、1秒以上の音を送ってください");
 				return;
 			}
 			List<PostDao.FeatureRow> rows = PostDao.audioFeatures(userId);

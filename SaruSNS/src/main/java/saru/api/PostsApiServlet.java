@@ -176,12 +176,8 @@ public class PostsApiServlet extends HttpServlet {
 				Path file = newFile("audio", ext);
 				Files.write(file, data);
 				saved.add(file);
-				String mfcc = null;
-				if (ext.equals("wav")) { // 特徴が作れるのは WAV だけ
-					float[] v = AudioFeature.mfcc(data);
-					if (v != null) mfcc = AudioFeature.toText(v);
-				}
-				media.add(new PostDao.NewMedia("audio", file.getFileName().toString(), null, mfcc));
+				float[] v = AudioConverter.mfcc(data, ext); // WAV 以外は ffmpeg で変換して作る
+				String mfcc = v == null ? null : AudioFeature.toText(v);
 			}
 			int postId = PostDao.create(userId, body, visibility, media);
 			ApiJson.write(res, 201, "{\"id\":" + postId + "}");
