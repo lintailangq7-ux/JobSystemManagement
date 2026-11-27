@@ -178,6 +178,10 @@ public class PostsApiServlet extends HttpServlet {
 				saved.add(file);
 				float[] v = AudioConverter.mfcc(data, ext); // WAV 以外は ffmpeg で変換して作る
 				String mfcc = v == null ? null : AudioFeature.toText(v);
+				media.add(new PostDao.NewMedia("audio", file.getFileName().toString(), null, mfcc));
+			}
+			if (media.size() != imageParts.size() + audioParts.size()) {
+				throw new IllegalStateException("メディアの数が合いません");
 			}
 			int postId = PostDao.create(userId, body, visibility, media);
 			ApiJson.write(res, 201, "{\"id\":" + postId + "}");

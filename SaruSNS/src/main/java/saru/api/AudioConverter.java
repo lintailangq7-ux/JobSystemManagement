@@ -16,10 +16,16 @@ public final class AudioConverter {
 	private static final long TIMEOUT_SEC = 30;
 		
 	/** ffmpeg の場所: -Dsaru.ffmpeg=... → 環境変数 SARU_FFMPEG → PATH の ffmpeg */
+	/** ffmpeg の場所: -Dsaru.ffmpeg=... → 環境変数 SARU_FFMPEG → 開発用の既定の場所 → PATH の ffmpeg */
 	private static String ffmpeg() {
 		String p = System.getProperty("saru.ffmpeg");
 		if (p == null || p.isBlank()) p = System.getenv("SARU_FFMPEG");
-		return (p == null || p.isBlank()) ? "ffmpeg" : p;
+		if (p != null && !p.isBlank()) return p;
+
+		Path dev = Path.of("C:\\dev\\ffmpeg\\bin\\ffmpeg.exe"); // 開発用のPCの既定の場所
+		if (Files.isRegularFile(dev)) return dev.toString();
+
+		return "ffmpeg";
 	}
 	
 	/** ファイル名の拡張子(小文字)。無ければ空文字 */
@@ -65,7 +71,7 @@ public final class AudioConverter {
 			if (p.exitValue() != 0 || Files.size(out) <= 44) return null;
 			return Files.readAllBytes(out);
 		} catch (IOException e) { // ffmpeg が見つからない、など
-			System.err.println("ffmpeg を使えませんでした: " + e.getMessage());
+			System.err.println("ffmpeg を使えませんでした (探した場所: " + ffmpeg() + "): " + e.getMessage());
 			return null;
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
