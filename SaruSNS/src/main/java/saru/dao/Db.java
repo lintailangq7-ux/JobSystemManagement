@@ -5,11 +5,15 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 import saru.Config;
 
 /** MySQL への接続と、テーブルの自動作成 */
 public final class Db {
 	private static Config config;
+	private static HikariDataSource pool;
 
 	// 外部キーの参照先が先に作られるよう、この順番で実行する
 	// (CREATE TABLE IF NOT EXISTS なので、すでにあるテーブルは変更されない)
@@ -155,13 +159,48 @@ public final class Db {
 			st.executeUpdate("CREATE DATABASE IF NOT EXISTS `" + c.dbName
 					+ "` CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci");
 		}
+		
+		
+		try (Connection conn = DriverManager.getConnection(url(""), c.dbUser, c.dbPassword);
+				Statement st = conn.createStatement()) {
+			st.executeUpdate("CREATE DATABASE IF NOT EXISTS `" + c.dbName
+					+ "` CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci");
+		}
+
+		//接続を使い回す(プール)
+		close(); // 作り直しのときは、古いものを閉じる
+		try {
+			HikariConfig hc = new HikariConfig();
+			hc.setJdbcUrl(url(c.dbName));
+			hc.setUsername(c.dbUser);
+			hc.setPassword(c.dbPassword);
+			hc.setMaximumPoolSize(5); // 共有のDBなので、控えめに
+			hc.setMinimumIdle(1);
+			hc.setPoolName("saru-pool");
+			pool = new HikariDataSource(hc);
+		} catch (RuntimeException e) {
+			throw new SQLException("接続プールを作れませんでした: " + e.getMessage(), e);
+		}
+
 		try (Connection conn = get(); Statement st = conn.createStatement()) {
 			for (String sql : SCHEMA) st.executeUpdate(sql);
 		}
+		
+		
 	}
+	
+	
 
 	public static Connection get() throws SQLException {
-		return DriverManager.getConnection(url(config.dbName), config.dbUser, config.dbPassword);
+		return pool.getConnection(); // プールから借りる。close() で、閉じずに返る
+	}
+
+	/** アプリの停止時に呼ぶ。プールの接続を閉じる */
+	public static void close() {
+		if (pool != null) {
+			pool.close();
+			pool = null;
+		}
 	}
 
 	public static Config config() {
